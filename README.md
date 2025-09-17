@@ -1,6 +1,6 @@
 # Project ai-platform
 
-One Paragraph of project description goes here
+The Nodehaus AI Platform to finetune and evaluate models with custom training data.
 
 ## Getting Started
 
