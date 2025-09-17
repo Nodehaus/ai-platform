@@ -19,8 +19,16 @@ func NewUserRepository(dbService database.Service) persistencePort.UserRepositor
 	return persistence.NewUserRepository(dbService.GetDB())
 }
 
+func NewProjectRepository(dbService database.Service) persistencePort.ProjectRepository {
+	return persistence.NewProjectRepository(dbService.GetDB())
+}
+
 func NewUserService() *services.UserService {
 	return services.NewUserService()
+}
+
+func NewProjectService() *services.ProjectService {
+	return services.NewProjectService()
 }
 
 func NewJWTService() *services.JWTService {
@@ -35,8 +43,16 @@ func NewLoginUseCase(userRepo persistencePort.UserRepository, userService *servi
 	return use_cases.NewLoginUseCase(userRepo, userService, jwtService)
 }
 
+func NewCreateProjectUseCase(projectRepo persistencePort.ProjectRepository, projectService *services.ProjectService) in.CreateProjectUseCase {
+	return use_cases.NewCreateProjectUseCase(projectRepo, projectService)
+}
+
 func NewLoginController(loginUseCase in.LoginUseCase) *web.LoginController {
 	return web.NewLoginController(loginUseCase)
+}
+
+func NewCreateProjectController(createProjectUseCase in.CreateProjectUseCase) *web.CreateProjectController {
+	return web.NewCreateProjectController(createProjectUseCase)
 }
 
 func NewAuthMiddleware(jwtService *services.JWTService) *server.AuthMiddleware {
@@ -45,9 +61,13 @@ func NewAuthMiddleware(jwtService *services.JWTService) *server.AuthMiddleware {
 
 var Module = fx.Options(
 	fx.Provide(NewUserRepository),
+	fx.Provide(NewProjectRepository),
 	fx.Provide(NewUserService),
+	fx.Provide(NewProjectService),
 	fx.Provide(NewJWTService),
 	fx.Provide(NewLoginUseCase),
+	fx.Provide(NewCreateProjectUseCase),
 	fx.Provide(NewLoginController),
+	fx.Provide(NewCreateProjectController),
 	fx.Provide(NewAuthMiddleware),
 )

@@ -30,6 +30,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	// Protected routes (authentication required)
 	protected := r.Group("/api")
 	protected.Use(s.authMiddleware.RequireAuth())
+	protected.POST("/projects", s.createProjectController.CreateProject)
 
 	staticFiles, _ := fs.Sub(web.Files, "assets")
 	r.StaticFS("/assets", http.FS(staticFiles))
@@ -57,8 +58,6 @@ func (s *Server) RegisterRoutes() http.Handler {
 	})
 
 
-	// Example protected endpoint
-	protected.GET("/profile", s.profileHandler)
 
 	return r
 }
@@ -67,26 +66,3 @@ func (s *Server) healthHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, s.db.Health())
 }
 
-func (s *Server) profileHandler(c *gin.Context) {
-	userID, exists := GetUserIDFromContext(c)
-	if !exists {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "User ID not found in context",
-		})
-		return
-	}
-
-	email, exists := GetUserEmailFromContext(c)
-	if !exists {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "User email not found in context",
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"user_id": userID,
-		"email":   email,
-		"message": "This is a protected endpoint",
-	})
-}

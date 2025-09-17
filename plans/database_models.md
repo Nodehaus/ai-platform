@@ -12,11 +12,11 @@ The main entity of the app will be `Project`. A project owns zero or more `Train
 ### Model sketch
 
 -   type Project
-    -   name: string
-    -   owner: User (1)
+    -   name: string (required)
+    -   owner: User (1, required)
     -   training_dataset: TrainingDataset (latest version, 0 or 1)
     -   finetune: Finetune (latest version, 0 or 1)
-    -   status: enum of [ACTIVE, ARCHIVED, DELETED]
+    -   status: enum of [ACTIVE, ARCHIVED, DELETED] (required)
 
 ## Corpus
 
@@ -26,8 +26,8 @@ the training data.
 ### Model sketch
 
 -   type Corpus
-    -   name: string
-    -   s3_path: string
+    -   name: string (required)
+    -   s3_path: string (required)
 
 ## TrainingDataset
 
@@ -37,33 +37,33 @@ numbers.
 ### Model sketch
 
 -   type TrainingDataset
-    -   version: int
+    -   version: int (required)
     -   generate_model: string
     -   generate_model_runner: string
     -   generate_gpu_info_card: string
     -   generate_gpu_info_total_gb: float (rounded to 2 decimals)
     -   generate_gpu_info_cuda_version: string
-    -   input_field: string
-    -   output_field: string
+    -   input_field: string (required)
+    -   output_field: string (required)
     -   total_generation_time_seconds: float (rounded to 2 decimals)
     -   generate_prompt_history: list of Prompt (history of all prompts that the user saved, except the current_prompt)
-    -   generate_prompt: Prompt
-    -   corpus: Corpus
-    -   language_iso: string (3-letter ISO code)
-    -   status: enum of [PLANNING, RUNNING, ABORTED, FAILED, DONE, DELETED]
-    -   field_names: list of string
+    -   generate_prompt: Prompt (required)
+    -   corpus: Corpus (required)
+    -   language_iso: string (3-letter ISO code, required)
+    -   status: enum of [PLANNING, RUNNING, ABORTED, FAILED, DONE, DELETED] (required)
+    -   field_names: list of string (required)
     -   data: list of TrainingDataItem
 
 Each `TrainingDataItem` is one example for training, validation and/or evaluation:
 
 -   type TrainingDataItem
-    -   values: list of string
+    -   values: list of string (required)
     -   corrects: ID of TrainingDataItem
     -   source_document: string
     -   source_document_start: string
     -   source_document_end: string
-    -   generation_time_seconds: float (rounded to 2 decimals)
-    -   deleted: boolean
+    -   generation_time_seconds: float (rounded to 2 decimals, required)
+    -   deleted: boolean (required, default False)
 
 The list of values are the same length and order as the `field_names` in `TrainingDataset`. When the user edits one
 `TrainingDataItem` we add a new database entry where the `corrects` field points to the original `TrainingDataItem`.
@@ -76,8 +76,8 @@ A `Prompt` is a string with a version.
 ### Model sketch
 
 -   type Prompt
-    -   version: int
-    -   text: string
+    -   version: int (required)
+    -   text: string (required)
 
 ## Finetune
 
@@ -86,17 +86,17 @@ The `Finetune` stored information about the model training and the final model.
 ### Model sketch
 
 -   type Finetune
-    -   version: int
-    -   model_name: string
-    -   base_model_name: string
+    -   version: int (required)
+    -   model_name: string (required)
+    -   base_model_name: string (required)
     -   model_size_gb: int
     -   model_size_parameter: int
     -   model_dtype: string
     -   model_quantization: string
     -   inference_samples: list of InferenceSample
-    -   training_dataset: TrainingDataset
+    -   training_dataset: TrainingDataset (required)
     -   training_time_seconds: float (rounded to 2 decimals)
-    -   status: enum of [RUNNING, ABORTED, FAILED, DONE, DELETED]
+    -   status: enum of [RUNNING, ABORTED, FAILED, DONE, DELETED] (required)
 
 The `InferenceSample` contains generated output with their input from the validation dataset, we create those during training at specific training steps:
 

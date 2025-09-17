@@ -14,19 +14,21 @@ import (
 )
 
 type Server struct {
-	port            int
-	db              database.Service
-	loginController *web.LoginController
-	authMiddleware  *AuthMiddleware
+	port                     int
+	db                       database.Service
+	loginController          *web.LoginController
+	createProjectController  *web.CreateProjectController
+	authMiddleware           *AuthMiddleware
 }
 
-func NewServer(db database.Service, loginController *web.LoginController, authMiddleware *AuthMiddleware) *http.Server {
+func NewServer(db database.Service, loginController *web.LoginController, createProjectController *web.CreateProjectController, authMiddleware *AuthMiddleware) *http.Server {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
 	serverInstance := &Server{
-		port:            port,
-		db:              db,
-		loginController: loginController,
-		authMiddleware:  authMiddleware,
+		port:                    port,
+		db:                      db,
+		loginController:         loginController,
+		createProjectController: createProjectController,
+		authMiddleware:          authMiddleware,
 	}
 
 	// Declare Server config
