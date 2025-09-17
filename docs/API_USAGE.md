@@ -121,3 +121,39 @@ curl -X GET http://localhost:8080/api/profile \
 - **Algorithm**: HS256
 - **Claims**: Contains user ID and email
 - **Issuer**: ai-platform
+
+## Web Frontend
+
+The application includes a web frontend with authentication flow:
+
+### Frontend Routes
+
+- **`GET /web`** - Redirects to home page
+- **`GET /web/login`** - Login page (redirects to home if already logged in)
+- **`POST /web/login`** - Process login form
+- **`GET /web/home`** - Dashboard/homepage (requires authentication)
+- **`GET /web/logout`** - Logout and clear session
+
+### Frontend Features
+
+1. **Login Page**: Clean, responsive login form using HTMX
+2. **Homepage/Dashboard**: Shows user profile information from `/api/profile`
+3. **Session Management**: Uses HTTP-only cookies to store JWT tokens
+4. **Auto-redirect**: Automatically redirects unauthenticated users to login
+5. **Token Validation**: Validates tokens by calling the API
+
+### Usage Flow
+
+1. Visit `http://localhost:8080/web` (or any `/web/*` route)
+2. If not logged in → redirected to `/web/login`
+3. Enter credentials and submit form
+4. On successful login → redirected to `/web/home`
+5. Homepage displays user profile data from the protected API
+6. Click "Logout" to clear session and return to login
+
+### Development Notes
+
+- Frontend uses HTMX for dynamic form handling
+- JWT tokens stored as HTTP-only cookies for security
+- Frontend makes API calls to backend using the same host
+- Responsive design with clean styling

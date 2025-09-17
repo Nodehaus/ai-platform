@@ -7,10 +7,11 @@ import (
 	"testing"
 )
 
-func TestHelloWorldHandler(t *testing.T) {
-	s := &Server{}
+func TestRootRedirect(t *testing.T) {
 	r := gin.New()
-	r.GET("/", s.HelloWorldHandler)
+	r.GET("/", func(c *gin.Context) {
+		c.Redirect(302, "/web/home")
+	})
 	// Create a test HTTP request
 	req, err := http.NewRequest("GET", "/", nil)
 	if err != nil {
@@ -20,13 +21,14 @@ func TestHelloWorldHandler(t *testing.T) {
 	rr := httptest.NewRecorder()
 	// Serve the HTTP request
 	r.ServeHTTP(rr, req)
-	// Check the status code
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("Handler returned wrong status code: got %v want %v", status, http.StatusOK)
+	// Check the status code for redirect
+	if status := rr.Code; status != http.StatusFound {
+		t.Errorf("Handler returned wrong status code: got %v want %v", status, http.StatusFound)
 	}
-	// Check the response body
-	expected := "{\"message\":\"Hello World\"}"
-	if rr.Body.String() != expected {
-		t.Errorf("Handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
+	// Check the redirect location
+	location := rr.Header().Get("Location")
+	expected := "/web/home"
+	if location != expected {
+		t.Errorf("Handler returned unexpected redirect location: got %v want %v", location, expected)
 	}
 }

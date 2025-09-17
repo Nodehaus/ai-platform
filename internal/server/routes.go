@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"ai-platform/cmd/web"
-	"github.com/a-h/templ"
 	"io/fs"
 )
 
@@ -22,7 +21,9 @@ func (s *Server) RegisterRoutes() http.Handler {
 	}))
 
 	// Public routes (no authentication required)
-	r.GET("/", s.HelloWorldHandler)
+	r.GET("/", func(c *gin.Context) {
+		c.Redirect(302, "/web/home")
+	})
 	r.GET("/health", s.healthHandler)
 	r.POST("/api/login", s.loginController.Login)
 
@@ -33,25 +34,33 @@ func (s *Server) RegisterRoutes() http.Handler {
 	staticFiles, _ := fs.Sub(web.Files, "assets")
 	r.StaticFS("/assets", http.FS(staticFiles))
 
+	// Frontend routes
 	r.GET("/web", func(c *gin.Context) {
-		templ.Handler(web.HelloForm()).ServeHTTP(c.Writer, c.Request)
+		// Redirect to home page (which will redirect to login if not authenticated)
+		c.Redirect(302, "/web/home")
 	})
 
-	r.POST("/hello", func(c *gin.Context) {
-		web.HelloWebHandler(c.Writer, c.Request)
+	r.GET("/web/login", func(c *gin.Context) {
+		web.LoginPageHandler(c.Writer, c.Request)
 	})
+
+	r.POST("/web/login", func(c *gin.Context) {
+		web.LoginFormHandler(c.Writer, c.Request)
+	})
+
+	r.GET("/web/home", func(c *gin.Context) {
+		web.HomepageHandler(c.Writer, c.Request)
+	})
+
+	r.GET("/web/logout", func(c *gin.Context) {
+		web.LogoutHandler(c.Writer, c.Request)
+	})
+
 
 	// Example protected endpoint
 	protected.GET("/profile", s.profileHandler)
 
 	return r
-}
-
-func (s *Server) HelloWorldHandler(c *gin.Context) {
-	resp := make(map[string]string)
-	resp["message"] = "Hello World"
-
-	c.JSON(http.StatusOK, resp)
 }
 
 func (s *Server) healthHandler(c *gin.Context) {

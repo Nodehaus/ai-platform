@@ -1,0 +1,126 @@
+package web
+
+import "github.com/google/uuid"
+
+type ProfileData struct {
+	UserID  uuid.UUID
+	Email   string
+	Message string
+}
+
+templ Homepage(profile ProfileData) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Dashboard - AI Platform</title>
+			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+			<link href="/assets/style.css" rel="stylesheet"/>
+			<style>
+				.dashboard-container {
+					max-width: 800px;
+					margin: 50px auto;
+					padding: 2rem;
+				}
+				.header {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					margin-bottom: 2rem;
+					padding-bottom: 1rem;
+					border-bottom: 1px solid #e2e8f0;
+				}
+				.profile-card {
+					background: white;
+					border: 1px solid #e2e8f0;
+					border-radius: 8px;
+					padding: 2rem;
+					box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+					margin-bottom: 2rem;
+				}
+				.profile-item {
+					margin-bottom: 1rem;
+					display: flex;
+					align-items: center;
+				}
+				.profile-label {
+					font-weight: 600;
+					color: #374151;
+					min-width: 120px;
+					margin-right: 1rem;
+				}
+				.profile-value {
+					color: #6b7280;
+					font-family: monospace;
+					background-color: #f9fafb;
+					padding: 0.25rem 0.5rem;
+					border-radius: 4px;
+					border: 1px solid #e5e7eb;
+				}
+				.btn {
+					padding: 0.5rem 1rem;
+					background-color: #dc2626;
+					color: white;
+					border: none;
+					border-radius: 4px;
+					cursor: pointer;
+					text-decoration: none;
+					display: inline-block;
+				}
+				.btn:hover {
+					background-color: #b91c1c;
+				}
+				.welcome-message {
+					background-color: #dbeafe;
+					border: 1px solid #93c5fd;
+					color: #1e40af;
+					padding: 1rem;
+					border-radius: 8px;
+					margin-bottom: 2rem;
+				}
+			</style>
+		</head>
+		<body>
+			<div class="dashboard-container">
+				<div class="header">
+					<h1 style="margin: 0; color: #1f2937;">AI Platform Dashboard</h1>
+					<a href="/web/logout" class="btn">Logout</a>
+				</div>
+
+				<div class="welcome-message">
+					<strong>Welcome!</strong> You are successfully logged in and accessing a protected page.
+				</div>
+
+				<div class="profile-card">
+					<h2 style="margin-top: 0; color: #1f2937;">Your Profile</h2>
+
+					<div class="profile-item">
+						<span class="profile-label">User ID:</span>
+						<span class="profile-value">{ profile.UserID.String() }</span>
+					</div>
+
+					<div class="profile-item">
+						<span class="profile-label">Email:</span>
+						<span class="profile-value">{ profile.Email }</span>
+					</div>
+
+					<div class="profile-item">
+						<span class="profile-label">Status:</span>
+						<span class="profile-value">{ profile.Message }</span>
+					</div>
+				</div>
+
+				<div class="profile-card">
+					<h3 style="margin-top: 0; color: #1f2937;">API Information</h3>
+					<p style="color: #6b7280; margin-bottom: 1rem;">
+						This data is fetched from the protected <code>/api/profile</code> endpoint using your JWT token.
+					</p>
+					<p style="color: #6b7280; margin: 0;">
+						You can access other protected API endpoints by including your authentication token in the Authorization header.
+					</p>
+				</div>
+			</div>
+		</body>
+	</html>
+}
