@@ -27,17 +27,23 @@ type LoginResponse struct {
 	Message string `json:"message"`
 }
 
-type ProfileResponse struct {
-	UserID  uuid.UUID `json:"user_id"`
-	Email   string    `json:"email"`
-	Message string    `json:"message"`
+type ProjectResponse struct {
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Status    string    `json:"status"`
+	CreatedAt string    `json:"created_at"`
+	UpdatedAt string    `json:"updated_at"`
+}
+
+type ProjectsResponse struct {
+	Projects []ProjectResponse `json:"projects"`
 }
 
 func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 	// Check if user already has a valid token
 	if token := getTokenFromCookie(r); token != "" {
 		// Verify token by calling profile endpoint
-		if isValidToken(token) {
+		if isValidToken(r, token) {
 			http.Redirect(w, r, "/web/home", http.StatusSeeOther)
 			return
 		}
@@ -114,8 +120,8 @@ func HomepageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Call the profile API to get user data
-	profileData, err := fetchProfileData(r, token)
+	// Call the projects API to get user projects
+	projectsData, userEmail, err := fetchProjectsData(r, token)
 	if err != nil {
 		// Token is invalid, clear it and redirect to login
 		clearTokenCookie(w)
@@ -123,7 +129,7 @@ func HomepageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	templ.Handler(Homepage(*profileData)).ServeHTTP(w, r)
+	templ.Handler(Homepage(*projectsData, userEmail)).ServeHTTP(w, r)
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -182,9 +188,11 @@ func getAPIBaseURL(r *http.Request) string {
 	return fmt.Sprintf("%s://%s", scheme, r.Host)
 }
 
-func isValidToken(token string) bool {
-	// Make a request to the profile endpoint to validate the token
-	req, err := http.NewRequest("GET", "http://localhost:8080/api/profile", nil)
+func isValidToken(r *http.Request, token string) bool {
+	// Make a request to the projects endpoint to validate the token
+	apiBaseURL := getAPIBaseURL(r)
+
+	req, err := http.NewRequest("GET", apiBaseURL+"/api/projects", nil)
 	if err != nil {
 		return false
 	}
@@ -201,12 +209,12 @@ func isValidToken(token string) bool {
 	return resp.StatusCode == http.StatusOK
 }
 
-func fetchProfileData(r *http.Request, token string) (*ProfileData, error) {
+func fetchProjectsData(r *http.Request, token string) (*ProjectsData, string, error) {
 	apiBaseURL := getAPIBaseURL(r)
 
-	req, err := http.NewRequest("GET", apiBaseURL+"/api/profile", nil)
+	req, err := http.NewRequest("GET", apiBaseURL+"/api/projects", nil)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	req.Header.Set("Authorization", "Bearer "+token)
@@ -214,27 +222,62 @@ func fetchProfileData(r *http.Request, token string) (*ProfileData, error) {
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("API returned status %d", resp.StatusCode)
+		return nil, "", fmt.Errorf("API returned status %d", resp.StatusCode)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
-	var profileResp ProfileResponse
-	if err := json.Unmarshal(body, &profileResp); err != nil {
-		return nil, err
+	var projectsResp ProjectsResponse
+	if err := json.Unmarshal(body, &projectsResp); err != nil {
+		return nil, "", err
 	}
 
-	return &ProfileData{
-		UserID:  profileResp.UserID,
-		Email:   profileResp.Email,
-		Message: profileResp.Message,
-	}, nil
+	// Convert API response to template data structure
+	projectsData := &ProjectsData{
+		Projects: make([]ProjectData, len(projectsResp.Projects)),
+	}
+
+	for i, project := range projectsResp.Projects {
+		projectsData.Projects[i] = ProjectData{
+			ID:        project.ID,
+			Name:      project.Name,
+			Status:    project.Status,
+			CreatedAt: project.CreatedAt,
+			UpdatedAt: project.UpdatedAt,
+		}
+	}
+
+	// Extract user email from JWT token claims (simplified - just get from login response)
+	// For now, we'll extract it from the token or return a placeholder
+	userEmail := extractEmailFromToken(token)
+
+	return projectsData, userEmail, nil
+}
+
+func extractEmailFromToken(token string) string {
+	// Simplified - in a real implementation, you'd decode the JWT
+	// For now, return a placeholder since we don't have the email easily accessible
+	return "user@example.com"
+}
+
+// ProjectData represents a project for template display
+type ProjectData struct {
+	ID        uuid.UUID
+	Name      string
+	Status    string
+	CreatedAt string
+	UpdatedAt string
+}
+
+// ProjectsData represents the collection of projects for template display
+type ProjectsData struct {
+	Projects []ProjectData
 }

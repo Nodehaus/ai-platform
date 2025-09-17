@@ -1,20 +1,12 @@
 package web
 
-import "github.com/google/uuid"
-
-type ProfileData struct {
-	UserID  uuid.UUID
-	Email   string
-	Message string
-}
-
-templ Homepage(profile ProfileData) {
+templ Homepage(projectsData ProjectsData, userEmail string) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>Dashboard - AI Platform</title>
+			<title>Projects - Nodehaus AI Platform</title>
 			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
 			<link href="/assets/style.css" rel="stylesheet"/>
 			<style>
@@ -31,7 +23,7 @@ templ Homepage(profile ProfileData) {
 					padding-bottom: 1rem;
 					border-bottom: 1px solid #e2e8f0;
 				}
-				.profile-card {
+				.projects-card {
 					background: white;
 					border: 1px solid #e2e8f0;
 					border-radius: 8px;
@@ -39,24 +31,57 @@ templ Homepage(profile ProfileData) {
 					box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 					margin-bottom: 2rem;
 				}
-				.profile-item {
-					margin-bottom: 1rem;
-					display: flex;
-					align-items: center;
-				}
-				.profile-label {
-					font-weight: 600;
-					color: #374151;
-					min-width: 120px;
-					margin-right: 1rem;
-				}
-				.profile-value {
-					color: #6b7280;
-					font-family: monospace;
-					background-color: #f9fafb;
-					padding: 0.25rem 0.5rem;
-					border-radius: 4px;
+				.project-item {
+					background: #f9fafb;
 					border: 1px solid #e5e7eb;
+					border-radius: 6px;
+					padding: 1.5rem;
+					margin-bottom: 1rem;
+					transition: all 0.2s ease;
+				}
+				.project-item:hover {
+					box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+					border-color: #d1d5db;
+				}
+				.project-name {
+					font-weight: 600;
+					color: #1f2937;
+					font-size: 1.1rem;
+					margin-bottom: 0.5rem;
+				}
+				.project-meta {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					font-size: 0.875rem;
+					color: #6b7280;
+				}
+				.project-status {
+					background-color: #10b981;
+					color: white;
+					padding: 0.25rem 0.5rem;
+					border-radius: 12px;
+					font-size: 0.75rem;
+					font-weight: 500;
+				}
+				.empty-state {
+					text-align: center;
+					padding: 3rem;
+					color: #6b7280;
+				}
+				.create-btn {
+					background-color: #3b82f6;
+					color: white;
+					padding: 0.75rem 1.5rem;
+					border: none;
+					border-radius: 6px;
+					font-weight: 500;
+					text-decoration: none;
+					display: inline-block;
+					margin-top: 1rem;
+				}
+				.create-btn:hover {
+					background-color: #2563eb;
 				}
 				.btn {
 					padding: 0.5rem 1rem;
@@ -84,41 +109,36 @@ templ Homepage(profile ProfileData) {
 		<body>
 			<div class="dashboard-container">
 				<div class="header">
-					<h1 style="margin: 0; color: #1f2937;">AI Platform Dashboard</h1>
+					<h1 style="margin: 0; color: #1f2937;">My Projects</h1>
 					<a href="/web/logout" class="btn">Logout</a>
 				</div>
 
 				<div class="welcome-message">
-					<strong>Welcome!</strong> You are successfully logged in and accessing a protected page.
+					<strong>Welcome back, { userEmail }!</strong> Here are your active projects.
 				</div>
 
-				<div class="profile-card">
-					<h2 style="margin-top: 0; color: #1f2937;">Your Profile</h2>
-
-					<div class="profile-item">
-						<span class="profile-label">User ID:</span>
-						<span class="profile-value">{ profile.UserID.String() }</span>
+				<div class="projects-card">
+					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+						<h2 style="margin: 0; color: #1f2937;">Projects</h2>
+						<button class="create-btn">+ New Project</button>
 					</div>
 
-					<div class="profile-item">
-						<span class="profile-label">Email:</span>
-						<span class="profile-value">{ profile.Email }</span>
-					</div>
-
-					<div class="profile-item">
-						<span class="profile-label">Status:</span>
-						<span class="profile-value">{ profile.Message }</span>
-					</div>
-				</div>
-
-				<div class="profile-card">
-					<h3 style="margin-top: 0; color: #1f2937;">API Information</h3>
-					<p style="color: #6b7280; margin-bottom: 1rem;">
-						This data is fetched from the protected <code>/api/profile</code> endpoint using your JWT token.
-					</p>
-					<p style="color: #6b7280; margin: 0;">
-						You can access other protected API endpoints by including your authentication token in the Authorization header.
-					</p>
+					if len(projectsData.Projects) == 0 {
+						<div class="empty-state">
+							<p style="margin: 0; font-size: 1.125rem;">No projects yet</p>
+							<p style="margin: 0.5rem 0 0 0;">Create your first project to get started with AI training.</p>
+						</div>
+					} else {
+						for _, project := range projectsData.Projects {
+							<div class="project-item">
+								<div class="project-name">{ project.Name }</div>
+								<div class="project-meta">
+									<span>Created { project.CreatedAt }</span>
+									<span class="project-status">{ project.Status }</span>
+								</div>
+							</div>
+						}
+					}
 				</div>
 			</div>
 		</body>
