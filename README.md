@@ -1,4 +1,4 @@
-# Project ai-platform
+# Nodehaus AI Platform
 
 The Nodehaus AI Platform to finetune and evaluate models with custom training data.
 
