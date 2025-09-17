@@ -83,8 +83,9 @@ docker build -t ai-platform:latest .
 Create a `.env.production` file:
 
 ```env
-PORT=8080
-BLUEPRINT_DB_HOST=your-db-host
+PORT=8081
+API_BASE_URL=https://ai.peterbouda.eu
+BLUEPRINT_DB_HOST=localhost
 BLUEPRINT_DB_PORT=5432
 BLUEPRINT_DB_DATABASE=ai_platform
 BLUEPRINT_DB_USERNAME=nodehaus
