@@ -90,6 +90,35 @@ func (r *ProjectRepositoryImpl) GetByOwnerID(ownerID uuid.UUID) ([]entities.Proj
 	return projects, nil
 }
 
+func (r *ProjectRepositoryImpl) GetActiveByOwnerID(ownerID uuid.UUID) ([]entities.Project, error) {
+	query := `SELECT id, name, owner_id, status, created_at, updated_at FROM projects WHERE owner_id = $1 AND status = 'ACTIVE' ORDER BY created_at DESC`
+
+	rows, err := r.db.Query(query, ownerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var projects []entities.Project
+	for rows.Next() {
+		var model ProjectRepositoryModel
+		err := rows.Scan(
+			&model.ID,
+			&model.Name,
+			&model.OwnerID,
+			&model.Status,
+			&model.CreatedAt,
+			&model.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		projects = append(projects, *model.ToEntity())
+	}
+
+	return projects, nil
+}
+
 func (r *ProjectRepositoryImpl) ExistsByNameAndOwnerID(name string, ownerID uuid.UUID) (bool, error) {
 	query := `SELECT EXISTS(SELECT 1 FROM projects WHERE name = $1 AND owner_id = $2 AND status != 'DELETED')`
 

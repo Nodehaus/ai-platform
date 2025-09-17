@@ -1,0 +1,1 @@
+Add an endpoint to create a new project. You can find information about the database models in `plans/database_models.md`. For now we only want one more POST endpoint `/api/projects` that reveives a `{"name": "Project name"}` JSON. The owner will be the currently logged in user. The training dataset and finetune are empty. The status is `ACTIVE`.

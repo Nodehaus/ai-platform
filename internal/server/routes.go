@@ -31,6 +31,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	protected := r.Group("/api")
 	protected.Use(s.authMiddleware.RequireAuth())
 	protected.POST("/projects", s.createProjectController.CreateProject)
+	protected.GET("/projects", s.listProjectsController.ListProjects)
 
 	staticFiles, _ := fs.Sub(web.Files, "assets")
 	r.StaticFS("/assets", http.FS(staticFiles))
