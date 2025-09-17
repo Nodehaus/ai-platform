@@ -9,6 +9,10 @@ import (
 	"syscall"
 	"time"
 
+	"go.uber.org/fx"
+
+	"ai-platform/internal/common"
+	"ai-platform/internal/database"
 	"ai-platform/internal/server"
 )
 
@@ -38,21 +42,27 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 }
 
 func main() {
+	app := fx.New(
+		fx.Provide(database.New),
+		common.Module,
+		fx.Provide(server.NewServer),
+		fx.Invoke(func(server *http.Server) {
+			// Create a done channel to signal when the shutdown is complete
+			done := make(chan bool, 1)
 
-	server := server.NewServer()
+			// Run graceful shutdown in a separate goroutine
+			go gracefulShutdown(server, done)
 
-	// Create a done channel to signal when the shutdown is complete
-	done := make(chan bool, 1)
+			err := server.ListenAndServe()
+			if err != nil && err != http.ErrServerClosed {
+				panic(fmt.Sprintf("http server error: %s", err))
+			}
 
-	// Run graceful shutdown in a separate goroutine
-	go gracefulShutdown(server, done)
+			// Wait for the graceful shutdown to complete
+			<-done
+			log.Println("Graceful shutdown complete.")
+		}),
+	)
 
-	err := server.ListenAndServe()
-	if err != nil && err != http.ErrServerClosed {
-		panic(fmt.Sprintf("http server error: %s", err))
-	}
-
-	// Wait for the graceful shutdown to complete
-	<-done
-	log.Println("Graceful shutdown complete.")
+	app.Run()
 }

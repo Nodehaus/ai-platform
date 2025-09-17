@@ -66,6 +66,30 @@ internal
 
 Use dependency injection with the go fx library.
 
+## Build and run
+
+Live reload the application:
+
+```bash
+make watch
+```
+
+Build the application
+
+```bash
+make build
+```
+
+Run the application
+
+```bash
+make run
+```
+
 ## Tests
 
-When you implement a new feature always add tests.
+When you implement a new feature always add tests. Run the test suite:
+
+```bash
+make test
+```

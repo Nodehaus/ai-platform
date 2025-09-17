@@ -36,6 +36,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 		web.HelloWebHandler(c.Writer, c.Request)
 	})
 
+	r.POST("/api/login", s.loginController.Login)
+
 	return r
 }
 
