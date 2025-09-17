@@ -34,7 +34,7 @@ func (c *LoginController) Login(ctx *gin.Context) {
 		Password: request.Password,
 	}
 
-	user, err := c.loginUseCase.Login(command)
+	loginResult, err := c.loginUseCase.Login(command)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"error": err.Error(),
@@ -42,6 +42,6 @@ func (c *LoginController) Login(ctx *gin.Context) {
 		return
 	}
 
-	response := NewLoginResponse(user, "Login successful")
+	response := NewLoginResponse(loginResult.User, loginResult.Token, "Login successful")
 	ctx.JSON(http.StatusOK, response)
 }

@@ -16,12 +16,12 @@ import (
 )
 
 type mockLoginUseCase struct {
-	user *entities.User
-	err  error
+	loginResult *in.LoginResult
+	err         error
 }
 
-func (m *mockLoginUseCase) Login(command in.LoginCommand) (*entities.User, error) {
-	return m.user, m.err
+func (m *mockLoginUseCase) Login(command in.LoginCommand) (*in.LoginResult, error) {
+	return m.loginResult, m.err
 }
 
 func TestLoginController_Login_Success(t *testing.T) {
@@ -32,9 +32,14 @@ func TestLoginController_Login_Success(t *testing.T) {
 		Email: "test@example.com",
 	}
 
+	loginResult := &in.LoginResult{
+		User:  user,
+		Token: "test-jwt-token",
+	}
+
 	mockUseCase := &mockLoginUseCase{
-		user: user,
-		err:  nil,
+		loginResult: loginResult,
+		err:         nil,
 	}
 
 	controller := NewLoginController(mockUseCase)
@@ -68,14 +73,18 @@ func TestLoginController_Login_Success(t *testing.T) {
 	if response.Message != "Login successful" {
 		t.Errorf("Expected message 'Login successful', got %s", response.Message)
 	}
+
+	if response.Token != "test-jwt-token" {
+		t.Errorf("Expected token 'test-jwt-token', got %s", response.Token)
+	}
 }
 
 func TestLoginController_Login_InvalidCredentials(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	mockUseCase := &mockLoginUseCase{
-		user: nil,
-		err:  errors.New("invalid credentials"),
+		loginResult: nil,
+		err:         errors.New("invalid credentials"),
 	}
 
 	controller := NewLoginController(mockUseCase)

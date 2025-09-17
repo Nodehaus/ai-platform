@@ -2,7 +2,6 @@ package use_cases
 
 import (
 	"errors"
-	"ai-platform/internal/application/domain/entities"
 	"ai-platform/internal/application/domain/services"
 	"ai-platform/internal/application/port/in"
 	"ai-platform/internal/application/port/out/persistence"
@@ -11,16 +10,18 @@ import (
 type LoginUseCaseImpl struct {
 	userRepository persistence.UserRepository
 	userService    *services.UserService
+	jwtService     *services.JWTService
 }
 
-func NewLoginUseCase(userRepository persistence.UserRepository, userService *services.UserService) in.LoginUseCase {
+func NewLoginUseCase(userRepository persistence.UserRepository, userService *services.UserService, jwtService *services.JWTService) in.LoginUseCase {
 	return &LoginUseCaseImpl{
 		userRepository: userRepository,
 		userService:    userService,
+		jwtService:     jwtService,
 	}
 }
 
-func (uc *LoginUseCaseImpl) Login(command in.LoginCommand) (*entities.User, error) {
+func (uc *LoginUseCaseImpl) Login(command in.LoginCommand) (*in.LoginResult, error) {
 	if command.Email == "" {
 		return nil, errors.New("email is required")
 	}
@@ -43,5 +44,13 @@ func (uc *LoginUseCaseImpl) Login(command in.LoginCommand) (*entities.User, erro
 		return nil, errors.New("invalid credentials")
 	}
 
-	return user, nil
+	token, err := uc.jwtService.GenerateToken(user.ID, user.Email)
+	if err != nil {
+		return nil, errors.New("failed to generate token")
+	}
+
+	return &in.LoginResult{
+		User:  user,
+		Token: token,
+	}, nil
 }

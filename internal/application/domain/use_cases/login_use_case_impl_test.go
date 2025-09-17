@@ -39,25 +39,34 @@ func TestLoginUseCaseImpl_Login_Success(t *testing.T) {
 	}
 
 	userService := services.NewUserService()
-	useCase := NewLoginUseCase(mockRepo, userService)
+	jwtService := services.NewJWTService("test-secret-key")
+	useCase := NewLoginUseCase(mockRepo, userService, jwtService)
 
 	command := in.LoginCommand{
 		Email:    "test@example.com",
 		Password: "password123",
 	}
 
-	user, err := useCase.Login(command)
+	loginResult, err := useCase.Login(command)
 
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
 
-	if user == nil {
+	if loginResult == nil {
+		t.Error("Expected login result, got nil")
+	}
+
+	if loginResult.User == nil {
 		t.Error("Expected user, got nil")
 	}
 
-	if user.Email != "test@example.com" {
-		t.Errorf("Expected email %s, got %s", "test@example.com", user.Email)
+	if loginResult.User.Email != "test@example.com" {
+		t.Errorf("Expected email %s, got %s", "test@example.com", loginResult.User.Email)
+	}
+
+	if loginResult.Token == "" {
+		t.Error("Expected token, got empty string")
 	}
 }
 
@@ -77,21 +86,22 @@ func TestLoginUseCaseImpl_Login_InvalidCredentials(t *testing.T) {
 	}
 
 	userService := services.NewUserService()
-	useCase := NewLoginUseCase(mockRepo, userService)
+	jwtService := services.NewJWTService("test-secret-key")
+	useCase := NewLoginUseCase(mockRepo, userService, jwtService)
 
 	command := in.LoginCommand{
 		Email:    "test@example.com",
 		Password: "wrongpassword",
 	}
 
-	user, err := useCase.Login(command)
+	loginResult, err := useCase.Login(command)
 
 	if err == nil {
 		t.Error("Expected error for invalid credentials")
 	}
 
-	if user != nil {
-		t.Error("Expected nil user for invalid credentials")
+	if loginResult != nil {
+		t.Error("Expected nil login result for invalid credentials")
 	}
 
 	if err.Error() != "invalid credentials" {
@@ -105,7 +115,8 @@ func TestLoginUseCaseImpl_Login_UserNotFound(t *testing.T) {
 	}
 
 	userService := services.NewUserService()
-	useCase := NewLoginUseCase(mockRepo, userService)
+	jwtService := services.NewJWTService("test-secret-key")
+	useCase := NewLoginUseCase(mockRepo, userService, jwtService)
 
 	command := in.LoginCommand{
 		Email:    "nonexistent@example.com",
@@ -133,7 +144,8 @@ func TestLoginUseCaseImpl_Login_EmptyEmail(t *testing.T) {
 	}
 
 	userService := services.NewUserService()
-	useCase := NewLoginUseCase(mockRepo, userService)
+	jwtService := services.NewJWTService("test-secret-key")
+	useCase := NewLoginUseCase(mockRepo, userService, jwtService)
 
 	command := in.LoginCommand{
 		Email:    "",
@@ -161,7 +173,8 @@ func TestLoginUseCaseImpl_Login_EmptyPassword(t *testing.T) {
 	}
 
 	userService := services.NewUserService()
-	useCase := NewLoginUseCase(mockRepo, userService)
+	jwtService := services.NewJWTService("test-secret-key")
+	useCase := NewLoginUseCase(mockRepo, userService, jwtService)
 
 	command := in.LoginCommand{
 		Email:    "test@example.com",
