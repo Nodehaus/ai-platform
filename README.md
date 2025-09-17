@@ -61,3 +61,52 @@ Clean up binary from the last build:
 ```bash
 make clean
 ```
+
+## Docker Deployment
+
+The application includes a Dockerfile for containerized deployment. Here's how to deploy it on a server with automatic restart capabilities:
+
+### Building the Docker Image
+
+```bash
+# Build the Docker image
+docker build -t ai-platform .
+
+# Or with a specific tag
+docker build -t ai-platform:latest .
+```
+
+### Running with Docker
+
+#### Using Environment File
+
+Create a `.env.production` file:
+
+```env
+PORT=8080
+BLUEPRINT_DB_HOST=your-db-host
+BLUEPRINT_DB_PORT=5432
+BLUEPRINT_DB_DATABASE=ai_platform
+BLUEPRINT_DB_USERNAME=nodehaus
+BLUEPRINT_DB_PASSWORD=your-password
+BLUEPRINT_DB_SCHEMA=public
+JWT_SECRET_KEY=your-jwt-secret
+```
+
+Then run:
+
+```bash
+docker run -d \
+  --name ai-platform \
+  --restart always \
+  -p 8080:8080 \
+  --env-file .env.production \
+  ai-platform
+```
+
+### Restart Policies
+
+-   `--restart unless-stopped`: Restart unless manually stopped
+-   `--restart always`: Always restart (even after system reboot)
+-   `--restart on-failure`: Restart only on failure
+-   `--restart no`: Never restart automatically (default)
