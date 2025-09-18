@@ -43,8 +43,8 @@ numbers.
     -   generate_gpu_info_card: string
     -   generate_gpu_info_total_gb: float (rounded to 2 decimals)
     -   generate_gpu_info_cuda_version: string
-    -   input_field: string (required)
-    -   output_field: string (required)
+    -   input_field: string
+    -   output_field: string
     -   total_generation_time_seconds: float (rounded to 2 decimals)
     -   generate_prompt_history: list of Prompt (history of all prompts that the user saved, except the current_prompt)
     -   generate_prompt: Prompt (required)

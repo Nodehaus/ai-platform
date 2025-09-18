@@ -23,12 +23,28 @@ func NewProjectRepository(dbService database.Service) persistencePort.ProjectRep
 	return persistence.NewProjectRepository(dbService.GetDB())
 }
 
+func NewTrainingDatasetRepository(dbService database.Service) persistencePort.TrainingDatasetRepository {
+	return persistence.NewTrainingDatasetRepository(dbService.GetDB())
+}
+
+func NewCorpusRepository(dbService database.Service) persistencePort.CorpusRepository {
+	return persistence.NewCorpusRepository(dbService.GetDB())
+}
+
+func NewPromptRepository(dbService database.Service) persistencePort.PromptRepository {
+	return persistence.NewPromptRepository(dbService.GetDB())
+}
+
 func NewUserService() *services.UserService {
 	return services.NewUserService()
 }
 
 func NewProjectService() *services.ProjectService {
 	return services.NewProjectService()
+}
+
+func NewTrainingDatasetService() *services.TrainingDatasetService {
+	return services.NewTrainingDatasetService()
 }
 
 func NewJWTService() *services.JWTService {
@@ -51,6 +67,16 @@ func NewListProjectsUseCase(projectRepo persistencePort.ProjectRepository) in.Li
 	return use_cases.NewListProjectsUseCase(projectRepo)
 }
 
+func NewCreateTrainingDatasetUseCase(
+	trainingDatasetRepo persistencePort.TrainingDatasetRepository,
+	projectRepo persistencePort.ProjectRepository,
+	corpusRepo persistencePort.CorpusRepository,
+	promptRepo persistencePort.PromptRepository,
+	trainingDatasetService *services.TrainingDatasetService,
+) in.CreateTrainingDatasetUseCase {
+	return use_cases.NewCreateTrainingDatasetUseCase(trainingDatasetRepo, projectRepo, corpusRepo, promptRepo, trainingDatasetService)
+}
+
 func NewLoginController(loginUseCase in.LoginUseCase) *web.LoginController {
 	return web.NewLoginController(loginUseCase)
 }
@@ -63,6 +89,12 @@ func NewListProjectsController(listProjectsUseCase in.ListProjectsUseCase) *web.
 	return web.NewListProjectsController(listProjectsUseCase)
 }
 
+func NewCreateTrainingDatasetController(
+	createTrainingDatasetUseCase in.CreateTrainingDatasetUseCase,
+) *web.CreateTrainingDatasetController {
+	return web.NewCreateTrainingDatasetController(createTrainingDatasetUseCase)
+}
+
 func NewAuthMiddleware(jwtService *services.JWTService) *server.AuthMiddleware {
 	return server.NewAuthMiddleware(jwtService)
 }
@@ -70,14 +102,20 @@ func NewAuthMiddleware(jwtService *services.JWTService) *server.AuthMiddleware {
 var Module = fx.Options(
 	fx.Provide(NewUserRepository),
 	fx.Provide(NewProjectRepository),
+	fx.Provide(NewTrainingDatasetRepository),
+	fx.Provide(NewCorpusRepository),
+	fx.Provide(NewPromptRepository),
 	fx.Provide(NewUserService),
 	fx.Provide(NewProjectService),
+	fx.Provide(NewTrainingDatasetService),
 	fx.Provide(NewJWTService),
 	fx.Provide(NewLoginUseCase),
 	fx.Provide(NewCreateProjectUseCase),
 	fx.Provide(NewListProjectsUseCase),
+	fx.Provide(NewCreateTrainingDatasetUseCase),
 	fx.Provide(NewLoginController),
 	fx.Provide(NewCreateProjectController),
 	fx.Provide(NewListProjectsController),
+	fx.Provide(NewCreateTrainingDatasetController),
 	fx.Provide(NewAuthMiddleware),
 )
