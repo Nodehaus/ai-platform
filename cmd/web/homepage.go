@@ -13,11 +13,12 @@ import (
 )
 
 type ProjectData struct {
-	ID        uuid.UUID
-	Name      string
-	Status    string
-	CreatedAt string
-	UpdatedAt string
+	ID                uuid.UUID
+	Name              string
+	Status            string
+	TrainingDatasetID *uuid.UUID
+	CreatedAt         string
+	UpdatedAt         string
 }
 
 type ProjectsData struct {
@@ -25,11 +26,12 @@ type ProjectsData struct {
 }
 
 type ProjectResponse struct {
-	ID        uuid.UUID `json:"id"`
-	Name      string    `json:"name"`
-	Status    string    `json:"status"`
-	CreatedAt string    `json:"created_at"`
-	UpdatedAt string    `json:"updated_at"`
+	ID                uuid.UUID  `json:"id"`
+	Name              string     `json:"name"`
+	Status            string     `json:"status"`
+	TrainingDatasetID *uuid.UUID `json:"training_dataset_id"`
+	CreatedAt         string     `json:"created_at"`
+	UpdatedAt         string     `json:"updated_at"`
 }
 
 type ProjectsResponse struct {
@@ -110,11 +112,12 @@ func fetchProjectsData(r *http.Request, token string) (*ProjectsData, error) {
 		}
 
 		projectsData.Projects[i] = ProjectData{
-			ID:        project.ID,
-			Name:      project.Name,
-			Status:    project.Status,
-			CreatedAt: formattedCreatedAt,
-			UpdatedAt: project.UpdatedAt,
+			ID:                project.ID,
+			Name:              project.Name,
+			Status:            project.Status,
+			TrainingDatasetID: project.TrainingDatasetID,
+			CreatedAt:         formattedCreatedAt,
+			UpdatedAt:         project.UpdatedAt,
 		}
 	}
 

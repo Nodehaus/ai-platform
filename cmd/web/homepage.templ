@@ -1,5 +1,7 @@
 package web
 
+import "fmt"
+
 templ Homepage(projectsData ProjectsData) {
 	@App("max-w-3xl") {
 		<div class="max-w-3xl mx-auto">
@@ -16,10 +18,20 @@ templ Homepage(projectsData ProjectsData) {
 				} else {
 					for _, project := range projectsData.Projects {
 						<div class="project-item">
-							<div class="project-name">{ project.Name }</div>
-							<div class="project-meta flex justify-between items-center">
-								<span>Created { project.CreatedAt }</span>
+							<div class="flex justify-between items-center">
+								<div class="project-name">{ project.Name }</div>
+								<span class="text-sm text-gray-500">Created { project.CreatedAt }</span>
 							</div>
+							if project.TrainingDatasetID == nil {
+								<div class="mt-2">
+									<a
+										href={ templ.URL(fmt.Sprintf("/web/projects/%s/training-datasets/step1", project.ID)) }
+										class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+									>
+										Create training dataset
+									</a>
+								</div>
+							}
 						</div>
 					}
 				}
@@ -27,7 +39,7 @@ templ Homepage(projectsData ProjectsData) {
 		</div>
 
 		<!-- Create Project Modal -->
-		<div id="createProjectModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+		<div id="createProjectModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
 			<div class="bg-white rounded-lg p-6 w-96 max-w-md mx-4">
 				<h2 class="text-xl font-semibold mb-4">Create New Project</h2>
 				<form hx-post="/web/projects/create" hx-target="#form-error" hx-swap="innerHTML" hx-on::before-request="console.log('HTMX request starting')" hx-on::after-request="console.log('HTMX request completed')">
