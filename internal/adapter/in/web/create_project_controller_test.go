@@ -53,7 +53,7 @@ func TestCreateProjectController_CreateProject_Success(t *testing.T) {
 		err:    nil,
 	}
 
-	controller := NewCreateProjectController(mockUseCase)
+	controller := &CreateProjectController{CreateProjectUseCase: mockUseCase}
 
 	router := gin.New()
 	router.Use(func(c *gin.Context) {
@@ -95,7 +95,7 @@ func TestCreateProjectController_CreateProject_ValidationError(t *testing.T) {
 	userID := uuid.New()
 	mockUseCase := &mockCreateProjectUseCase{}
 
-	controller := NewCreateProjectController(mockUseCase)
+	controller := &CreateProjectController{CreateProjectUseCase: mockUseCase}
 
 	router := gin.New()
 	router.Use(func(c *gin.Context) {
@@ -133,7 +133,7 @@ func TestCreateProjectController_CreateProject_DuplicateName(t *testing.T) {
 	userID := uuid.New()
 	mockUseCase := &mockCreateProjectUseCase{}
 
-	controller := NewCreateProjectController(mockUseCase)
+	controller := &CreateProjectController{CreateProjectUseCase: mockUseCase}
 
 	router := gin.New()
 	router.Use(func(c *gin.Context) {
@@ -169,7 +169,7 @@ func TestCreateProjectController_CreateProject_NoUserInContext(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	mockUseCase := &mockCreateProjectUseCase{}
-	controller := NewCreateProjectController(mockUseCase)
+	controller := &CreateProjectController{CreateProjectUseCase: mockUseCase}
 
 	router := gin.New()
 	router.POST("/projects", controller.CreateProject)

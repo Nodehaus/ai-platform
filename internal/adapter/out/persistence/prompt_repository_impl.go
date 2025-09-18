@@ -8,18 +8,12 @@ import (
 	"github.com/google/uuid"
 
 	"ai-platform/internal/application/domain/entities"
-	"ai-platform/internal/application/port/out/persistence"
 )
 
 type PromptRepositoryImpl struct {
-	db *sql.DB
+	Db *sql.DB
 }
 
-func NewPromptRepository(db *sql.DB) persistence.PromptRepository {
-	return &PromptRepositoryImpl{
-		db: db,
-	}
-}
 
 func (r *PromptRepositoryImpl) Create(ctx context.Context, prompt *entities.Prompt) error {
 	query := `INSERT INTO prompts (id, version, text, created_at, updated_at)
@@ -29,7 +23,7 @@ func (r *PromptRepositoryImpl) Create(ctx context.Context, prompt *entities.Prom
 	prompt.CreatedAt = now
 	prompt.UpdatedAt = now
 
-	_, err := r.db.ExecContext(ctx, query,
+	_, err := r.Db.ExecContext(ctx, query,
 		prompt.ID,
 		prompt.Version,
 		prompt.Text,
@@ -44,7 +38,7 @@ func (r *PromptRepositoryImpl) GetByID(ctx context.Context, id uuid.UUID) (*enti
 	query := `SELECT id, version, text, created_at, updated_at FROM prompts WHERE id = $1`
 
 	var model PromptRepositoryModel
-	err := r.db.QueryRowContext(ctx, query, id).Scan(
+	err := r.Db.QueryRowContext(ctx, query, id).Scan(
 		&model.ID,
 		&model.Version,
 		&model.Text,
@@ -67,7 +61,7 @@ func (r *PromptRepositoryImpl) Update(ctx context.Context, prompt *entities.Prom
 
 	prompt.UpdatedAt = time.Now()
 
-	_, err := r.db.ExecContext(ctx, query,
+	_, err := r.Db.ExecContext(ctx, query,
 		prompt.ID,
 		prompt.Version,
 		prompt.Text,
@@ -79,6 +73,6 @@ func (r *PromptRepositoryImpl) Update(ctx context.Context, prompt *entities.Prom
 
 func (r *PromptRepositoryImpl) Delete(ctx context.Context, id uuid.UUID) error {
 	query := `DELETE FROM prompts WHERE id = $1`
-	_, err := r.db.ExecContext(ctx, query, id)
+	_, err := r.Db.ExecContext(ctx, query, id)
 	return err
 }

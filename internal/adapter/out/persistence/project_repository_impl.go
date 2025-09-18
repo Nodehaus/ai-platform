@@ -3,20 +3,14 @@ package persistence
 import (
 	"database/sql"
 	"ai-platform/internal/application/domain/entities"
-	"ai-platform/internal/application/port/out/persistence"
 	"github.com/google/uuid"
 	"time"
 )
 
 type ProjectRepositoryImpl struct {
-	db *sql.DB
+	Db *sql.DB
 }
 
-func NewProjectRepository(db *sql.DB) persistence.ProjectRepository {
-	return &ProjectRepositoryImpl{
-		db: db,
-	}
-}
 
 func (r *ProjectRepositoryImpl) Create(project *entities.Project) error {
 	query := `INSERT INTO projects (id, name, owner_id, status, created_at, updated_at)
@@ -26,7 +20,7 @@ func (r *ProjectRepositoryImpl) Create(project *entities.Project) error {
 	project.CreatedAt = now
 	project.UpdatedAt = now
 
-	_, err := r.db.Exec(query,
+	_, err := r.Db.Exec(query,
 		project.ID,
 		project.Name,
 		project.OwnerID,
@@ -42,7 +36,7 @@ func (r *ProjectRepositoryImpl) GetByID(id uuid.UUID) (*entities.Project, error)
 	query := `SELECT id, name, owner_id, status, created_at, updated_at FROM projects WHERE id = $1`
 
 	var model ProjectRepositoryModel
-	err := r.db.QueryRow(query, id).Scan(
+	err := r.Db.QueryRow(query, id).Scan(
 		&model.ID,
 		&model.Name,
 		&model.OwnerID,
@@ -64,7 +58,7 @@ func (r *ProjectRepositoryImpl) GetByID(id uuid.UUID) (*entities.Project, error)
 func (r *ProjectRepositoryImpl) GetByOwnerID(ownerID uuid.UUID) ([]entities.Project, error) {
 	query := `SELECT id, name, owner_id, status, created_at, updated_at FROM projects WHERE owner_id = $1 ORDER BY created_at DESC`
 
-	rows, err := r.db.Query(query, ownerID)
+	rows, err := r.Db.Query(query, ownerID)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +87,7 @@ func (r *ProjectRepositoryImpl) GetByOwnerID(ownerID uuid.UUID) ([]entities.Proj
 func (r *ProjectRepositoryImpl) GetActiveByOwnerID(ownerID uuid.UUID) ([]entities.Project, error) {
 	query := `SELECT id, name, owner_id, status, created_at, updated_at FROM projects WHERE owner_id = $1 AND status = 'ACTIVE' ORDER BY created_at DESC`
 
-	rows, err := r.db.Query(query, ownerID)
+	rows, err := r.Db.Query(query, ownerID)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +117,7 @@ func (r *ProjectRepositoryImpl) ExistsByNameAndOwnerID(name string, ownerID uuid
 	query := `SELECT EXISTS(SELECT 1 FROM projects WHERE name = $1 AND owner_id = $2 AND status != 'DELETED')`
 
 	var exists bool
-	err := r.db.QueryRow(query, name, ownerID).Scan(&exists)
+	err := r.Db.QueryRow(query, name, ownerID).Scan(&exists)
 	if err != nil {
 		return false, err
 	}
@@ -136,7 +130,7 @@ func (r *ProjectRepositoryImpl) Update(project *entities.Project) error {
 
 	project.UpdatedAt = time.Now()
 
-	_, err := r.db.Exec(query,
+	_, err := r.Db.Exec(query,
 		project.ID,
 		project.Name,
 		string(project.Status),
@@ -148,6 +142,6 @@ func (r *ProjectRepositoryImpl) Update(project *entities.Project) error {
 
 func (r *ProjectRepositoryImpl) Delete(id uuid.UUID) error {
 	query := `DELETE FROM projects WHERE id = $1`
-	_, err := r.db.Exec(query, id)
+	_, err := r.Db.Exec(query, id)
 	return err
 }

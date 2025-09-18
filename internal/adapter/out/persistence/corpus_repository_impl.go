@@ -8,18 +8,12 @@ import (
 	"github.com/google/uuid"
 
 	"ai-platform/internal/application/domain/entities"
-	"ai-platform/internal/application/port/out/persistence"
 )
 
 type CorpusRepositoryImpl struct {
-	db *sql.DB
+	Db *sql.DB
 }
 
-func NewCorpusRepository(db *sql.DB) persistence.CorpusRepository {
-	return &CorpusRepositoryImpl{
-		db: db,
-	}
-}
 
 func (r *CorpusRepositoryImpl) Create(ctx context.Context, corpus *entities.Corpus) error {
 	query := `INSERT INTO corpus (id, name, s3_path, created_at, updated_at)
@@ -29,7 +23,7 @@ func (r *CorpusRepositoryImpl) Create(ctx context.Context, corpus *entities.Corp
 	corpus.CreatedAt = now
 	corpus.UpdatedAt = now
 
-	_, err := r.db.ExecContext(ctx, query,
+	_, err := r.Db.ExecContext(ctx, query,
 		corpus.ID,
 		corpus.Name,
 		corpus.S3Path,
@@ -44,7 +38,7 @@ func (r *CorpusRepositoryImpl) GetByID(ctx context.Context, id uuid.UUID) (*enti
 	query := `SELECT id, name, s3_path, created_at, updated_at FROM corpus WHERE id = $1`
 
 	var model CorpusRepositoryModel
-	err := r.db.QueryRowContext(ctx, query, id).Scan(
+	err := r.Db.QueryRowContext(ctx, query, id).Scan(
 		&model.ID,
 		&model.Name,
 		&model.S3Path,
@@ -66,7 +60,7 @@ func (r *CorpusRepositoryImpl) GetByName(ctx context.Context, name string) (*ent
 	query := `SELECT id, name, s3_path, created_at, updated_at FROM corpus WHERE name = $1`
 
 	var model CorpusRepositoryModel
-	err := r.db.QueryRowContext(ctx, query, name).Scan(
+	err := r.Db.QueryRowContext(ctx, query, name).Scan(
 		&model.ID,
 		&model.Name,
 		&model.S3Path,
@@ -89,7 +83,7 @@ func (r *CorpusRepositoryImpl) Update(ctx context.Context, corpus *entities.Corp
 
 	corpus.UpdatedAt = time.Now()
 
-	_, err := r.db.ExecContext(ctx, query,
+	_, err := r.Db.ExecContext(ctx, query,
 		corpus.ID,
 		corpus.Name,
 		corpus.S3Path,
@@ -101,14 +95,14 @@ func (r *CorpusRepositoryImpl) Update(ctx context.Context, corpus *entities.Corp
 
 func (r *CorpusRepositoryImpl) Delete(ctx context.Context, id uuid.UUID) error {
 	query := `DELETE FROM corpus WHERE id = $1`
-	_, err := r.db.ExecContext(ctx, query, id)
+	_, err := r.Db.ExecContext(ctx, query, id)
 	return err
 }
 
 func (r *CorpusRepositoryImpl) List(ctx context.Context) ([]*entities.Corpus, error) {
 	query := `SELECT id, name, s3_path, created_at, updated_at FROM corpus ORDER BY name`
 
-	rows, err := r.db.QueryContext(ctx, query)
+	rows, err := r.Db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}

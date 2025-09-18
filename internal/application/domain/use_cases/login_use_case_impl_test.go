@@ -38,9 +38,13 @@ func TestLoginUseCaseImpl_Login_Success(t *testing.T) {
 		},
 	}
 
-	userService := services.NewUserService()
-	jwtService := services.NewJWTService("test-secret-key")
-	useCase := NewLoginUseCase(mockRepo, userService, jwtService)
+	userService := &services.UserService{}
+	jwtService := &services.JWTService{SecretKey: []byte("test-secret-key")}
+	useCase := &LoginUseCaseImpl{
+		UserRepository: mockRepo,
+		UserService:    userService,
+		JwtService:     jwtService,
+	}
 
 	command := in.LoginCommand{
 		Email:    "test@example.com",
@@ -85,9 +89,13 @@ func TestLoginUseCaseImpl_Login_InvalidCredentials(t *testing.T) {
 		},
 	}
 
-	userService := services.NewUserService()
-	jwtService := services.NewJWTService("test-secret-key")
-	useCase := NewLoginUseCase(mockRepo, userService, jwtService)
+	userService := &services.UserService{}
+	jwtService := &services.JWTService{SecretKey: []byte("test-secret-key")}
+	useCase := &LoginUseCaseImpl{
+		UserRepository: mockRepo,
+		UserService:    userService,
+		JwtService:     jwtService,
+	}
 
 	command := in.LoginCommand{
 		Email:    "test@example.com",
@@ -114,9 +122,13 @@ func TestLoginUseCaseImpl_Login_UserNotFound(t *testing.T) {
 		users: make(map[string]*entities.User),
 	}
 
-	userService := services.NewUserService()
-	jwtService := services.NewJWTService("test-secret-key")
-	useCase := NewLoginUseCase(mockRepo, userService, jwtService)
+	userService := &services.UserService{}
+	jwtService := &services.JWTService{SecretKey: []byte("test-secret-key")}
+	useCase := &LoginUseCaseImpl{
+		UserRepository: mockRepo,
+		UserService:    userService,
+		JwtService:     jwtService,
+	}
 
 	command := in.LoginCommand{
 		Email:    "nonexistent@example.com",
@@ -143,9 +155,13 @@ func TestLoginUseCaseImpl_Login_EmptyEmail(t *testing.T) {
 		users: make(map[string]*entities.User),
 	}
 
-	userService := services.NewUserService()
-	jwtService := services.NewJWTService("test-secret-key")
-	useCase := NewLoginUseCase(mockRepo, userService, jwtService)
+	userService := &services.UserService{}
+	jwtService := &services.JWTService{SecretKey: []byte("test-secret-key")}
+	useCase := &LoginUseCaseImpl{
+		UserRepository: mockRepo,
+		UserService:    userService,
+		JwtService:     jwtService,
+	}
 
 	command := in.LoginCommand{
 		Email:    "",
@@ -172,9 +188,13 @@ func TestLoginUseCaseImpl_Login_EmptyPassword(t *testing.T) {
 		users: make(map[string]*entities.User),
 	}
 
-	userService := services.NewUserService()
-	jwtService := services.NewJWTService("test-secret-key")
-	useCase := NewLoginUseCase(mockRepo, userService, jwtService)
+	userService := &services.UserService{}
+	jwtService := &services.JWTService{SecretKey: []byte("test-secret-key")}
+	useCase := &LoginUseCaseImpl{
+		UserRepository: mockRepo,
+		UserService:    userService,
+		JwtService:     jwtService,
+	}
 
 	command := in.LoginCommand{
 		Email:    "test@example.com",

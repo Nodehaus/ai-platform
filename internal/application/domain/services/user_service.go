@@ -7,9 +7,6 @@ import (
 
 type UserService struct{}
 
-func NewUserService() *UserService {
-	return &UserService{}
-}
 
 func (s *UserService) ValidatePassword(hashedPassword, plainPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainPassword))

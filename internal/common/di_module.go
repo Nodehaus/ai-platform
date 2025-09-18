@@ -16,35 +16,45 @@ import (
 )
 
 func NewUserRepository(dbService database.Service) persistencePort.UserRepository {
-	return persistence.NewUserRepository(dbService.GetDB())
+	return &persistence.UserRepositoryImpl{
+		Db: dbService.GetDB(),
+	}
 }
 
 func NewProjectRepository(dbService database.Service) persistencePort.ProjectRepository {
-	return persistence.NewProjectRepository(dbService.GetDB())
+	return &persistence.ProjectRepositoryImpl{
+		Db: dbService.GetDB(),
+	}
 }
 
 func NewTrainingDatasetRepository(dbService database.Service) persistencePort.TrainingDatasetRepository {
-	return persistence.NewTrainingDatasetRepository(dbService.GetDB())
+	return &persistence.TrainingDatasetRepositoryImpl{
+		Db: dbService.GetDB(),
+	}
 }
 
 func NewCorpusRepository(dbService database.Service) persistencePort.CorpusRepository {
-	return persistence.NewCorpusRepository(dbService.GetDB())
+	return &persistence.CorpusRepositoryImpl{
+		Db: dbService.GetDB(),
+	}
 }
 
 func NewPromptRepository(dbService database.Service) persistencePort.PromptRepository {
-	return persistence.NewPromptRepository(dbService.GetDB())
+	return &persistence.PromptRepositoryImpl{
+		Db: dbService.GetDB(),
+	}
 }
 
 func NewUserService() *services.UserService {
-	return services.NewUserService()
+	return &services.UserService{}
 }
 
 func NewProjectService() *services.ProjectService {
-	return services.NewProjectService()
+	return &services.ProjectService{}
 }
 
 func NewTrainingDatasetService() *services.TrainingDatasetService {
-	return services.NewTrainingDatasetService()
+	return &services.TrainingDatasetService{}
 }
 
 func NewJWTService() *services.JWTService {
@@ -52,19 +62,30 @@ func NewJWTService() *services.JWTService {
 	if secretKey == "" {
 		secretKey = "your-secret-key-change-this-in-production"
 	}
-	return services.NewJWTService(secretKey)
+	return &services.JWTService{
+		SecretKey: []byte(secretKey),
+	}
 }
 
 func NewLoginUseCase(userRepo persistencePort.UserRepository, userService *services.UserService, jwtService *services.JWTService) in.LoginUseCase {
-	return use_cases.NewLoginUseCase(userRepo, userService, jwtService)
+	return &use_cases.LoginUseCaseImpl{
+		UserRepository: userRepo,
+		UserService:    userService,
+		JwtService:     jwtService,
+	}
 }
 
 func NewCreateProjectUseCase(projectRepo persistencePort.ProjectRepository, projectService *services.ProjectService) in.CreateProjectUseCase {
-	return use_cases.NewCreateProjectUseCase(projectRepo, projectService)
+	return &use_cases.CreateProjectUseCaseImpl{
+		ProjectRepository: projectRepo,
+		ProjectService:    projectService,
+	}
 }
 
 func NewListProjectsUseCase(projectRepo persistencePort.ProjectRepository) in.ListProjectsUseCase {
-	return use_cases.NewListProjectsUseCase(projectRepo)
+	return &use_cases.ListProjectsUseCaseImpl{
+		ProjectRepository: projectRepo,
+	}
 }
 
 func NewCreateTrainingDatasetUseCase(
@@ -74,29 +95,45 @@ func NewCreateTrainingDatasetUseCase(
 	promptRepo persistencePort.PromptRepository,
 	trainingDatasetService *services.TrainingDatasetService,
 ) in.CreateTrainingDatasetUseCase {
-	return use_cases.NewCreateTrainingDatasetUseCase(trainingDatasetRepo, projectRepo, corpusRepo, promptRepo, trainingDatasetService)
+	return &use_cases.CreateTrainingDatasetUseCaseImpl{
+		TrainingDatasetRepository: trainingDatasetRepo,
+		ProjectRepository:         projectRepo,
+		CorpusRepository:          corpusRepo,
+		PromptRepository:          promptRepo,
+		TrainingDatasetService:    trainingDatasetService,
+	}
 }
 
 func NewLoginController(loginUseCase in.LoginUseCase) *web.LoginController {
-	return web.NewLoginController(loginUseCase)
+	return &web.LoginController{
+		LoginUseCase: loginUseCase,
+	}
 }
 
 func NewCreateProjectController(createProjectUseCase in.CreateProjectUseCase) *web.CreateProjectController {
-	return web.NewCreateProjectController(createProjectUseCase)
+	return &web.CreateProjectController{
+		CreateProjectUseCase: createProjectUseCase,
+	}
 }
 
 func NewListProjectsController(listProjectsUseCase in.ListProjectsUseCase) *web.ListProjectsController {
-	return web.NewListProjectsController(listProjectsUseCase)
+	return &web.ListProjectsController{
+		ListProjectsUseCase: listProjectsUseCase,
+	}
 }
 
 func NewCreateTrainingDatasetController(
 	createTrainingDatasetUseCase in.CreateTrainingDatasetUseCase,
 ) *web.CreateTrainingDatasetController {
-	return web.NewCreateTrainingDatasetController(createTrainingDatasetUseCase)
+	return &web.CreateTrainingDatasetController{
+		CreateTrainingDatasetUseCase: createTrainingDatasetUseCase,
+	}
 }
 
 func NewAuthMiddleware(jwtService *services.JWTService) *server.AuthMiddleware {
-	return server.NewAuthMiddleware(jwtService)
+	return &server.AuthMiddleware{
+		JwtService: jwtService,
+	}
 }
 
 var Module = fx.Options(

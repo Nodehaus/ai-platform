@@ -9,14 +9,9 @@ import (
 )
 
 type LoginController struct {
-	loginUseCase in.LoginUseCase
+	LoginUseCase in.LoginUseCase
 }
 
-func NewLoginController(loginUseCase in.LoginUseCase) *LoginController {
-	return &LoginController{
-		loginUseCase: loginUseCase,
-	}
-}
 
 func (c *LoginController) Login(ctx *gin.Context) {
 	var request LoginRequest
@@ -34,7 +29,7 @@ func (c *LoginController) Login(ctx *gin.Context) {
 		Password: request.Password,
 	}
 
-	loginResult, err := c.loginUseCase.Login(command)
+	loginResult, err := c.LoginUseCase.Login(command)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"error": err.Error(),

@@ -7,31 +7,25 @@ import (
 )
 
 type CreateProjectUseCaseImpl struct {
-	projectRepository persistence.ProjectRepository
-	projectService    *services.ProjectService
+	ProjectRepository persistence.ProjectRepository
+	ProjectService    *services.ProjectService
 }
 
-func NewCreateProjectUseCase(projectRepository persistence.ProjectRepository, projectService *services.ProjectService) in.CreateProjectUseCase {
-	return &CreateProjectUseCaseImpl{
-		projectRepository: projectRepository,
-		projectService:    projectService,
-	}
-}
 
 func (uc *CreateProjectUseCaseImpl) CreateProject(command in.CreateProjectCommand) (*in.CreateProjectResult, error) {
-	err := uc.projectService.ValidateProjectName(command.Name)
+	err := uc.ProjectService.ValidateProjectName(command.Name)
 	if err != nil {
 		return nil, err
 	}
 
-	err = uc.projectService.ValidateProjectNameUniqueness(command.Name, command.OwnerID, uc.projectRepository.ExistsByNameAndOwnerID)
+	err = uc.ProjectService.ValidateProjectNameUniqueness(command.Name, command.OwnerID, uc.ProjectRepository.ExistsByNameAndOwnerID)
 	if err != nil {
 		return nil, err
 	}
 
-	project := uc.projectService.CreateProject(command.Name, command.OwnerID)
+	project := uc.ProjectService.CreateProject(command.Name, command.OwnerID)
 
-	err = uc.projectRepository.Create(project)
+	err = uc.ProjectRepository.Create(project)
 	if err != nil {
 		return nil, err
 	}

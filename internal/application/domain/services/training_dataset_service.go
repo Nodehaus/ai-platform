@@ -10,9 +10,6 @@ import (
 
 type TrainingDatasetService struct{}
 
-func NewTrainingDatasetService() *TrainingDatasetService {
-	return &TrainingDatasetService{}
-}
 
 func (s *TrainingDatasetService) CreateTrainingDataset(
 	projectID uuid.UUID,

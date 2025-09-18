@@ -10,16 +10,9 @@ import (
 )
 
 type CreateTrainingDatasetController struct {
-	createTrainingDatasetUseCase in.CreateTrainingDatasetUseCase
+	CreateTrainingDatasetUseCase in.CreateTrainingDatasetUseCase
 }
 
-func NewCreateTrainingDatasetController(
-	createTrainingDatasetUseCase in.CreateTrainingDatasetUseCase,
-) *CreateTrainingDatasetController {
-	return &CreateTrainingDatasetController{
-		createTrainingDatasetUseCase: createTrainingDatasetUseCase,
-	}
-}
 
 func (c *CreateTrainingDatasetController) CreateTrainingDataset(ctx *gin.Context) {
 	_, exists := GetUserIDFromContext(ctx)
@@ -58,7 +51,7 @@ func (c *CreateTrainingDatasetController) CreateTrainingDataset(ctx *gin.Context
 		GeneratePrompt: request.GeneratePrompt,
 	}
 
-	result, err := c.createTrainingDatasetUseCase.Execute(ctx.Request.Context(), command)
+	result, err := c.CreateTrainingDatasetUseCase.Execute(ctx.Request.Context(), command)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

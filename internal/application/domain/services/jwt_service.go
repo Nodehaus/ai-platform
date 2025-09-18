@@ -9,7 +9,7 @@ import (
 )
 
 type JWTService struct {
-	secretKey []byte
+	SecretKey []byte
 }
 
 type JWTClaims struct {
@@ -18,11 +18,6 @@ type JWTClaims struct {
 	jwt.RegisteredClaims
 }
 
-func NewJWTService(secretKey string) *JWTService {
-	return &JWTService{
-		secretKey: []byte(secretKey),
-	}
-}
 
 func (s *JWTService) GenerateToken(userID uuid.UUID, email string) (string, error) {
 	claims := JWTClaims{
@@ -38,7 +33,7 @@ func (s *JWTService) GenerateToken(userID uuid.UUID, email string) (string, erro
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(s.secretKey)
+	return token.SignedString(s.SecretKey)
 }
 
 func (s *JWTService) ValidateToken(tokenString string) (*JWTClaims, error) {
@@ -46,7 +41,7 @@ func (s *JWTService) ValidateToken(tokenString string) (*JWTClaims, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
-		return s.secretKey, nil
+		return s.SecretKey, nil
 	})
 
 	if err != nil {

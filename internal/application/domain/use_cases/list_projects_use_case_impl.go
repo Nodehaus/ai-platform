@@ -6,17 +6,12 @@ import (
 )
 
 type ListProjectsUseCaseImpl struct {
-	projectRepository persistence.ProjectRepository
+	ProjectRepository persistence.ProjectRepository
 }
 
-func NewListProjectsUseCase(projectRepository persistence.ProjectRepository) in.ListProjectsUseCase {
-	return &ListProjectsUseCaseImpl{
-		projectRepository: projectRepository,
-	}
-}
 
 func (uc *ListProjectsUseCaseImpl) ListProjects(command in.ListProjectsCommand) (*in.ListProjectsResult, error) {
-	projects, err := uc.projectRepository.GetActiveByOwnerID(command.OwnerID)
+	projects, err := uc.ProjectRepository.GetActiveByOwnerID(command.OwnerID)
 	if err != nil {
 		return nil, err
 	}

@@ -55,7 +55,7 @@ func TestListProjectsController_ListProjects_Success(t *testing.T) {
 		err:    nil,
 	}
 
-	controller := NewListProjectsController(mockUseCase)
+	controller := &ListProjectsController{ListProjectsUseCase: mockUseCase}
 
 	router := gin.New()
 	router.Use(func(c *gin.Context) {
@@ -101,7 +101,7 @@ func TestListProjectsController_ListProjects_EmptyList(t *testing.T) {
 		err:    nil,
 	}
 
-	controller := NewListProjectsController(mockUseCase)
+	controller := &ListProjectsController{ListProjectsUseCase: mockUseCase}
 
 	router := gin.New()
 	router.Use(func(c *gin.Context) {
@@ -130,7 +130,7 @@ func TestListProjectsController_ListProjects_NoUserInContext(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	mockUseCase := &mockListProjectsUseCase{}
-	controller := NewListProjectsController(mockUseCase)
+	controller := &ListProjectsController{ListProjectsUseCase: mockUseCase}
 
 	router := gin.New()
 	router.GET("/projects", controller.ListProjects)

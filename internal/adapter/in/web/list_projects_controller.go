@@ -9,14 +9,9 @@ import (
 )
 
 type ListProjectsController struct {
-	listProjectsUseCase in.ListProjectsUseCase
+	ListProjectsUseCase in.ListProjectsUseCase
 }
 
-func NewListProjectsController(listProjectsUseCase in.ListProjectsUseCase) *ListProjectsController {
-	return &ListProjectsController{
-		listProjectsUseCase: listProjectsUseCase,
-	}
-}
 
 func (c *ListProjectsController) ListProjects(ctx *gin.Context) {
 	userID, exists := GetUserIDFromContext(ctx)
@@ -31,7 +26,7 @@ func (c *ListProjectsController) ListProjects(ctx *gin.Context) {
 		OwnerID: userID,
 	}
 
-	result, err := c.listProjectsUseCase.ListProjects(command)
+	result, err := c.ListProjectsUseCase.ListProjects(command)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to fetch projects",

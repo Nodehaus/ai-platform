@@ -13,32 +13,17 @@ import (
 )
 
 type CreateTrainingDatasetUseCaseImpl struct {
-	trainingDatasetRepository persistence.TrainingDatasetRepository
-	projectRepository         persistence.ProjectRepository
-	corpusRepository          persistence.CorpusRepository
-	promptRepository          persistence.PromptRepository
-	trainingDatasetService    *services.TrainingDatasetService
+	TrainingDatasetRepository persistence.TrainingDatasetRepository
+	ProjectRepository         persistence.ProjectRepository
+	CorpusRepository          persistence.CorpusRepository
+	PromptRepository          persistence.PromptRepository
+	TrainingDatasetService    *services.TrainingDatasetService
 }
 
-func NewCreateTrainingDatasetUseCase(
-	trainingDatasetRepository persistence.TrainingDatasetRepository,
-	projectRepository persistence.ProjectRepository,
-	corpusRepository persistence.CorpusRepository,
-	promptRepository persistence.PromptRepository,
-	trainingDatasetService *services.TrainingDatasetService,
-) in.CreateTrainingDatasetUseCase {
-	return &CreateTrainingDatasetUseCaseImpl{
-		trainingDatasetRepository: trainingDatasetRepository,
-		projectRepository:         projectRepository,
-		corpusRepository:          corpusRepository,
-		promptRepository:          promptRepository,
-		trainingDatasetService:    trainingDatasetService,
-	}
-}
 
 func (uc *CreateTrainingDatasetUseCaseImpl) Execute(ctx context.Context, command in.CreateTrainingDatasetCommand) (*entities.TrainingDataset, error) {
 	// Verify project exists
-	project, err := uc.projectRepository.GetByID(command.ProjectID)
+	project, err := uc.ProjectRepository.GetByID(command.ProjectID)
 	if err != nil {
 		return nil, err
 	}
@@ -47,15 +32,15 @@ func (uc *CreateTrainingDatasetUseCaseImpl) Execute(ctx context.Context, command
 	}
 
 	// Validate corpus name and generate prompt
-	if err := uc.trainingDatasetService.ValidateCorpusName(command.CorpusName); err != nil {
+	if err := uc.TrainingDatasetService.ValidateCorpusName(command.CorpusName); err != nil {
 		return nil, err
 	}
-	if err := uc.trainingDatasetService.ValidateGeneratePrompt(command.GeneratePrompt); err != nil {
+	if err := uc.TrainingDatasetService.ValidateGeneratePrompt(command.GeneratePrompt); err != nil {
 		return nil, err
 	}
 
 	// Verify corpus exists (assuming it exists as stated in requirements)
-	corpus, err := uc.corpusRepository.GetByName(ctx, command.CorpusName)
+	corpus, err := uc.CorpusRepository.GetByName(ctx, command.CorpusName)
 	if err != nil {
 		return nil, err
 	}
@@ -69,21 +54,21 @@ func (uc *CreateTrainingDatasetUseCaseImpl) Execute(ctx context.Context, command
 		Version: 1,
 		Text:    command.GeneratePrompt,
 	}
-	err = uc.promptRepository.Create(ctx, prompt)
+	err = uc.PromptRepository.Create(ctx, prompt)
 	if err != nil {
 		return nil, err
 	}
 
 	// Get next version number for this project
-	nextVersion, err := uc.trainingDatasetService.GetNextVersion(command.ProjectID, func(projectID uuid.UUID) (*entities.TrainingDataset, error) {
-		return uc.trainingDatasetRepository.GetLatestByProjectID(ctx, projectID)
+	nextVersion, err := uc.TrainingDatasetService.GetNextVersion(command.ProjectID, func(projectID uuid.UUID) (*entities.TrainingDataset, error) {
+		return uc.TrainingDatasetRepository.GetLatestByProjectID(ctx, projectID)
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	// Create training dataset
-	trainingDataset, err := uc.trainingDatasetService.CreateTrainingDataset(
+	trainingDataset, err := uc.TrainingDatasetService.CreateTrainingDataset(
 		command.ProjectID,
 		corpus.ID,
 		prompt.ID,
@@ -100,7 +85,7 @@ func (uc *CreateTrainingDatasetUseCaseImpl) Execute(ctx context.Context, command
 	trainingDataset.Version = nextVersion
 
 	// Save to repository
-	err = uc.trainingDatasetRepository.Create(ctx, trainingDataset)
+	err = uc.TrainingDatasetRepository.Create(ctx, trainingDataset)
 	if err != nil {
 		return nil, err
 	}

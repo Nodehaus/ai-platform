@@ -8,9 +8,6 @@ import (
 
 type ProjectService struct{}
 
-func NewProjectService() *ProjectService {
-	return &ProjectService{}
-}
 
 func (s *ProjectService) CreateProject(name string, ownerID uuid.UUID) *entities.Project {
 	return &entities.Project{

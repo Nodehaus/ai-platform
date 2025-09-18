@@ -9,14 +9,9 @@ import (
 )
 
 type CreateProjectController struct {
-	createProjectUseCase in.CreateProjectUseCase
+	CreateProjectUseCase in.CreateProjectUseCase
 }
 
-func NewCreateProjectController(createProjectUseCase in.CreateProjectUseCase) *CreateProjectController {
-	return &CreateProjectController{
-		createProjectUseCase: createProjectUseCase,
-	}
-}
 
 func (c *CreateProjectController) CreateProject(ctx *gin.Context) {
 	userID, exists := GetUserIDFromContext(ctx)
@@ -41,7 +36,7 @@ func (c *CreateProjectController) CreateProject(ctx *gin.Context) {
 		OwnerID: userID,
 	}
 
-	result, err := c.createProjectUseCase.CreateProject(command)
+	result, err := c.CreateProjectUseCase.CreateProject(command)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

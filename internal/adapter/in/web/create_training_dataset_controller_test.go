@@ -62,7 +62,7 @@ func TestCreateTrainingDatasetController_CreateTrainingDataset_Success(t *testin
 		err:    nil,
 	}
 
-	controller := NewCreateTrainingDatasetController(mockUseCase)
+	controller := &CreateTrainingDatasetController{CreateTrainingDatasetUseCase: mockUseCase}
 
 	router := gin.New()
 	router.Use(func(c *gin.Context) {
@@ -110,7 +110,7 @@ func TestCreateTrainingDatasetController_CreateTrainingDataset_ValidationError(t
 	projectID := uuid.New()
 	mockUseCase := &mockCreateTrainingDatasetUseCase{}
 
-	controller := NewCreateTrainingDatasetController(mockUseCase)
+	controller := &CreateTrainingDatasetController{CreateTrainingDatasetUseCase: mockUseCase}
 
 	router := gin.New()
 	router.Use(func(c *gin.Context) {
@@ -154,7 +154,7 @@ func TestCreateTrainingDatasetController_CreateTrainingDataset_FieldValidationEr
 	projectID := uuid.New()
 	mockUseCase := &mockCreateTrainingDatasetUseCase{}
 
-	controller := NewCreateTrainingDatasetController(mockUseCase)
+	controller := &CreateTrainingDatasetController{CreateTrainingDatasetUseCase: mockUseCase}
 
 	router := gin.New()
 	router.Use(func(c *gin.Context) {
@@ -197,7 +197,7 @@ func TestCreateTrainingDatasetController_CreateTrainingDataset_InvalidProjectID(
 	userID := uuid.New()
 	mockUseCase := &mockCreateTrainingDatasetUseCase{}
 
-	controller := NewCreateTrainingDatasetController(mockUseCase)
+	controller := &CreateTrainingDatasetController{CreateTrainingDatasetUseCase: mockUseCase}
 
 	router := gin.New()
 	router.Use(func(c *gin.Context) {
@@ -239,7 +239,7 @@ func TestCreateTrainingDatasetController_CreateTrainingDataset_NoUserInContext(t
 
 	projectID := uuid.New()
 	mockUseCase := &mockCreateTrainingDatasetUseCase{}
-	controller := NewCreateTrainingDatasetController(mockUseCase)
+	controller := &CreateTrainingDatasetController{CreateTrainingDatasetUseCase: mockUseCase}
 
 	router := gin.New()
 	router.POST("/projects/:project_id/training-datasets", controller.CreateTrainingDataset)

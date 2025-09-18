@@ -42,7 +42,7 @@ func TestLoginController_Login_Success(t *testing.T) {
 		err:         nil,
 	}
 
-	controller := NewLoginController(mockUseCase)
+	controller := &LoginController{LoginUseCase: mockUseCase}
 
 	router := gin.New()
 	router.POST("/login", controller.Login)
@@ -87,7 +87,7 @@ func TestLoginController_Login_InvalidCredentials(t *testing.T) {
 		err:         errors.New("invalid credentials"),
 	}
 
-	controller := NewLoginController(mockUseCase)
+	controller := &LoginController{LoginUseCase: mockUseCase}
 
 	router := gin.New()
 	router.POST("/login", controller.Login)
@@ -120,7 +120,7 @@ func TestLoginController_Login_InvalidRequestFormat(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	mockUseCase := &mockLoginUseCase{}
-	controller := NewLoginController(mockUseCase)
+	controller := &LoginController{LoginUseCase: mockUseCase}
 
 	router := gin.New()
 	router.POST("/login", controller.Login)

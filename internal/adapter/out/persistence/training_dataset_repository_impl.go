@@ -8,18 +8,12 @@ import (
 	"github.com/google/uuid"
 
 	"ai-platform/internal/application/domain/entities"
-	"ai-platform/internal/application/port/out/persistence"
 )
 
 type TrainingDatasetRepositoryImpl struct {
-	db *sql.DB
+	Db *sql.DB
 }
 
-func NewTrainingDatasetRepository(db *sql.DB) persistence.TrainingDatasetRepository {
-	return &TrainingDatasetRepositoryImpl{
-		db: db,
-	}
-}
 
 func (r *TrainingDatasetRepositoryImpl) Create(ctx context.Context, trainingDataset *entities.TrainingDataset) error {
 	query := `INSERT INTO training_datasets (
@@ -39,7 +33,7 @@ func (r *TrainingDatasetRepositoryImpl) Create(ctx context.Context, trainingData
 		return err
 	}
 
-	_, err = r.db.ExecContext(ctx, query,
+	_, err = r.Db.ExecContext(ctx, query,
 		model.ID,
 		model.ProjectID,
 		model.Version,
@@ -75,7 +69,7 @@ func (r *TrainingDatasetRepositoryImpl) GetByID(ctx context.Context, id uuid.UUI
 	FROM training_datasets WHERE id = $1`
 
 	var model TrainingDatasetRepositoryModel
-	err := r.db.QueryRowContext(ctx, query, id).Scan(
+	err := r.Db.QueryRowContext(ctx, query, id).Scan(
 		&model.ID,
 		&model.ProjectID,
 		&model.Version,
@@ -117,7 +111,7 @@ func (r *TrainingDatasetRepositoryImpl) GetByProjectID(ctx context.Context, proj
 		language_iso, status, field_names_json, data_json, created_at, updated_at
 	FROM training_datasets WHERE project_id = $1 ORDER BY version DESC`
 
-	rows, err := r.db.QueryContext(ctx, query, projectID)
+	rows, err := r.Db.QueryContext(ctx, query, projectID)
 	if err != nil {
 		return nil, err
 	}
@@ -173,7 +167,7 @@ func (r *TrainingDatasetRepositoryImpl) GetLatestByProjectID(ctx context.Context
 	FROM training_datasets WHERE project_id = $1 ORDER BY version DESC LIMIT 1`
 
 	var model TrainingDatasetRepositoryModel
-	err := r.db.QueryRowContext(ctx, query, projectID).Scan(
+	err := r.Db.QueryRowContext(ctx, query, projectID).Scan(
 		&model.ID,
 		&model.ProjectID,
 		&model.Version,
@@ -222,7 +216,7 @@ func (r *TrainingDatasetRepositoryImpl) Update(ctx context.Context, trainingData
 		return err
 	}
 
-	_, err = r.db.ExecContext(ctx, query,
+	_, err = r.Db.ExecContext(ctx, query,
 		model.ID,
 		model.ProjectID,
 		model.GenerateModel,
@@ -248,6 +242,6 @@ func (r *TrainingDatasetRepositoryImpl) Update(ctx context.Context, trainingData
 
 func (r *TrainingDatasetRepositoryImpl) Delete(ctx context.Context, id uuid.UUID) error {
 	query := `DELETE FROM training_datasets WHERE id = $1`
-	_, err := r.db.ExecContext(ctx, query, id)
+	_, err := r.Db.ExecContext(ctx, query, id)
 	return err
 }

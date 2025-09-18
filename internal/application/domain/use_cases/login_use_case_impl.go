@@ -8,18 +8,11 @@ import (
 )
 
 type LoginUseCaseImpl struct {
-	userRepository persistence.UserRepository
-	userService    *services.UserService
-	jwtService     *services.JWTService
+	UserRepository persistence.UserRepository
+	UserService    *services.UserService
+	JwtService     *services.JWTService
 }
 
-func NewLoginUseCase(userRepository persistence.UserRepository, userService *services.UserService, jwtService *services.JWTService) in.LoginUseCase {
-	return &LoginUseCaseImpl{
-		userRepository: userRepository,
-		userService:    userService,
-		jwtService:     jwtService,
-	}
-}
 
 func (uc *LoginUseCaseImpl) Login(command in.LoginCommand) (*in.LoginResult, error) {
 	if command.Email == "" {
@@ -30,7 +23,7 @@ func (uc *LoginUseCaseImpl) Login(command in.LoginCommand) (*in.LoginResult, err
 		return nil, errors.New("password is required")
 	}
 
-	user, err := uc.userRepository.FindByEmail(command.Email)
+	user, err := uc.UserRepository.FindByEmail(command.Email)
 	if err != nil {
 		return nil, err
 	}
@@ -39,12 +32,12 @@ func (uc *LoginUseCaseImpl) Login(command in.LoginCommand) (*in.LoginResult, err
 		return nil, errors.New("invalid credentials")
 	}
 
-	err = uc.userService.ValidatePassword(user.Password, command.Password)
+	err = uc.UserService.ValidatePassword(user.Password, command.Password)
 	if err != nil {
 		return nil, errors.New("invalid credentials")
 	}
 
-	token, err := uc.jwtService.GenerateToken(user.ID, user.Email)
+	token, err := uc.JwtService.GenerateToken(user.ID, user.Email)
 	if err != nil {
 		return nil, errors.New("failed to generate token")
 	}
