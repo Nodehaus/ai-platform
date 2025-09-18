@@ -1,1 +1,85 @@
-@import "tailwindcss"
+@import "tailwindcss";
+@import "./homepage.css";
+
+body {
+  font-family: "Inter", sans-serif;
+}
+
+/* Common Button Styles */
+.btn {
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2563eb;
+}
+
+.btn-danger {
+  background-color: #dc2626;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #b91c1c;
+}
+
+.btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.btn-full {
+  width: 100%;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Message Styles */
+.error {
+  color: #dc2626;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.success {
+  color: #16a34a;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}

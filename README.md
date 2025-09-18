@@ -4,7 +4,8 @@ The Nodehaus AI Platform to finetune and evaluate models with custom training da
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing
+purposes. See deployment for notes on how to deploy the project on a live system.
 
 ## MakeFile
 
@@ -64,7 +65,8 @@ make clean
 
 ## Docker Deployment
 
-The application includes a Dockerfile for containerized deployment. Here's how to deploy it on a server with automatic restart capabilities:
+The application includes a Dockerfile for containerized deployment. Here's how to deploy it on a server with automatic
+restart capabilities:
 
 ### Building the Docker Image
 

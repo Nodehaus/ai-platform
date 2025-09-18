@@ -6,135 +6,38 @@ templ Homepage(projectsData ProjectsData, userEmail string) {
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>Projects - Nodehaus AI Platform</title>
-			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
-			<link href="/assets/style.css" rel="stylesheet"/>
-			<style>
-				.dashboard-container {
-					max-width: 800px;
-					margin: 50px auto;
-					padding: 2rem;
-				}
-				.header {
-					display: flex;
-					justify-content: space-between;
-					align-items: center;
-					margin-bottom: 2rem;
-					padding-bottom: 1rem;
-					border-bottom: 1px solid #e2e8f0;
-				}
-				.projects-card {
-					background: white;
-					border: 1px solid #e2e8f0;
-					border-radius: 8px;
-					padding: 2rem;
-					box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-					margin-bottom: 2rem;
-				}
-				.project-item {
-					background: #f9fafb;
-					border: 1px solid #e5e7eb;
-					border-radius: 6px;
-					padding: 1.5rem;
-					margin-bottom: 1rem;
-					transition: all 0.2s ease;
-				}
-				.project-item:hover {
-					box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
-					border-color: #d1d5db;
-				}
-				.project-name {
-					font-weight: 600;
-					color: #1f2937;
-					font-size: 1.1rem;
-					margin-bottom: 0.5rem;
-				}
-				.project-meta {
-					display: flex;
-					justify-content: space-between;
-					align-items: center;
-					font-size: 0.875rem;
-					color: #6b7280;
-				}
-				.project-status {
-					background-color: #10b981;
-					color: white;
-					padding: 0.25rem 0.5rem;
-					border-radius: 12px;
-					font-size: 0.75rem;
-					font-weight: 500;
-				}
-				.empty-state {
-					text-align: center;
-					padding: 3rem;
-					color: #6b7280;
-				}
-				.create-btn {
-					background-color: #3b82f6;
-					color: white;
-					padding: 0.75rem 1.5rem;
-					border: none;
-					border-radius: 6px;
-					font-weight: 500;
-					text-decoration: none;
-					display: inline-block;
-					margin-top: 1rem;
-				}
-				.create-btn:hover {
-					background-color: #2563eb;
-				}
-				.btn {
-					padding: 0.5rem 1rem;
-					background-color: #dc2626;
-					color: white;
-					border: none;
-					border-radius: 4px;
-					cursor: pointer;
-					text-decoration: none;
-					display: inline-block;
-				}
-				.btn:hover {
-					background-color: #b91c1c;
-				}
-				.welcome-message {
-					background-color: #dbeafe;
-					border: 1px solid #93c5fd;
-					color: #1e40af;
-					padding: 1rem;
-					border-radius: 8px;
-					margin-bottom: 2rem;
-				}
-			</style>
+			<title>Nodehaus AI Platform</title>
+			<link href="/assets/css/output.css" rel="stylesheet"/>
+			<script src="/assets/js/htmx.min.js"></script>
 		</head>
 		<body>
-			<div class="dashboard-container">
-				<div class="header">
-					<h1 style="margin: 0; color: #1f2937;">My Projects</h1>
-					<a href="/web/logout" class="btn">Logout</a>
+			<div class="max-w-3xl mx-auto mt-12 p-8">
+				<div class="flex justify-between items-center mb-8 pb-4 border-b border-gray-200">
+					<h1 class="m-0 text-gray-800 text-xl">My Projects</h1>
+					<a href="/web/logout" class="btn btn-danger">Logout</a>
 				</div>
 
 				<div class="welcome-message">
 					<strong>Welcome back, { userEmail }!</strong> Here are your active projects.
 				</div>
 
-				<div class="projects-card">
-					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-						<h2 style="margin: 0; color: #1f2937;">Projects</h2>
+				<div class="bg-white border border-gray-200 rounded-lg p-8 shadow-md mb-8">
+					<div class="flex justify-between items-center mb-6">
+						<h2 class="m-0 text-gray-800">Projects</h2>
 						<button class="create-btn">+ New Project</button>
 					</div>
 
 					if len(projectsData.Projects) == 0 {
-						<div class="empty-state">
-							<p style="margin: 0; font-size: 1.125rem;">No projects yet</p>
-							<p style="margin: 0.5rem 0 0 0;">Create your first project to get started with AI training.</p>
+						<div class="empty-state text-center p-12">
+							<p class="m-0 text-lg">No projects yet</p>
+							<p class="mt-2 mb-0">Create your first project to get started with AI training.</p>
 						</div>
 					} else {
 						for _, project := range projectsData.Projects {
 							<div class="project-item">
 								<div class="project-name">{ project.Name }</div>
-								<div class="project-meta">
+								<div class="project-meta flex justify-between items-center">
 									<span>Created { project.CreatedAt }</span>
-									<span class="project-status">{ project.Status }</span>
 								</div>
 							</div>
 						}

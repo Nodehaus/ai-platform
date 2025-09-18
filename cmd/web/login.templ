@@ -6,71 +6,13 @@ templ LoginPage() {
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>Login - Nodehaus AI Platform</title>
-			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
-			<link href="/assets/style.css" rel="stylesheet"/>
-			<style>
-				.login-container {
-					max-width: 400px;
-					margin: 100px auto;
-					padding: 2rem;
-					border: 1px solid #e2e8f0;
-					border-radius: 8px;
-					box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-				}
-				.form-group {
-					margin-bottom: 1rem;
-				}
-				.form-label {
-					display: block;
-					margin-bottom: 0.5rem;
-					font-weight: 500;
-					color: #374151;
-				}
-				.form-input {
-					width: 100%;
-					padding: 0.75rem;
-					border: 1px solid #d1d5db;
-					border-radius: 4px;
-					font-size: 1rem;
-				}
-				.form-input:focus {
-					outline: none;
-					border-color: #3b82f6;
-					box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-				}
-				.btn {
-					width: 100%;
-					padding: 0.75rem;
-					background-color: #3b82f6;
-					color: white;
-					border: none;
-					border-radius: 4px;
-					font-size: 1rem;
-					cursor: pointer;
-				}
-				.btn:hover {
-					background-color: #2563eb;
-				}
-				.btn:disabled {
-					background-color: #9ca3af;
-					cursor: not-allowed;
-				}
-				.error {
-					color: #dc2626;
-					margin-top: 0.5rem;
-					font-size: 0.875rem;
-				}
-				.success {
-					color: #16a34a;
-					margin-top: 0.5rem;
-					font-size: 0.875rem;
-				}
-			</style>
+			<title>Nodehaus AI Platform</title>
+			<link href="/assets/css/output.css" rel="stylesheet"/>
+			<script src="/assets/js/htmx.min.js"></script>
 		</head>
 		<body>
-			<div class="login-container">
-				<h1 style="text-align: center; margin-bottom: 2rem; color: #1f2937;">Nodehaus AI Platform Login</h1>
+			<div class="max-w-sm mx-auto mt-24 p-8 border border-gray-200 rounded-lg shadow-md">
+				<h1 style="text-align: center; margin-bottom: 2rem; color: #1f2937;" class="text-xl">Nodehaus AI Platform Login</h1>
 				<form
 					hx-post="/web/login"
 					hx-target="#login-form"
@@ -99,7 +41,7 @@ templ LoginPage() {
 							placeholder="Enter your password"
 						/>
 					</div>
-					<button type="submit" class="btn">
+					<button type="submit" class="btn btn-primary btn-full">
 						Sign In
 					</button>
 				</form>
@@ -140,7 +82,7 @@ templ LoginForm(errorMsg string) {
 		if errorMsg != "" {
 			<div class="error">{ errorMsg }</div>
 		}
-		<button type="submit" class="btn">
+		<button type="submit" class="btn btn-primary btn-full">
 			Sign In
 		</button>
 	</form>
