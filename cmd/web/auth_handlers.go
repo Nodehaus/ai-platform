@@ -246,11 +246,21 @@ func fetchProjectsData(r *http.Request, token string) (*ProjectsData, string, er
 	}
 
 	for i, project := range projectsResp.Projects {
+		// Parse the CreatedAt string and format it as "hh:mm on dd.mm.yyyy"
+		createdAt, err := time.Parse(time.RFC3339, project.CreatedAt)
+		var formattedCreatedAt string
+		if err != nil {
+			// If parsing fails, use the original string
+			formattedCreatedAt = project.CreatedAt
+		} else {
+			formattedCreatedAt = createdAt.Format("15:04 on 02.01.2006")
+		}
+
 		projectsData.Projects[i] = ProjectData{
 			ID:        project.ID,
 			Name:      project.Name,
 			Status:    project.Status,
-			CreatedAt: project.CreatedAt,
+			CreatedAt: formattedCreatedAt,
 			UpdatedAt: project.UpdatedAt,
 		}
 	}
