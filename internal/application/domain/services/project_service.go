@@ -51,6 +51,23 @@ func (s *ProjectService) ValidateProjectNameUniqueness(name string, ownerID uuid
 	return nil
 }
 
+func (s *ProjectService) GetProject(ctx context.Context, projectID uuid.UUID, ownerID uuid.UUID) (*entities.Project, error) {
+	project, err := s.ProjectRepository.GetByID(projectID)
+	if err != nil {
+		return nil, err
+	}
+
+	if project == nil {
+		return nil, errors.New("project not found")
+	}
+
+	if project.OwnerID != ownerID {
+		return nil, errors.New("access denied")
+	}
+
+	return project, nil
+}
+
 func (s *ProjectService) ListProjects(ctx context.Context, ownerID uuid.UUID) ([]ProjectWithTrainingDataset, error) {
 	projects, err := s.ProjectRepository.GetActiveByOwnerID(ownerID)
 	if err != nil {

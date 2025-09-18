@@ -85,6 +85,12 @@ func NewCreateProjectUseCase(projectRepo persistencePort.ProjectRepository, proj
 	}
 }
 
+func NewGetProjectUseCase(projectService *services.ProjectService) in.GetProjectUseCase {
+	return &use_cases.GetProjectUseCaseImpl{
+		ProjectService: projectService,
+	}
+}
+
 func NewListProjectsUseCase(projectService *services.ProjectService) in.ListProjectsUseCase {
 	return &use_cases.ListProjectsUseCaseImpl{
 		ProjectService: projectService,
@@ -116,6 +122,12 @@ func NewLoginController(loginUseCase in.LoginUseCase) *web.LoginController {
 func NewCreateProjectController(createProjectUseCase in.CreateProjectUseCase) *web.CreateProjectController {
 	return &web.CreateProjectController{
 		CreateProjectUseCase: createProjectUseCase,
+	}
+}
+
+func NewGetProjectController(getProjectUseCase in.GetProjectUseCase) *web.GetProjectController {
+	return &web.GetProjectController{
+		GetProjectUseCase: getProjectUseCase,
 	}
 }
 
@@ -151,10 +163,12 @@ var Module = fx.Options(
 	fx.Provide(NewJWTService),
 	fx.Provide(NewLoginUseCase),
 	fx.Provide(NewCreateProjectUseCase),
+	fx.Provide(NewGetProjectUseCase),
 	fx.Provide(NewListProjectsUseCase),
 	fx.Provide(NewCreateTrainingDatasetUseCase),
 	fx.Provide(NewLoginController),
 	fx.Provide(NewCreateProjectController),
+	fx.Provide(NewGetProjectController),
 	fx.Provide(NewListProjectsController),
 	fx.Provide(NewCreateTrainingDatasetController),
 	fx.Provide(NewAuthMiddleware),

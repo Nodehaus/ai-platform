@@ -18,18 +18,20 @@ type Server struct {
 	db                              database.Service
 	loginController                 *web.LoginController
 	createProjectController         *web.CreateProjectController
+	getProjectController            *web.GetProjectController
 	listProjectsController          *web.ListProjectsController
 	createTrainingDatasetController *web.CreateTrainingDatasetController
 	authMiddleware                  *AuthMiddleware
 }
 
-func NewServer(db database.Service, loginController *web.LoginController, createProjectController *web.CreateProjectController, listProjectsController *web.ListProjectsController, createTrainingDatasetController *web.CreateTrainingDatasetController, authMiddleware *AuthMiddleware) *http.Server {
+func NewServer(db database.Service, loginController *web.LoginController, createProjectController *web.CreateProjectController, getProjectController *web.GetProjectController, listProjectsController *web.ListProjectsController, createTrainingDatasetController *web.CreateTrainingDatasetController, authMiddleware *AuthMiddleware) *http.Server {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
 	serverInstance := &Server{
 		port:                            port,
 		db:                              db,
 		loginController:                 loginController,
 		createProjectController:         createProjectController,
+		getProjectController:            getProjectController,
 		listProjectsController:          listProjectsController,
 		createTrainingDatasetController: createTrainingDatasetController,
 		authMiddleware:                  authMiddleware,
