@@ -1,49 +1,38 @@
 package web
 
 templ Homepage(projectsData ProjectsData, userEmail string) {
-	<!DOCTYPE html>
-	<html lang="en">
-		<head>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>Nodehaus AI Platform</title>
-			<link href="/assets/css/output.css" rel="stylesheet"/>
-			<script src="/assets/js/htmx.min.js"></script>
-		</head>
-		<body>
-			<div class="max-w-3xl mx-auto mt-12 p-8">
-				<div class="flex justify-between items-center mb-8 pb-4 border-b border-gray-200">
-					<h1 class="m-0 text-gray-800 text-xl">My Projects</h1>
-					<a href="/web/logout" class="btn btn-danger">Logout</a>
-				</div>
-
-				<div class="welcome-message">
-					<strong>Welcome back, { userEmail }!</strong> Here are your active projects.
-				</div>
-
-				<div class="bg-white border border-gray-200 rounded-lg p-8 shadow-md mb-8">
-					<div class="flex justify-between items-center mb-6">
-						<h2 class="m-0 text-gray-800">Projects</h2>
-						<button class="create-btn">+ New Project</button>
-					</div>
-
-					if len(projectsData.Projects) == 0 {
-						<div class="empty-state text-center p-12">
-							<p class="m-0 text-lg">No projects yet</p>
-							<p class="mt-2 mb-0">Create your first project to get started with AI training.</p>
-						</div>
-					} else {
-						for _, project := range projectsData.Projects {
-							<div class="project-item">
-								<div class="project-name">{ project.Name }</div>
-								<div class="project-meta flex justify-between items-center">
-									<span>Created { project.CreatedAt }</span>
-								</div>
-							</div>
-						}
-					}
-				</div>
+	@Base("max-w-3xl") {
+		<div class="mt-8">
+			<div class="flex justify-between items-center mb-8 pb-4 border-b border-gray-200">
+				<h1 class="m-0 text-gray-800 text-xl">My Projects</h1>
+				<a href="/web/logout" class="btn btn-danger">Logout</a>
 			</div>
-		</body>
-	</html>
+
+			<div class="welcome-message">
+				<strong>Welcome back, { userEmail }!</strong> Here are your active projects.
+			</div>
+
+			<div class="bg-white border border-gray-200 rounded-lg p-8 shadow-md mb-8">
+				<div class="mb-6 text-center">
+					<button class="create-btn">+ Create New Project</button>
+				</div>
+
+				if len(projectsData.Projects) == 0 {
+					<div class="empty-state text-center p-12">
+						<p class="m-0 text-lg">No projects yet</p>
+						<p class="mt-2 mb-0">Create your first project to get started with AI training.</p>
+					</div>
+				} else {
+					for _, project := range projectsData.Projects {
+						<div class="project-item">
+							<div class="project-name">{ project.Name }</div>
+							<div class="project-meta flex justify-between items-center">
+								<span>Created { project.CreatedAt }</span>
+							</div>
+						</div>
+					}
+				}
+			</div>
+		</div>
+	}
 }

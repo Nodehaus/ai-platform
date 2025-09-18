@@ -1,53 +1,43 @@
 package web
 
 templ LoginPage() {
-	<!DOCTYPE html>
-	<html lang="en">
-		<head>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>Nodehaus AI Platform</title>
-			<link href="/assets/css/output.css" rel="stylesheet"/>
-			<script src="/assets/js/htmx.min.js"></script>
-		</head>
-		<body>
-			<div class="max-w-sm mx-auto mt-24 p-8 border border-gray-200 rounded-lg shadow-md">
-				<h1 style="text-align: center; margin-bottom: 2rem; color: #1f2937;" class="text-xl">Nodehaus AI Platform Login</h1>
-				<form
-					hx-post="/web/login"
-					hx-target="#login-form"
-					hx-swap="outerHTML"
-					id="login-form"
-				>
-					<div class="form-group">
-						<label for="email" class="form-label">Email</label>
-						<input
-							type="email"
-							id="email"
-							name="email"
-							class="form-input"
-							required
-							placeholder="Enter your email"
-						/>
-					</div>
-					<div class="form-group">
-						<label for="password" class="form-label">Password</label>
-						<input
-							type="password"
-							id="password"
-							name="password"
-							class="form-input"
-							required
-							placeholder="Enter your password"
-						/>
-					</div>
-					<button type="submit" class="btn btn-primary btn-full">
-						Sign In
-					</button>
-				</form>
-			</div>
-		</body>
-	</html>
+	@Base("max-w-sm") {
+		<div class="mt-20 border border-gray-200 rounded-lg shadow-md bg-white">
+			<h1 style="text-align: center; margin-bottom: 2rem; color: #1f2937;" class="text-xl">Nodehaus AI Platform Login</h1>
+			<form
+				hx-post="/web/login"
+				hx-target="#login-form"
+				hx-swap="outerHTML"
+				id="login-form"
+			>
+				<div class="form-group">
+					<label for="email" class="form-label">Email</label>
+					<input
+						type="email"
+						id="email"
+						name="email"
+						class="form-input"
+						required
+						placeholder="Enter your email"
+					/>
+				</div>
+				<div class="form-group">
+					<label for="password" class="form-label">Password</label>
+					<input
+						type="password"
+						id="password"
+						name="password"
+						class="form-input"
+						required
+						placeholder="Enter your password"
+					/>
+				</div>
+				<button type="submit" class="btn btn-primary btn-full">
+					Sign In
+				</button>
+			</form>
+		</div>
+	}
 }
 
 templ LoginForm(errorMsg string) {
