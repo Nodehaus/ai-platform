@@ -135,8 +135,7 @@ func CreateProjectHandler(w http.ResponseWriter, r *http.Request) {
 
 	projectName := r.FormValue("projectName")
 	if projectName == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(`<div class="text-red-600">Project name is required</div>`))
+		w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">Project name is required</div>`))
 		return
 	}
 
@@ -146,16 +145,14 @@ func CreateProjectHandler(w http.ResponseWriter, r *http.Request) {
 
 	jsonData, err := json.Marshal(createReq)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`<div class="text-red-600">Failed to process request</div>`))
+		w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">Failed to process request</div>`))
 		return
 	}
 
 	apiBaseURL := getAPIBaseURL(r)
 	req, err := http.NewRequest("POST", apiBaseURL+"/api/projects", bytes.NewBuffer(jsonData))
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`<div class="text-red-600">Failed to create request</div>`))
+		w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">Failed to create request</div>`))
 		return
 	}
 
@@ -165,22 +162,35 @@ func CreateProjectHandler(w http.ResponseWriter, r *http.Request) {
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`<div class="text-red-600">Failed to connect to API</div>`))
+		w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">Failed to connect to API</div>`))
 		return
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusCreated {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`<div class="text-red-600">Failed to create project</div>`))
+		// Extract error message from API response
+		var apiError struct {
+			Error string `json:"error"`
+		}
+
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">Failed to create project</div>`))
+			return
+		}
+
+		if err := json.Unmarshal(body, &apiError); err != nil || apiError.Error == "" {
+			w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">Failed to create project</div>`))
+			return
+		}
+
+		w.Write([]byte(fmt.Sprintf(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">%s</div>`, apiError.Error)))
 		return
 	}
 
 	var createResp CreateProjectResponse
 	if err := json.NewDecoder(resp.Body).Decode(&createResp); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`<div class="text-red-600">Failed to process response</div>`))
+		w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">Failed to process response</div>`))
 		return
 	}
 
