@@ -1,0 +1,51 @@
+I think something is wrong with our code setup in the front-end in `cmd/web/`. In the go blueprint I had to files for a `Hello` demo page:
+
+hello.go
+
+```
+package web
+
+import (
+	"log"
+	"net/http"
+)
+
+func HelloWebHandler(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+	}
+
+	name := r.FormValue("name")
+	component := HelloPost(name)
+	err = component.Render(r.Context(), w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Fatalf("Error rendering in HelloWebHandler: %e", err)
+	}
+}
+```
+
+hello.templ
+
+```
+package web
+
+templ HelloForm() {
+	@Base() {
+		<form hx-post="/hello" method="POST" hx-target="#hello-container">
+			<input class="bg-gray-200 text-black p-2 border border-gray-400 rounded-lg"id="name" name="name" type="text"/>
+			<button type="submit" class="bg-orange-500 hover:bg-orange-700 text-white py-2 px-4 rounded">Submit</button>
+		</form>
+		<div id="hello-container"></div>
+	}
+}
+
+templ HelloPost(name string) {
+	<div class="bg-green-100 p-4 shadow-md rounded-lg mt-6">
+		<p>Hello, { name }</p>
+	</div>
+}
+```
+
+Now we have a `homepage.templ` and a general `auth_handers.go`. Implement the homepage according to the best practices of templ, all the code related to the homepage will be in a `homepage.go`.
