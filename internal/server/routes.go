@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"ai-platform/cmd/web"
+	"ai-platform/cmd/web/training_datasets"
 	"io/fs"
 )
 
@@ -53,7 +54,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	})
 
 	r.GET("/web/home", func(c *gin.Context) {
-		web.HomepageHandler(c.Writer, c.Request)
+		web.HomeHandler(c.Writer, c.Request)
 	})
 
 	r.GET("/web/logout", func(c *gin.Context) {
@@ -65,7 +66,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	})
 
 	r.GET("/web/projects/:project_id/training-datasets/step1", func(c *gin.Context) {
-		web.TrainingDatasetStep1Handler(c.Writer, c.Request)
+		training_datasets.TrainingDatasetStep1Handler(c.Writer, c.Request)
 	})
 
 

@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "./homepage.css";
+@import "./home.css";
 
 body {
   font-family: "Inter", sans-serif;

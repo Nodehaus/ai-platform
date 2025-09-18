@@ -1,4 +1,4 @@
-package web
+package training_datasets
 
 import (
 	"encoding/json"
@@ -8,10 +8,12 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/google/uuid"
+
+	"ai-platform/cmd/web"
 )
 
 func TrainingDatasetStep1Handler(w http.ResponseWriter, r *http.Request) {
-	token := getTokenFromCookie(r)
+	token := web.GetTokenFromCookie(r)
 	if token == "" {
 		http.Redirect(w, r, "/web/login", http.StatusSeeOther)
 		return
@@ -36,7 +38,7 @@ func TrainingDatasetStep1Handler(w http.ResponseWriter, r *http.Request) {
 	projectName, err := fetchProjectName(r, token, projectID)
 	if err != nil {
 		// If we can't fetch the project, redirect to login (token might be invalid)
-		clearTokenCookie(w)
+		web.ClearTokenCookie(w)
 		http.Redirect(w, r, "/web/login", http.StatusSeeOther)
 		return
 	}
@@ -45,7 +47,7 @@ func TrainingDatasetStep1Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func fetchProjectName(r *http.Request, token string, projectID uuid.UUID) (string, error) {
-	apiBaseURL := getAPIBaseURL(r)
+	apiBaseURL := web.GetAPIBaseURL(r)
 
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/projects/%s", apiBaseURL, projectID), nil)
 	if err != nil {
@@ -65,7 +67,7 @@ func fetchProjectName(r *http.Request, token string, projectID uuid.UUID) (strin
 		return "", fmt.Errorf("API returned status %d", resp.StatusCode)
 	}
 
-	var project ProjectResponse
+	var project web.ProjectResponse
 	if err := json.NewDecoder(resp.Body).Decode(&project); err != nil {
 		return "", err
 	}

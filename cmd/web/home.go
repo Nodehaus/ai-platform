@@ -50,8 +50,8 @@ type CreateProjectResponse struct {
 	UpdatedAt string    `json:"updated_at"`
 }
 
-func HomepageHandler(w http.ResponseWriter, r *http.Request) {
-	token := getTokenFromCookie(r)
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	token := GetTokenFromCookie(r)
 	if token == "" {
 		http.Redirect(w, r, "/web/login", http.StatusSeeOther)
 		return
@@ -59,16 +59,16 @@ func HomepageHandler(w http.ResponseWriter, r *http.Request) {
 
 	projectsData, err := fetchProjectsData(r, token)
 	if err != nil {
-		clearTokenCookie(w)
+		ClearTokenCookie(w)
 		http.Redirect(w, r, "/web/login", http.StatusSeeOther)
 		return
 	}
 
-	templ.Handler(Homepage(*projectsData)).ServeHTTP(w, r)
+	templ.Handler(Home(*projectsData)).ServeHTTP(w, r)
 }
 
 func fetchProjectsData(r *http.Request, token string) (*ProjectsData, error) {
-	apiBaseURL := getAPIBaseURL(r)
+	apiBaseURL := GetAPIBaseURL(r)
 
 	req, err := http.NewRequest("GET", apiBaseURL+"/api/projects", nil)
 	if err != nil {
@@ -130,7 +130,7 @@ func CreateProjectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := getTokenFromCookie(r)
+	token := GetTokenFromCookie(r)
 	if token == "" {
 		http.Redirect(w, r, "/web/login", http.StatusSeeOther)
 		return
@@ -152,7 +152,7 @@ func CreateProjectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	apiBaseURL := getAPIBaseURL(r)
+	apiBaseURL := GetAPIBaseURL(r)
 	req, err := http.NewRequest("POST", apiBaseURL+"/api/projects", bytes.NewBuffer(jsonData))
 	if err != nil {
 		w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">Failed to create request</div>`))

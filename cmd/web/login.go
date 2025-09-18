@@ -24,12 +24,12 @@ type LoginResponse struct {
 }
 
 func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
-	if token := getTokenFromCookie(r); token != "" {
+	if token := GetTokenFromCookie(r); token != "" {
 		if isValidToken(r, token) {
 			http.Redirect(w, r, "/web/home", http.StatusSeeOther)
 			return
 		}
-		clearTokenCookie(w)
+		ClearTokenCookie(w)
 	}
 
 	templ.Handler(LoginPage()).ServeHTTP(w, r)
@@ -60,7 +60,7 @@ func LoginFormHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	apiBaseURL := getAPIBaseURL(r)
+	apiBaseURL := GetAPIBaseURL(r)
 	resp, err := http.Post(apiBaseURL+"/api/login", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		templ.Handler(LoginForm("Failed to connect to authentication service")).ServeHTTP(w, r)
@@ -85,6 +85,6 @@ func LoginFormHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setTokenCookie(w, loginResp.Token)
+	SetTokenCookie(w, loginResp.Token)
 	w.Header().Set("HX-Redirect", "/web/home")
 }
