@@ -27,27 +27,34 @@ func TestListProjectsController_ListProjects_Success(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	userID := uuid.New()
-	projects := []entities.Project{
+	trainingDatasetID := uuid.New()
+	projectsWithTrainingDatasets := []in.ProjectWithTrainingDataset{
 		{
-			ID:        uuid.New(),
-			Name:      "Project 1",
-			OwnerID:   userID,
-			Status:    entities.ProjectStatusActive,
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
+			Project: entities.Project{
+				ID:        uuid.New(),
+				Name:      "Project 1",
+				OwnerID:   userID,
+				Status:    entities.ProjectStatusActive,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			},
+			TrainingDatasetID: &trainingDatasetID,
 		},
 		{
-			ID:        uuid.New(),
-			Name:      "Project 2",
-			OwnerID:   userID,
-			Status:    entities.ProjectStatusActive,
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
+			Project: entities.Project{
+				ID:        uuid.New(),
+				Name:      "Project 2",
+				OwnerID:   userID,
+				Status:    entities.ProjectStatusActive,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			},
+			TrainingDatasetID: nil,
 		},
 	}
 
 	result := &in.ListProjectsResult{
-		Projects: projects,
+		Projects: projectsWithTrainingDatasets,
 	}
 
 	mockUseCase := &mockListProjectsUseCase{
@@ -86,6 +93,14 @@ func TestListProjectsController_ListProjects_Success(t *testing.T) {
 	if response.Projects[1].Name != "Project 2" {
 		t.Errorf("Expected second project name 'Project 2', got %s", response.Projects[1].Name)
 	}
+
+	if response.Projects[0].TrainingDatasetID == nil {
+		t.Error("Expected first project to have a training dataset ID")
+	}
+
+	if response.Projects[1].TrainingDatasetID != nil {
+		t.Error("Expected second project to have no training dataset ID")
+	}
 }
 
 func TestListProjectsController_ListProjects_EmptyList(t *testing.T) {
@@ -93,7 +108,7 @@ func TestListProjectsController_ListProjects_EmptyList(t *testing.T) {
 
 	userID := uuid.New()
 	result := &in.ListProjectsResult{
-		Projects: []entities.Project{},
+		Projects: []in.ProjectWithTrainingDataset{},
 	}
 
 	mockUseCase := &mockListProjectsUseCase{

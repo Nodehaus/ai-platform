@@ -1,22 +1,31 @@
 package use_cases
 
 import (
+	"ai-platform/internal/application/domain/services"
 	"ai-platform/internal/application/port/in"
-	"ai-platform/internal/application/port/out/persistence"
+	"context"
 )
 
 type ListProjectsUseCaseImpl struct {
-	ProjectRepository persistence.ProjectRepository
+	ProjectService *services.ProjectService
 }
 
 
 func (uc *ListProjectsUseCaseImpl) ListProjects(command in.ListProjectsCommand) (*in.ListProjectsResult, error) {
-	projects, err := uc.ProjectRepository.GetActiveByOwnerID(command.OwnerID)
+	projectsWithDatasets, err := uc.ProjectService.ListProjects(context.Background(), command.OwnerID)
 	if err != nil {
 		return nil, err
 	}
 
+	result := make([]in.ProjectWithTrainingDataset, len(projectsWithDatasets))
+	for i, projectWithDataset := range projectsWithDatasets {
+		result[i] = in.ProjectWithTrainingDataset{
+			Project:           projectWithDataset.Project,
+			TrainingDatasetID: projectWithDataset.TrainingDatasetID,
+		}
+	}
+
 	return &in.ListProjectsResult{
-		Projects: projects,
+		Projects: result,
 	}, nil
 }

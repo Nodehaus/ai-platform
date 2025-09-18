@@ -49,8 +49,11 @@ func NewUserService() *services.UserService {
 	return &services.UserService{}
 }
 
-func NewProjectService() *services.ProjectService {
-	return &services.ProjectService{}
+func NewProjectService(projectRepo persistencePort.ProjectRepository, trainingDatasetRepo persistencePort.TrainingDatasetRepository) *services.ProjectService {
+	return &services.ProjectService{
+		ProjectRepository:         projectRepo,
+		TrainingDatasetRepository: trainingDatasetRepo,
+	}
 }
 
 func NewTrainingDatasetService() *services.TrainingDatasetService {
@@ -82,9 +85,9 @@ func NewCreateProjectUseCase(projectRepo persistencePort.ProjectRepository, proj
 	}
 }
 
-func NewListProjectsUseCase(projectRepo persistencePort.ProjectRepository) in.ListProjectsUseCase {
+func NewListProjectsUseCase(projectService *services.ProjectService) in.ListProjectsUseCase {
 	return &use_cases.ListProjectsUseCaseImpl{
-		ProjectRepository: projectRepo,
+		ProjectService: projectService,
 	}
 }
 
