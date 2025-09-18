@@ -59,6 +59,14 @@ func (s *Server) RegisterRoutes() http.Handler {
 		web.LogoutHandler(c.Writer, c.Request)
 	})
 
+	r.POST("/web/projects/create", func(c *gin.Context) {
+		web.CreateProjectHandler(c.Writer, c.Request)
+	})
+
+	r.GET("/web/projects/:project_id/training-datasets/step1", func(c *gin.Context) {
+		web.TrainingDatasetStep1Handler(c.Writer, c.Request)
+	})
+
 
 
 	return r

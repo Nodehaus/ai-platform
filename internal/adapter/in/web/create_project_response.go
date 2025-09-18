@@ -7,10 +7,6 @@ import (
 	"github.com/google/uuid"
 )
 
-type CreateProjectResponse struct {
-	Project *ProjectResponse `json:"project"`
-	Message string           `json:"message"`
-}
 
 type ProjectResponse struct {
 	ID        uuid.UUID              `json:"id"`
@@ -20,15 +16,12 @@ type ProjectResponse struct {
 	UpdatedAt time.Time              `json:"updated_at"`
 }
 
-func NewCreateProjectResponse(project *entities.Project, message string) *CreateProjectResponse {
-	return &CreateProjectResponse{
-		Project: &ProjectResponse{
-			ID:        project.ID,
-			Name:      project.Name,
-			Status:    project.Status,
-			CreatedAt: project.CreatedAt,
-			UpdatedAt: project.UpdatedAt,
-		},
-		Message: message,
+func NewCreateProjectResponse(project *entities.Project) *ProjectResponse {
+	return &ProjectResponse{
+		ID:        project.ID,
+		Name:      project.Name,
+		Status:    project.Status,
+		CreatedAt: project.CreatedAt,
+		UpdatedAt: project.UpdatedAt,
 	}
 }

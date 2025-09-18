@@ -1,6 +1,7 @@
 package web
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -33,6 +34,18 @@ type ProjectResponse struct {
 
 type ProjectsResponse struct {
 	Projects []ProjectResponse `json:"projects"`
+}
+
+type CreateProjectRequest struct {
+	Name string `json:"name"`
+}
+
+type CreateProjectResponse struct {
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Status    string    `json:"status"`
+	CreatedAt string    `json:"created_at"`
+	UpdatedAt string    `json:"updated_at"`
 }
 
 func HomepageHandler(w http.ResponseWriter, r *http.Request) {
@@ -106,4 +119,70 @@ func fetchProjectsData(r *http.Request, token string) (*ProjectsData, error) {
 	}
 
 	return projectsData, nil
+}
+
+func CreateProjectHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	token := getTokenFromCookie(r)
+	if token == "" {
+		http.Redirect(w, r, "/web/login", http.StatusSeeOther)
+		return
+	}
+
+	projectName := r.FormValue("projectName")
+	if projectName == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`<div class="text-red-600">Project name is required</div>`))
+		return
+	}
+
+	createReq := CreateProjectRequest{
+		Name: projectName,
+	}
+
+	jsonData, err := json.Marshal(createReq)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`<div class="text-red-600">Failed to process request</div>`))
+		return
+	}
+
+	apiBaseURL := getAPIBaseURL(r)
+	req, err := http.NewRequest("POST", apiBaseURL+"/api/projects", bytes.NewBuffer(jsonData))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`<div class="text-red-600">Failed to create request</div>`))
+		return
+	}
+
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`<div class="text-red-600">Failed to connect to API</div>`))
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusCreated {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`<div class="text-red-600">Failed to create project</div>`))
+		return
+	}
+
+	var createResp CreateProjectResponse
+	if err := json.NewDecoder(resp.Body).Decode(&createResp); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`<div class="text-red-600">Failed to process response</div>`))
+		return
+	}
+
+	w.Header().Set("HX-Redirect", fmt.Sprintf("/web/projects/%s/training-datasets/step1", createResp.ID))
 }

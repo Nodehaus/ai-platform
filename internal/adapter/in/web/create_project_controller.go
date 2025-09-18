@@ -44,6 +44,6 @@ func (c *CreateProjectController) CreateProject(ctx *gin.Context) {
 		return
 	}
 
-	response := NewCreateProjectResponse(result.Project, "Project created successfully")
+	response := NewCreateProjectResponse(result.Project)
 	ctx.JSON(http.StatusCreated, response)
 }
