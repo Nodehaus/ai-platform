@@ -48,6 +48,7 @@ numbers.
     -   total_generation_time_seconds: float (rounded to 2 decimals)
     -   generate_prompt_history: list of Prompt (history of all prompts that the user saved, except the current_prompt)
     -   generate_prompt: Prompt (required)
+    -   generate_examples_number: int (required)
     -   corpus: Corpus (required)
     -   language_iso: string (3-letter ISO code, required)
     -   status: enum of [PLANNING, RUNNING, ABORTED, FAILED, DONE, DELETED] (required)

@@ -1,1 +1,22 @@
 We want to activate the `+ Create New Project` button in `cmd/web/homepage.templ`. A click on the button will display a pop that asks for a project name. When the user entered the name and confirms then we will send a create project POST request to the API `/api/projects`. The user will be forwarded to a new page `/web/projects/{project_id}/training-datasets/step1` that will start a wizard to collect the parameters for the training dataset. We will implement the wizard later, for now just add `step1` page that has a title `1/4 Base corpus` but nothing else.
+
+In `cmd/web/training_datasets/step1.templ` and `cmd/web/training_datasets/step1.go` we have the first step of the UI to start a training dataset wizard. The API already has an endpoihnt to create the training dataset at `/api/projects/{project_id}/training-datasets`. It will receive the following JSON (the values are examples):
+
+{
+    "corpus_name": "eurlex",
+    "input_field": "question",
+    "output_field": "answer",
+    "language_iso": "deu",
+    "field_names": ["question", "answer", "complexity"],
+    "generate_prompt": "You task is to generate training dataset for question answering.",
+    "generate_examples_number": 100
+}
+
+In the UI we will collect the data in 4 steps:
+
+1) Base Corpus (this page exists but is empty): We want to add a select here with one entry in the UI "EUR-Lex" and value "eurlex".
+2) Choose Language: a select with flags with langauges English, German, French, Italian, Spanish, Polish, Finnish, Estonian. The values a are three-letter language codes.
+3) Create training data prompt: A textarea for the input of a prompt and three input fields for "Field names" (comma separated), "Input Field" and "Output Field".
+4) Generate training data: Display the prompt, input field, output field, field names, base corpus and language (all read-only) and a number field "Number of training examples to generate".
+
+All pages will have a "Next" and "Back" button. Your task is to implement the 4 steps in the UI. Keep the pages as simple as possible with only the content needed to collect the data

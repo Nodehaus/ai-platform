@@ -63,6 +63,42 @@ Clean up binary from the last build:
 make clean
 ```
 
+## Setup PostgreSQL database
+
+Start a postgres shell:
+
+```
+$ sudo -u postgres psql
+
+```
+
+Run the following commands
+
+```
+CREATE DATABASE ai_platform;
+CREATE USER nodehaus with password 'SecurePassword;
+GRANT ALL PRIVILEGES ON DATABASE ai_platform TO nodehaus;
+\connect ai_platform
+GRANT ALL PRIVILEGES ON SCHEMA public TO nodehaus;
+```
+
+Create `.env` file (see below for Docker) and run migrations:
+
+```
+$ ./run_migrations.sh
+```
+
+Add a test user:
+
+```
+$ sudo -u postgres psql
+
+```
+
+```
+INSERT INTO users (email, password) VALUES ('test@example.com', '$2a$12$k2WRsfc9868pKseoXaGAf.YdtXrp8uXumJiWoTxq1UxBWQ5m0df96');
+```
+
 ## Docker Deployment
 
 The application includes a Dockerfile for containerized deployment. Here's how to deploy it on a server with automatic
@@ -82,12 +118,12 @@ docker build -t ai-platform:latest .
 
 #### Using Environment File
 
-Create a `.env.production` file:
+Create a `.env` file:
 
 ```env
 PORT=8081
 API_BASE_URL=https://ai.peterbouda.eu
-BLUEPRINT_DB_HOST=localhost
+BLUEPRINT_DB_HOST=host.docker.internal
 BLUEPRINT_DB_PORT=5432
 BLUEPRINT_DB_DATABASE=ai_platform
 BLUEPRINT_DB_USERNAME=nodehaus
@@ -102,10 +138,13 @@ Then run:
 docker run -d \
   --name ai-platform \
   --restart always \
-  -p 8080:8080 \
-  --env-file .env.production \
+  -p 8081:8081 \
+  --env-file .env \
+  --add-host=host.docker.internal:host-gateway \
   ai-platform
 ```
+
+Add `--add-host=host.docker.internal:host-gateway` if you want to access postgres on the host.
 
 ### Restart Policies
 

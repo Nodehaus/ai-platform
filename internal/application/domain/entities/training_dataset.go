@@ -35,6 +35,7 @@ type TrainingDataset struct {
 	LanguageISO                     string                `json:"language_iso"`
 	Status                          TrainingDatasetStatus `json:"status"`
 	FieldNames                      []string              `json:"field_names"`
+	GenerateExamplesNumber          int                   `json:"generate_examples_number"`
 	Data                            []TrainingDataItem    `json:"data"`
 	CreatedAt                       time.Time             `json:"created_at"`
 	UpdatedAt                       time.Time             `json:"updated_at"`

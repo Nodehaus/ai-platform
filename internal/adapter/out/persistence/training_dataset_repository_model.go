@@ -27,6 +27,7 @@ type TrainingDatasetRepositoryModel struct {
 	LanguageISO                     string    `db:"language_iso"`
 	Status                          string    `db:"status"`
 	FieldNamesJSON                  string    `db:"field_names_json"`
+	GenerateExamplesNumber          int       `db:"generate_examples_number"`
 	DataJSON                        string    `db:"data_json"`
 	CreatedAt                       time.Time `db:"created_at"`
 	UpdatedAt                       time.Time `db:"updated_at"`
@@ -70,6 +71,7 @@ func (m *TrainingDatasetRepositoryModel) ToEntity() (*entities.TrainingDataset, 
 		LanguageISO:                     m.LanguageISO,
 		Status:                          entities.TrainingDatasetStatus(m.Status),
 		FieldNames:                      fieldNames,
+		GenerateExamplesNumber:          m.GenerateExamplesNumber,
 		Data:                            data,
 		CreatedAt:                       m.CreatedAt,
 		UpdatedAt:                       m.UpdatedAt,
@@ -110,6 +112,7 @@ func FromTrainingDatasetEntity(td *entities.TrainingDataset) (*TrainingDatasetRe
 		LanguageISO:                     td.LanguageISO,
 		Status:                          string(td.Status),
 		FieldNamesJSON:                  string(fieldNamesJSON),
+		GenerateExamplesNumber:          td.GenerateExamplesNumber,
 		DataJSON:                        string(dataJSON),
 		CreatedAt:                       td.CreatedAt,
 		UpdatedAt:                       td.UpdatedAt,

@@ -76,6 +76,7 @@ func (uc *CreateTrainingDatasetUseCaseImpl) Execute(ctx context.Context, command
 		command.OutputField,
 		command.LanguageISO,
 		command.FieldNames,
+		command.GenerateExamplesNumber,
 	)
 	if err != nil {
 		return nil, err

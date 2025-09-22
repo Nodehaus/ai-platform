@@ -16,12 +16,20 @@ type ProjectResponse struct {
 	UpdatedAt time.Time              `json:"updated_at"`
 }
 
-func NewCreateProjectResponse(project *entities.Project) *ProjectResponse {
-	return &ProjectResponse{
-		ID:        project.ID,
-		Name:      project.Name,
-		Status:    project.Status,
-		CreatedAt: project.CreatedAt,
-		UpdatedAt: project.UpdatedAt,
+type CreateProjectResponse struct {
+	Project ProjectResponse `json:"project"`
+	Message string          `json:"message"`
+}
+
+func NewCreateProjectResponse(project *entities.Project) *CreateProjectResponse {
+	return &CreateProjectResponse{
+		Project: ProjectResponse{
+			ID:        project.ID,
+			Name:      project.Name,
+			Status:    project.Status,
+			CreatedAt: project.CreatedAt,
+			UpdatedAt: project.UpdatedAt,
+		},
+		Message: "Project created successfully",
 	}
 }

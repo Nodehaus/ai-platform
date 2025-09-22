@@ -52,6 +52,7 @@ func TestCreateTrainingDatasetController_CreateTrainingDataset_Success(t *testin
 		LanguageISO:              "deu",
 		Status:                   entities.TrainingDatasetStatusPlanning,
 		FieldNames:               []string{"question", "answer", "complexity"},
+		GenerateExamplesNumber:   100,
 		Data:                     []entities.TrainingDataItem{},
 		CreatedAt:                time.Now(),
 		UpdatedAt:                time.Now(),
@@ -72,12 +73,13 @@ func TestCreateTrainingDatasetController_CreateTrainingDataset_Success(t *testin
 	router.POST("/projects/:project_id/training-datasets", controller.CreateTrainingDataset)
 
 	request := CreateTrainingDatasetRequest{
-		CorpusName:     "eurlex",
-		InputField:     "question",
-		OutputField:    "answer",
-		LanguageISO:    "deu",
-		FieldNames:     []string{"question", "answer", "complexity"},
-		GeneratePrompt: "Generate Q&A dataset",
+		CorpusName:            "eurlex",
+		InputField:            "question",
+		OutputField:           "answer",
+		LanguageISO:           "deu",
+		FieldNames:            []string{"question", "answer", "complexity"},
+		GeneratePrompt:        "Generate Q&A dataset",
+		GenerateExamplesNumber: 100,
 	}
 
 	requestBody, _ := json.Marshal(request)
@@ -120,12 +122,13 @@ func TestCreateTrainingDatasetController_CreateTrainingDataset_ValidationError(t
 	router.POST("/projects/:project_id/training-datasets", controller.CreateTrainingDataset)
 
 	request := CreateTrainingDatasetRequest{
-		CorpusName:     "invalid", // Will trigger the validation error in mock
-		InputField:     "question",
-		OutputField:    "answer",
-		LanguageISO:    "deu",
-		FieldNames:     []string{"question", "answer"},
-		GeneratePrompt: "Generate Q&A dataset",
+		CorpusName:            "invalid", // Will trigger the validation error in mock
+		InputField:            "question",
+		OutputField:           "answer",
+		LanguageISO:           "deu",
+		FieldNames:            []string{"question", "answer"},
+		GeneratePrompt:        "Generate Q&A dataset",
+		GenerateExamplesNumber: 75,
 	}
 
 	requestBody, _ := json.Marshal(request)
@@ -164,12 +167,13 @@ func TestCreateTrainingDatasetController_CreateTrainingDataset_FieldValidationEr
 	router.POST("/projects/:project_id/training-datasets", controller.CreateTrainingDataset)
 
 	request := CreateTrainingDatasetRequest{
-		CorpusName:     "eurlex",
-		InputField:     "nonexistent", // Will trigger field validation error in mock
-		OutputField:    "answer",
-		LanguageISO:    "deu",
-		FieldNames:     []string{"question", "answer"},
-		GeneratePrompt: "Generate Q&A dataset",
+		CorpusName:            "eurlex",
+		InputField:            "nonexistent", // Will trigger field validation error in mock
+		OutputField:           "answer",
+		LanguageISO:           "deu",
+		FieldNames:            []string{"question", "answer"},
+		GeneratePrompt:        "Generate Q&A dataset",
+		GenerateExamplesNumber: 50,
 	}
 
 	requestBody, _ := json.Marshal(request)
@@ -207,12 +211,13 @@ func TestCreateTrainingDatasetController_CreateTrainingDataset_InvalidProjectID(
 	router.POST("/projects/:project_id/training-datasets", controller.CreateTrainingDataset)
 
 	request := CreateTrainingDatasetRequest{
-		CorpusName:     "eurlex",
-		InputField:     "question",
-		OutputField:    "answer",
-		LanguageISO:    "deu",
-		FieldNames:     []string{"question", "answer"},
-		GeneratePrompt: "Generate Q&A dataset",
+		CorpusName:            "eurlex",
+		InputField:            "question",
+		OutputField:           "answer",
+		LanguageISO:           "deu",
+		FieldNames:            []string{"question", "answer"},
+		GeneratePrompt:        "Generate Q&A dataset",
+		GenerateExamplesNumber: 25,
 	}
 
 	requestBody, _ := json.Marshal(request)
@@ -245,12 +250,13 @@ func TestCreateTrainingDatasetController_CreateTrainingDataset_NoUserInContext(t
 	router.POST("/projects/:project_id/training-datasets", controller.CreateTrainingDataset)
 
 	request := CreateTrainingDatasetRequest{
-		CorpusName:     "eurlex",
-		InputField:     "question",
-		OutputField:    "answer",
-		LanguageISO:    "deu",
-		FieldNames:     []string{"question", "answer"},
-		GeneratePrompt: "Generate Q&A dataset",
+		CorpusName:            "eurlex",
+		InputField:            "question",
+		OutputField:           "answer",
+		LanguageISO:           "deu",
+		FieldNames:            []string{"question", "answer"},
+		GeneratePrompt:        "Generate Q&A dataset",
+		GenerateExamplesNumber: 25,
 	}
 
 	requestBody, _ := json.Marshal(request)

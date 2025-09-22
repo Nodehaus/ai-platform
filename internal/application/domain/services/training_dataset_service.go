@@ -19,6 +19,7 @@ func (s *TrainingDatasetService) CreateTrainingDataset(
 	outputField string,
 	languageISO string,
 	fieldNames []string,
+	generateExamplesNumber int,
 ) (*entities.TrainingDataset, error) {
 	if err := s.ValidateCreateTrainingDatasetRequest(inputField, outputField, languageISO, fieldNames); err != nil {
 		return nil, err
@@ -36,6 +37,7 @@ func (s *TrainingDatasetService) CreateTrainingDataset(
 		LanguageISO:              languageISO,
 		Status:                   entities.TrainingDatasetStatusPlanning,
 		FieldNames:               fieldNames,
+		GenerateExamplesNumber:   generateExamplesNumber,
 		Data:                     []entities.TrainingDataItem{},
 	}, nil
 }
