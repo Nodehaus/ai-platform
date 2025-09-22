@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -42,6 +43,9 @@ func (c *UpdateTrainingDatasetStatusController) UpdateStatus(ctx *gin.Context) {
 	// Execute use case
 	err = c.UpdateTrainingDatasetStatusUseCase.Execute(ctx.Request.Context(), command)
 	if err != nil {
+		// Log the full error message to console
+		fmt.Printf("Full error: %v\n", err)
+
 		if err.Error() == "training dataset not found" {
 			ctx.JSON(http.StatusNotFound, gin.H{
 				"error": "Training dataset not found",

@@ -11,6 +11,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+
+	portClients "ai-platform/internal/application/port/out/clients"
 )
 
 type TrainingDatasetJobClientImpl struct {
@@ -47,7 +49,7 @@ func NewTrainingDatasetJobClientImpl() (*TrainingDatasetJobClientImpl, error) {
 	}, nil
 }
 
-func (c *TrainingDatasetJobClientImpl) SubmitJob(ctx context.Context, job TrainingDatasetJobModel) error {
+func (c *TrainingDatasetJobClientImpl) SubmitJob(ctx context.Context, job portClients.TrainingDatasetJobModel) error {
 	jobJSON, err := json.Marshal(job)
 	if err != nil {
 		return fmt.Errorf("failed to marshal job to JSON: %w", err)

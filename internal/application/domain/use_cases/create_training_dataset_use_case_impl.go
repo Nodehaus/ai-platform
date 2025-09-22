@@ -6,7 +6,6 @@ import (
 
 	"github.com/google/uuid"
 
-	clientModels "ai-platform/internal/adapter/out/clients"
 	"ai-platform/internal/application/domain/entities"
 	"ai-platform/internal/application/domain/services"
 	"ai-platform/internal/application/port/in"
@@ -100,7 +99,7 @@ func (uc *CreateTrainingDatasetUseCaseImpl) Execute(ctx context.Context, command
 		corpusFilesSubset = *corpus.FilesSubset
 	}
 
-	job := clientModels.TrainingDatasetJobModel{
+	job := clients.TrainingDatasetJobModel{
 		CorpusS3Path:           corpus.S3Path,
 		CorpusFilesSubset:      corpusFilesSubset,
 		LanguageISO:            command.LanguageISO,

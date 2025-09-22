@@ -149,9 +149,13 @@ func NewCreateTrainingDatasetController(
 	}
 }
 
-func NewUpdateTrainingDatasetStatusUseCase(trainingDatasetRepo persistencePort.TrainingDatasetRepository) in.UpdateTrainingDatasetStatusUseCase {
+func NewUpdateTrainingDatasetStatusUseCase(
+	trainingDatasetRepo persistencePort.TrainingDatasetRepository,
+	trainingDatasetResultsClient clientsPort.TrainingDatasetResultsClient,
+) in.UpdateTrainingDatasetStatusUseCase {
 	return &use_cases.UpdateTrainingDatasetStatusUseCaseImpl{
-		TrainingDatasetRepository: trainingDatasetRepo,
+		TrainingDatasetRepository:     trainingDatasetRepo,
+		TrainingDatasetResultsClient: trainingDatasetResultsClient,
 	}
 }
 
@@ -173,6 +177,14 @@ func NewTrainingDatasetJobClient() clientsPort.TrainingDatasetJobClient {
 	return client
 }
 
+func NewTrainingDatasetResultsClient() clientsPort.TrainingDatasetResultsClient {
+	client, err := clients.NewTrainingDatasetResultsClientImpl()
+	if err != nil {
+		panic(err)
+	}
+	return client
+}
+
 func NewAuthMiddleware(jwtService *services.JWTService) *server.AuthMiddleware {
 	return &server.AuthMiddleware{
 		JwtService: jwtService,
@@ -186,6 +198,7 @@ var Module = fx.Options(
 	fx.Provide(NewCorpusRepository),
 	fx.Provide(NewPromptRepository),
 	fx.Provide(NewTrainingDatasetJobClient),
+	fx.Provide(NewTrainingDatasetResultsClient),
 	fx.Provide(NewUserService),
 	fx.Provide(NewProjectService),
 	fx.Provide(NewTrainingDatasetService),

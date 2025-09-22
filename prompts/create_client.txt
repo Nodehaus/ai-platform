@@ -17,3 +17,7 @@ We want to implement an S3 client to submit the training dataset creation job as
 We will configure the S3 client with three environment variables, you can assume they exist: AWS_ENDPOINT_URL, AWS_DEFAULT_REGION and APP_S3_BUCKET. The path for the job files is `/jobs`.
 
 The job file will be written in the use case after we created the training dataset in the database.
+
+---
+
+We want to implement another S3 client to get all training dataset JSONs that an external runner generated. The client will get all the JSON files from the path `datasets/{training_dataset_id}/`. Each JSON file contains two fields that we need: `total_generation_time_seconds` and `annotations`. You can find an example JSON file in `02002L0058-20091219_eng.json`. Sum up all `total_generation_time_seconds` to get the number for the full training dataset generation. Return all annotations in a single list. We want to use that client in the `internal/application/domain/use_cases/update_training_dataset_status_use_case_impl.go`. When the status is set to `DONE` we will get all the annotations and the `total_generation_time_seconds` and write it to the database as TrainingDataItem. Check that each annotation has the fields defined in `FieldNames` and write them in the same order to the `values` of the `TrainingDataItem`. The field `question`, `answer` and `complexity` are specific to this one training dataset. Other datasets might have different fields, depending on the `FieldNames`.
