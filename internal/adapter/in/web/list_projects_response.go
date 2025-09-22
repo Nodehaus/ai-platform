@@ -12,25 +12,38 @@ type ListProjectsResponse struct {
 	Projects []ListProjectResponse `json:"projects"`
 }
 
+type TrainingDatasetResponse struct {
+	ID     uuid.UUID                     `json:"id"`
+	Status entities.TrainingDatasetStatus `json:"status"`
+}
+
 type ListProjectResponse struct {
-	ID                uuid.UUID              `json:"id"`
-	Name              string                 `json:"name"`
-	Status            entities.ProjectStatus `json:"status"`
-	TrainingDatasetID *uuid.UUID             `json:"training_dataset_id"`
-	CreatedAt         time.Time              `json:"created_at"`
-	UpdatedAt         time.Time              `json:"updated_at"`
+	ID              uuid.UUID                `json:"id"`
+	Name            string                   `json:"name"`
+	Status          entities.ProjectStatus   `json:"status"`
+	TrainingDataset *TrainingDatasetResponse `json:"training_dataset"`
+	CreatedAt       time.Time                `json:"created_at"`
+	UpdatedAt       time.Time                `json:"updated_at"`
 }
 
 func NewListProjectsResponse(projects []in.ProjectWithTrainingDataset) *ListProjectsResponse {
 	projectResponses := make([]ListProjectResponse, len(projects))
 	for i, projectWithDataset := range projects {
+		var trainingDatasetResponse *TrainingDatasetResponse
+		if projectWithDataset.TrainingDataset != nil {
+			trainingDatasetResponse = &TrainingDatasetResponse{
+				ID:     projectWithDataset.TrainingDataset.ID,
+				Status: projectWithDataset.TrainingDataset.Status,
+			}
+		}
+
 		projectResponses[i] = ListProjectResponse{
-			ID:                projectWithDataset.Project.ID,
-			Name:              projectWithDataset.Project.Name,
-			Status:            projectWithDataset.Project.Status,
-			TrainingDatasetID: projectWithDataset.TrainingDatasetID,
-			CreatedAt:         projectWithDataset.Project.CreatedAt,
-			UpdatedAt:         projectWithDataset.Project.UpdatedAt,
+			ID:              projectWithDataset.Project.ID,
+			Name:            projectWithDataset.Project.Name,
+			Status:          projectWithDataset.Project.Status,
+			TrainingDataset: trainingDatasetResponse,
+			CreatedAt:       projectWithDataset.Project.CreatedAt,
+			UpdatedAt:       projectWithDataset.Project.UpdatedAt,
 		}
 	}
 

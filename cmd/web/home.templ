@@ -22,7 +22,7 @@ templ Home(projectsData ProjectsData) {
 								<div class="project-name">{ project.Name }</div>
 								<span class="text-sm text-gray-500">Created { project.CreatedAt }</span>
 							</div>
-							if project.TrainingDatasetID == nil {
+							if project.TrainingDataset == nil {
 								<div class="mt-2">
 									<a
 										href={ templ.URL(fmt.Sprintf("/web/projects/%s/training-datasets/step1", project.ID)) }
@@ -30,6 +30,23 @@ templ Home(projectsData ProjectsData) {
 									>
 										Create training dataset
 									</a>
+								</div>
+							} else {
+								<div class="mt-2 flex items-center justify-between">
+									<div class="flex items-center space-x-2">
+										<span class="text-sm text-gray-600">Training Dataset:</span>
+										<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-800">
+											{ project.TrainingDataset.Status }
+										</span>
+									</div>
+									if project.TrainingDataset.Status == "DONE" {
+										<a
+											href={ templ.URL(fmt.Sprintf("/web/projects/%s/finetune", project.ID)) }
+											class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+										>
+											Start fine-tuning
+										</a>
+									}
 								</div>
 							}
 						</div>

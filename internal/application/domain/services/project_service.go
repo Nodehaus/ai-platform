@@ -9,8 +9,8 @@ import (
 )
 
 type ProjectWithTrainingDataset struct {
-	Project           entities.Project
-	TrainingDatasetID *uuid.UUID
+	Project         entities.Project
+	TrainingDataset *entities.TrainingDataset
 }
 
 type ProjectService struct {
@@ -76,16 +76,14 @@ func (s *ProjectService) ListProjects(ctx context.Context, ownerID uuid.UUID) ([
 
 	result := make([]ProjectWithTrainingDataset, len(projects))
 	for i, project := range projects {
-		var trainingDatasetID *uuid.UUID
-
 		latestTrainingDataset, err := s.TrainingDatasetRepository.GetLatestByProjectID(ctx, project.ID)
-		if err == nil && latestTrainingDataset != nil {
-			trainingDatasetID = &latestTrainingDataset.ID
+		if err != nil {
+			latestTrainingDataset = nil
 		}
 
 		result[i] = ProjectWithTrainingDataset{
-			Project:           project,
-			TrainingDatasetID: trainingDatasetID,
+			Project:         project,
+			TrainingDataset: latestTrainingDataset,
 		}
 	}
 

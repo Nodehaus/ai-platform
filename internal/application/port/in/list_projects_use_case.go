@@ -2,12 +2,11 @@ package in
 
 import (
 	"ai-platform/internal/application/domain/entities"
-	"github.com/google/uuid"
 )
 
 type ProjectWithTrainingDataset struct {
-	Project           entities.Project
-	TrainingDatasetID *uuid.UUID
+	Project         entities.Project
+	TrainingDataset *entities.TrainingDataset
 }
 
 type ListProjectsResult struct {

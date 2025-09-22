@@ -182,5 +182,5 @@ func CreateTrainingDatasetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Success response
-	w.Write([]byte(`<div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">Training dataset created successfully! <a href="/web/projects/` + projectIDStr + `" class="underline">Go to project</a></div>`))
+	w.Write([]byte(`<div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">Training dataset creation started successfully! <a href="/web/home" class="underline">Check status on home page</a></div>`))
 }

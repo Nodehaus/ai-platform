@@ -38,7 +38,13 @@ func TestListProjectsController_ListProjects_Success(t *testing.T) {
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 			},
-			TrainingDatasetID: &trainingDatasetID,
+			TrainingDataset: &entities.TrainingDataset{
+				ID:        trainingDatasetID,
+				ProjectID: uuid.New(),
+				Status:    entities.TrainingDatasetStatusDone,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			},
 		},
 		{
 			Project: entities.Project{
@@ -49,7 +55,7 @@ func TestListProjectsController_ListProjects_Success(t *testing.T) {
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 			},
-			TrainingDatasetID: nil,
+			TrainingDataset: nil,
 		},
 	}
 
@@ -94,12 +100,21 @@ func TestListProjectsController_ListProjects_Success(t *testing.T) {
 		t.Errorf("Expected second project name 'Project 2', got %s", response.Projects[1].Name)
 	}
 
-	if response.Projects[0].TrainingDatasetID == nil {
-		t.Error("Expected first project to have a training dataset ID")
+	if response.Projects[0].TrainingDataset == nil {
+		t.Error("Expected first project to have a training dataset")
 	}
 
-	if response.Projects[1].TrainingDatasetID != nil {
-		t.Error("Expected second project to have no training dataset ID")
+	if response.Projects[1].TrainingDataset != nil {
+		t.Error("Expected second project to have no training dataset")
+	}
+
+	if response.Projects[0].TrainingDataset != nil {
+		if response.Projects[0].TrainingDataset.ID != trainingDatasetID {
+			t.Errorf("Expected training dataset ID %s, got %s", trainingDatasetID, response.Projects[0].TrainingDataset.ID)
+		}
+		if response.Projects[0].TrainingDataset.Status != entities.TrainingDatasetStatusDone {
+			t.Errorf("Expected training dataset status %s, got %s", entities.TrainingDatasetStatusDone, response.Projects[0].TrainingDataset.Status)
+		}
 	}
 }
 

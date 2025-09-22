@@ -12,26 +12,36 @@ import (
 	"github.com/google/uuid"
 )
 
+type TrainingDatasetData struct {
+	ID     uuid.UUID `json:"id"`
+	Status string    `json:"status"`
+}
+
 type ProjectData struct {
-	ID                uuid.UUID
-	Name              string
-	Status            string
-	TrainingDatasetID *uuid.UUID
-	CreatedAt         string
-	UpdatedAt         string
+	ID              uuid.UUID             `json:"id"`
+	Name            string                `json:"name"`
+	Status          string                `json:"status"`
+	TrainingDataset *TrainingDatasetData  `json:"training_dataset"`
+	CreatedAt       string                `json:"created_at"`
+	UpdatedAt       string                `json:"updated_at"`
 }
 
 type ProjectsData struct {
 	Projects []ProjectData
 }
 
+type TrainingDatasetResponse struct {
+	ID     uuid.UUID `json:"id"`
+	Status string    `json:"status"`
+}
+
 type ProjectResponse struct {
-	ID                uuid.UUID  `json:"id"`
-	Name              string     `json:"name"`
-	Status            string     `json:"status"`
-	TrainingDatasetID *uuid.UUID `json:"training_dataset_id"`
-	CreatedAt         string     `json:"created_at"`
-	UpdatedAt         string     `json:"updated_at"`
+	ID              uuid.UUID                `json:"id"`
+	Name            string                   `json:"name"`
+	Status          string                   `json:"status"`
+	TrainingDataset *TrainingDatasetResponse `json:"training_dataset"`
+	CreatedAt       string                   `json:"created_at"`
+	UpdatedAt       string                   `json:"updated_at"`
 }
 
 type ProjectsResponse struct {
@@ -111,13 +121,21 @@ func fetchProjectsData(r *http.Request, token string) (*ProjectsData, error) {
 			formattedCreatedAt = createdAt.Format("15:04 on 02.01.2006")
 		}
 
+		var trainingDataset *TrainingDatasetData
+		if project.TrainingDataset != nil {
+			trainingDataset = &TrainingDatasetData{
+				ID:     project.TrainingDataset.ID,
+				Status: project.TrainingDataset.Status,
+			}
+		}
+
 		projectsData.Projects[i] = ProjectData{
-			ID:                project.ID,
-			Name:              project.Name,
-			Status:            project.Status,
-			TrainingDatasetID: project.TrainingDatasetID,
-			CreatedAt:         formattedCreatedAt,
-			UpdatedAt:         project.UpdatedAt,
+			ID:              project.ID,
+			Name:            project.Name,
+			Status:          project.Status,
+			TrainingDataset: trainingDataset,
+			CreatedAt:       formattedCreatedAt,
+			UpdatedAt:       project.UpdatedAt,
 		}
 	}
 

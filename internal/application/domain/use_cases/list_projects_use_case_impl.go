@@ -20,8 +20,8 @@ func (uc *ListProjectsUseCaseImpl) ListProjects(command in.ListProjectsCommand) 
 	result := make([]in.ProjectWithTrainingDataset, len(projectsWithDatasets))
 	for i, projectWithDataset := range projectsWithDatasets {
 		result[i] = in.ProjectWithTrainingDataset{
-			Project:           projectWithDataset.Project,
-			TrainingDatasetID: projectWithDataset.TrainingDatasetID,
+			Project:         projectWithDataset.Project,
+			TrainingDataset: projectWithDataset.TrainingDataset,
 		}
 	}
 
