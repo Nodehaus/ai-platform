@@ -28,7 +28,6 @@ type TrainingDatasetRepositoryModel struct {
 	Status                          string    `db:"status"`
 	FieldNamesJSON                  string    `db:"field_names_json"`
 	GenerateExamplesNumber          int       `db:"generate_examples_number"`
-	DataJSON                        string    `db:"data_json"`
 	CreatedAt                       time.Time `db:"created_at"`
 	UpdatedAt                       time.Time `db:"updated_at"`
 }
@@ -46,12 +45,6 @@ func (m *TrainingDatasetRepositoryModel) ToEntity() (*entities.TrainingDataset, 
 		return nil, err
 	}
 
-	var data []entities.TrainingDataItem
-	if m.DataJSON != "" {
-		if err := json.Unmarshal([]byte(m.DataJSON), &data); err != nil {
-			return nil, err
-		}
-	}
 
 	return &entities.TrainingDataset{
 		ID:                              m.ID,
@@ -72,7 +65,7 @@ func (m *TrainingDatasetRepositoryModel) ToEntity() (*entities.TrainingDataset, 
 		Status:                          entities.TrainingDatasetStatus(m.Status),
 		FieldNames:                      fieldNames,
 		GenerateExamplesNumber:          m.GenerateExamplesNumber,
-		Data:                            data,
+		Data:                            []entities.TrainingDataItem{}, // Will be populated separately
 		CreatedAt:                       m.CreatedAt,
 		UpdatedAt:                       m.UpdatedAt,
 	}, nil
@@ -89,10 +82,6 @@ func FromTrainingDatasetEntity(td *entities.TrainingDataset) (*TrainingDatasetRe
 		return nil, err
 	}
 
-	dataJSON, err := json.Marshal(td.Data)
-	if err != nil {
-		return nil, err
-	}
 
 	return &TrainingDatasetRepositoryModel{
 		ID:                              td.ID,
@@ -113,7 +102,6 @@ func FromTrainingDatasetEntity(td *entities.TrainingDataset) (*TrainingDatasetRe
 		Status:                          string(td.Status),
 		FieldNamesJSON:                  string(fieldNamesJSON),
 		GenerateExamplesNumber:          td.GenerateExamplesNumber,
-		DataJSON:                        string(dataJSON),
 		CreatedAt:                       td.CreatedAt,
 		UpdatedAt:                       td.UpdatedAt,
 	}, nil
