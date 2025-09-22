@@ -28,6 +28,7 @@ the training data.
 -   type Corpus
     -   name: string (required)
     -   s3_path: string (required)
+    -   files_subset: list of string
 
 ## TrainingDataset
 
