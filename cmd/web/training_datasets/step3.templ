@@ -2,7 +2,7 @@ package training_datasets
 
 import "ai-platform/cmd/web"
 
-templ TrainingDatasetStep3(projectID string, projectName string, corpus string, language string) {
+templ TrainingDatasetStep3(projectID string, projectName string, corpus string, language string, defaultPrompt string) {
 	@web.App("max-w-4xl") {
 		<div class="max-w-4xl mx-auto">
 			<div class="bg-white border border-gray-200 rounded-lg p-8 shadow-md mb-8">
@@ -19,14 +19,14 @@ templ TrainingDatasetStep3(projectID string, projectName string, corpus string, 
 						<textarea
 							id="prompt"
 							name="prompt"
-							rows="4"
+							rows="20"
 							required
-							placeholder="You task is to generate training dataset for question answering."
+							placeholder="Describe the task that you want to train on in detail and add a JSON output format"
 							class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-						></textarea>
+						>{ defaultPrompt }</textarea>
 					</div>
 
-					<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+					<div class="grid grid-cols-1 gap-4">
 						<div>
 							<label for="field-names" class="block text-sm font-medium text-gray-700 mb-2">
 								Field Names
@@ -36,7 +36,8 @@ templ TrainingDatasetStep3(projectID string, projectName string, corpus string, 
 								id="field-names"
 								name="field-names"
 								required
-								placeholder="question, answer, complexity"
+								placeholder="Comma-separated fields of your JSON output"
+								value="question,answer,complexity"
 								class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
 							/>
 							<p class="text-xs text-gray-500 mt-1">Comma separated</p>
@@ -51,7 +52,8 @@ templ TrainingDatasetStep3(projectID string, projectName string, corpus string, 
 								id="input-field"
 								name="input-field"
 								required
-								placeholder="question"
+								placeholder="The excepted input field of your JSON"
+								value="question"
 								class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
 							/>
 						</div>
@@ -65,7 +67,8 @@ templ TrainingDatasetStep3(projectID string, projectName string, corpus string, 
 								id="output-field"
 								name="output-field"
 								required
-								placeholder="answer"
+								placeholder="The expected output field of your JSON"
+								value="answer"
 								class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
 							/>
 						</div>
@@ -81,8 +84,7 @@ templ TrainingDatasetStep3(projectID string, projectName string, corpus string, 
 					</a>
 					<button
 						id="next-btn"
-						class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-400 cursor-not-allowed"
-						disabled
+						class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
 					>
 						Next
 					</button>
@@ -126,6 +128,7 @@ templ TrainingDatasetStep3(projectID string, projectName string, corpus string, 
 			document.getElementById('field-names').addEventListener('input', validateForm);
 			document.getElementById('input-field').addEventListener('input', validateForm);
 			document.getElementById('output-field').addEventListener('input', validateForm);
+			validateForm();
 		</script>
 	}
 }
