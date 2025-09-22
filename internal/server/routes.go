@@ -65,11 +65,25 @@ func (s *Server) RegisterRoutes() http.Handler {
 		web.CreateProjectHandler(c.Writer, c.Request)
 	})
 
+	r.POST("/web/projects/:project_id/training-datasets/create", func(c *gin.Context) {
+		training_datasets.CreateTrainingDatasetHandler(c.Writer, c.Request)
+	})
+
 	r.GET("/web/projects/:project_id/training-datasets/step1", func(c *gin.Context) {
 		training_datasets.TrainingDatasetStep1Handler(c.Writer, c.Request)
 	})
 
+	r.GET("/web/projects/:project_id/training-datasets/step2", func(c *gin.Context) {
+		training_datasets.TrainingDatasetStep2Handler(c.Writer, c.Request)
+	})
 
+	r.GET("/web/projects/:project_id/training-datasets/step3", func(c *gin.Context) {
+		training_datasets.TrainingDatasetStep3Handler(c.Writer, c.Request)
+	})
+
+	r.GET("/web/projects/:project_id/training-datasets/step4", func(c *gin.Context) {
+		training_datasets.TrainingDatasetStep4Handler(c.Writer, c.Request)
+	})
 
 	return r
 }

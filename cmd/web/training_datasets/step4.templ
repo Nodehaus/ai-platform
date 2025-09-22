@@ -1,0 +1,95 @@
+package training_datasets
+
+import "ai-platform/cmd/web"
+
+templ TrainingDatasetStep4(projectID string, projectName string, corpus string, language string, prompt string, fieldNames string, inputField string, outputField string) {
+	@web.App("max-w-4xl") {
+		<div class="max-w-4xl mx-auto">
+			<div class="bg-white border border-gray-200 rounded-lg p-8 shadow-md mb-8">
+				<div class="mb-6">
+					<h1 class="text-2xl font-bold text-gray-900 mb-2">4/4 Generate Training Data</h1>
+					<p class="text-gray-600">Project: { projectName }</p>
+				</div>
+
+				<div class="space-y-6 mb-8">
+					<div class="bg-gray-50 p-4 rounded-lg">
+						<h3 class="text-lg font-medium text-gray-900 mb-4">Configuration Summary</h3>
+
+						<div class="grid grid-cols-2 gap-4 text-sm">
+							<div>
+								<span class="font-medium text-gray-700">Base Corpus:</span>
+								<span class="ml-2 text-gray-900">{ corpus }</span>
+							</div>
+							<div>
+								<span class="font-medium text-gray-700">Language:</span>
+								<span class="ml-2 text-gray-900">{ language }</span>
+							</div>
+							<div>
+								<span class="font-medium text-gray-700">Input Field:</span>
+								<span class="ml-2 text-gray-900">{ inputField }</span>
+							</div>
+							<div>
+								<span class="font-medium text-gray-700">Output Field:</span>
+								<span class="ml-2 text-gray-900">{ outputField }</span>
+							</div>
+						</div>
+
+						<div class="mt-4 text-sm">
+							<span class="font-medium text-gray-700">Field Names:</span>
+							<span class="ml-2 text-gray-900">{ fieldNames }</span>
+						</div>
+
+						<div class="mt-4 text-sm">
+							<span class="font-medium text-gray-700">Generate Prompt:</span>
+							<div class="mt-2 p-3 bg-white border rounded text-gray-900">
+								{ prompt }
+							</div>
+						</div>
+					</div>
+
+					<form hx-post={ "/web/projects/" + projectID + "/training-datasets/create" } hx-target="#form-result" hx-swap="innerHTML">
+						<input type="hidden" name="corpus" value={ corpus }/>
+						<input type="hidden" name="language" value={ language }/>
+						<input type="hidden" name="prompt" value={ prompt }/>
+						<input type="hidden" name="field_names" value={ fieldNames }/>
+						<input type="hidden" name="input_field" value={ inputField }/>
+						<input type="hidden" name="output_field" value={ outputField }/>
+
+						<div>
+							<label for="examples-count" class="block text-sm font-medium text-gray-700 mb-2">
+								Number of training examples to generate
+							</label>
+							<input
+								type="number"
+								id="examples-count"
+								name="examples_count"
+								min="1"
+								max="1000"
+								value="100"
+								required
+								class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+							/>
+						</div>
+
+						<div id="form-result" class="mt-4"></div>
+
+						<div class="mt-8 flex justify-between">
+							<a
+								href={ templ.SafeURL("/web/projects/" + projectID + "/training-datasets/step3?corpus=" + corpus + "&language=" + language) }
+								class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+							>
+								← Back
+							</a>
+							<button
+								type="submit"
+								class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+							>
+								Generate Training Data
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	}
+}

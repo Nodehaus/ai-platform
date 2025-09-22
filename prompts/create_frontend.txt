@@ -19,4 +19,4 @@ In the UI we will collect the data in 4 steps:
 3) Create training data prompt: A textarea for the input of a prompt and three input fields for "Field names" (comma separated), "Input Field" and "Output Field".
 4) Generate training data: Display the prompt, input field, output field, field names, base corpus and language (all read-only) and a number field "Number of training examples to generate".
 
-All pages will have a "Next" and "Back" button. Your task is to implement the 4 steps in the UI. Keep the pages as simple as possible with only the content needed to collect the data
+All pages will have a "Next" and "Back" button. Your task is to implement the 4 steps in the UI. Keep the pages as simple as possible with only the content needed to collect the data.

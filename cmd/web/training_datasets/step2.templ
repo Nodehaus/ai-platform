@@ -2,35 +2,42 @@ package training_datasets
 
 import "ai-platform/cmd/web"
 
-templ TrainingDatasetStep1(projectID string, projectName string) {
+templ TrainingDatasetStep2(projectID string, projectName string, corpus string) {
 	@web.App("max-w-4xl") {
 		<div class="max-w-4xl mx-auto">
 			<div class="bg-white border border-gray-200 rounded-lg p-8 shadow-md mb-8">
 				<div class="mb-6">
-					<h1 class="text-2xl font-bold text-gray-900 mb-2">1/4 Base Corpus</h1>
+					<h1 class="text-2xl font-bold text-gray-900 mb-2">2/4 Choose Language</h1>
 					<p class="text-gray-600">Project: { projectName }</p>
 				</div>
 
-				<form id="step1-form" class="space-y-6">
+				<form id="step2-form" class="space-y-6">
 					<div>
-						<label for="corpus" class="block text-sm font-medium text-gray-700 mb-2">
-							Select Base Corpus
+						<label for="language" class="block text-sm font-medium text-gray-700 mb-2">
+							Select Language
 						</label>
 						<select
-							id="corpus"
-							name="corpus"
+							id="language"
+							name="language"
 							required
 							class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
 						>
-							<option value="">Choose a corpus...</option>
-							<option value="eurlex">EUR-Lex</option>
+							<option value="">Choose a language...</option>
+							<option value="eng">🇬🇧 English</option>
+							<option value="deu">🇩🇪 German</option>
+							<option value="fra">🇫🇷 French</option>
+							<option value="ita">🇮🇹 Italian</option>
+							<option value="spa">🇪🇸 Spanish</option>
+							<option value="pol">🇵🇱 Polish</option>
+							<option value="fin">🇫🇮 Finnish</option>
+							<option value="est">🇪🇪 Estonian</option>
 						</select>
 					</div>
 				</form>
 
 				<div class="mt-8 flex justify-between">
 					<a
-						href="/web/home"
+						href={ templ.SafeURL("/web/projects/" + projectID + "/training-datasets/step1") }
 						class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
 					>
 						← Back
@@ -48,14 +55,16 @@ templ TrainingDatasetStep1(projectID string, projectName string) {
 
 		<script>
 			const projectId = {{ projectID }};
-			document.getElementById('corpus').addEventListener('change', function() {
+			const corpus = {{ corpus }};
+			document.getElementById('language').addEventListener('change', function() {
 				const nextBtn = document.getElementById('next-btn');
 				if (this.value) {
 					nextBtn.disabled = false;
 					nextBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
 					nextBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
 					nextBtn.onclick = function() {
-						window.location.href = '/web/projects/' + projectId + '/training-datasets/step2?corpus=' + encodeURIComponent(document.getElementById('corpus').value);
+						const language = encodeURIComponent(document.getElementById('language').value);
+						window.location.href = '/web/projects/' + projectId + '/training-datasets/step3?corpus=' + encodeURIComponent(corpus) + '&language=' + language;
 					};
 				} else {
 					nextBtn.disabled = true;

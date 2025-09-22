@@ -56,6 +56,6 @@ func (c *GetProjectController) GetProject(ctx *gin.Context) {
 		return
 	}
 
-	response := NewCreateProjectResponse(&result.Project)
+	response := NewGetProjectResponse(&result.Project)
 	ctx.JSON(http.StatusOK, response)
 }

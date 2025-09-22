@@ -67,7 +67,14 @@ func fetchProjectName(r *http.Request, token string, projectID uuid.UUID) (strin
 		return "", fmt.Errorf("API returned status %d", resp.StatusCode)
 	}
 
-	var project web.ProjectResponse
+	// Use a simple struct that matches the API response
+	var project struct {
+		ID        string    `json:"id"`
+		Name      string    `json:"name"`
+		Status    string    `json:"status"`
+		CreatedAt string    `json:"created_at"`
+		UpdatedAt string    `json:"updated_at"`
+	}
 	if err := json.NewDecoder(resp.Body).Decode(&project); err != nil {
 		return "", err
 	}
