@@ -80,12 +80,12 @@ func TestCreateProjectController_CreateProject_Success(t *testing.T) {
 	var response CreateProjectResponse
 	json.Unmarshal(recorder.Body.Bytes(), &response)
 
-	if response.Project.Name != "Test Project" {
-		t.Errorf("Expected project name 'Test Project', got %s", response.Project.Name)
+	if response.Name != "Test Project" {
+		t.Errorf("Expected project name 'Test Project', got %s", response.Name)
 	}
 
-	if response.Message != "Project created successfully" {
-		t.Errorf("Expected message 'Project created successfully', got %s", response.Message)
+	if response.ID == uuid.Nil {
+		t.Error("Expected project ID to be set")
 	}
 }
 
