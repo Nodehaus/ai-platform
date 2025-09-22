@@ -47,7 +47,7 @@ templ TrainingDatasetStep4(projectID string, projectName string, corpus string, 
 						</div>
 					</div>
 
-					<form hx-post={ "/web/projects/" + projectID + "/training-datasets/create" } hx-target="#form-result" hx-swap="innerHTML">
+					<form hx-post={ "/web/projects/" + projectID + "/training-datasets/create" } hx-target="#form-result" hx-swap="innerHTML" hx-on::after-request="if(event.detail.xhr.responseText.includes('bg-green-50')) { document.getElementById('form-buttons').style.display = 'none'; }">
 						<input type="hidden" name="corpus" value={ corpus }/>
 						<input type="hidden" name="language" value={ language }/>
 						<input type="hidden" name="prompt" value={ prompt }/>
@@ -73,7 +73,7 @@ templ TrainingDatasetStep4(projectID string, projectName string, corpus string, 
 
 						<div id="form-result" class="mt-4"></div>
 
-						<div class="mt-8 flex justify-between">
+						<div id="form-buttons" class="mt-8 flex justify-between">
 							<a
 								href={ templ.SafeURL("/web/projects/" + projectID + "/training-datasets/step3?corpus=" + corpus + "&language=" + language) }
 								class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
