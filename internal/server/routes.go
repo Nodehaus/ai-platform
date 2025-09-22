@@ -36,6 +36,11 @@ func (s *Server) RegisterRoutes() http.Handler {
 	protected.GET("/projects/:project_id", s.getProjectController.GetProject)
 	protected.POST("/projects/:project_id/training-datasets", s.createTrainingDatasetController.CreateTrainingDataset)
 
+	// External API routes (API key protected)
+	external := r.Group("/api/external")
+	external.Use(s.externalAPIMiddleware.RequireAPIKey())
+	external.PUT("/training-datasets/:training_dataset_id/update-status", s.updateTrainingDatasetStatusController.UpdateStatus)
+
 	staticFiles, _ := fs.Sub(web.Files, "assets")
 	r.StaticFS("/assets", http.FS(staticFiles))
 

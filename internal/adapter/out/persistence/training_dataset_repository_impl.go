@@ -240,6 +240,12 @@ func (r *TrainingDatasetRepositoryImpl) Update(ctx context.Context, trainingData
 	return err
 }
 
+func (r *TrainingDatasetRepositoryImpl) UpdateStatus(ctx context.Context, id uuid.UUID, status entities.TrainingDatasetStatus) error {
+	query := `UPDATE training_datasets SET status = $2, updated_at = $3 WHERE id = $1`
+	_, err := r.Db.ExecContext(ctx, query, id, status, time.Now())
+	return err
+}
+
 func (r *TrainingDatasetRepositoryImpl) Delete(ctx context.Context, id uuid.UUID) error {
 	query := `DELETE FROM training_datasets WHERE id = $1`
 	_, err := r.Db.ExecContext(ctx, query, id)

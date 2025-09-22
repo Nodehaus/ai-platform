@@ -14,5 +14,6 @@ type TrainingDatasetRepository interface {
 	GetByProjectID(ctx context.Context, projectID uuid.UUID) ([]*entities.TrainingDataset, error)
 	GetLatestByProjectID(ctx context.Context, projectID uuid.UUID) (*entities.TrainingDataset, error)
 	Update(ctx context.Context, trainingDataset *entities.TrainingDataset) error
+	UpdateStatus(ctx context.Context, id uuid.UUID, status entities.TrainingDatasetStatus) error
 	Delete(ctx context.Context, id uuid.UUID) error
 }

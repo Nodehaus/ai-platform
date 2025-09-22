@@ -14,27 +14,31 @@ import (
 )
 
 type Server struct {
-	port                            int
-	db                              database.Service
-	loginController                 *web.LoginController
-	createProjectController         *web.CreateProjectController
-	getProjectController            *web.GetProjectController
-	listProjectsController          *web.ListProjectsController
-	createTrainingDatasetController *web.CreateTrainingDatasetController
-	authMiddleware                  *AuthMiddleware
+	port                                     int
+	db                                       database.Service
+	loginController                          *web.LoginController
+	createProjectController                  *web.CreateProjectController
+	getProjectController                     *web.GetProjectController
+	listProjectsController                   *web.ListProjectsController
+	createTrainingDatasetController          *web.CreateTrainingDatasetController
+	updateTrainingDatasetStatusController    *web.UpdateTrainingDatasetStatusController
+	authMiddleware                           *AuthMiddleware
+	externalAPIMiddleware                    *ExternalAPIMiddleware
 }
 
-func NewServer(db database.Service, loginController *web.LoginController, createProjectController *web.CreateProjectController, getProjectController *web.GetProjectController, listProjectsController *web.ListProjectsController, createTrainingDatasetController *web.CreateTrainingDatasetController, authMiddleware *AuthMiddleware) *http.Server {
+func NewServer(db database.Service, loginController *web.LoginController, createProjectController *web.CreateProjectController, getProjectController *web.GetProjectController, listProjectsController *web.ListProjectsController, createTrainingDatasetController *web.CreateTrainingDatasetController, updateTrainingDatasetStatusController *web.UpdateTrainingDatasetStatusController, authMiddleware *AuthMiddleware, externalAPIMiddleware *ExternalAPIMiddleware) *http.Server {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
 	serverInstance := &Server{
-		port:                            port,
-		db:                              db,
-		loginController:                 loginController,
-		createProjectController:         createProjectController,
-		getProjectController:            getProjectController,
-		listProjectsController:          listProjectsController,
-		createTrainingDatasetController: createTrainingDatasetController,
-		authMiddleware:                  authMiddleware,
+		port:                                     port,
+		db:                                       db,
+		loginController:                          loginController,
+		createProjectController:                  createProjectController,
+		getProjectController:                     getProjectController,
+		listProjectsController:                   listProjectsController,
+		createTrainingDatasetController:          createTrainingDatasetController,
+		updateTrainingDatasetStatusController:    updateTrainingDatasetStatusController,
+		authMiddleware:                           authMiddleware,
+		externalAPIMiddleware:                    externalAPIMiddleware,
 	}
 
 	// Declare Server config

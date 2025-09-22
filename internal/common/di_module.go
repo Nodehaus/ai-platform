@@ -149,6 +149,22 @@ func NewCreateTrainingDatasetController(
 	}
 }
 
+func NewUpdateTrainingDatasetStatusUseCase(trainingDatasetRepo persistencePort.TrainingDatasetRepository) in.UpdateTrainingDatasetStatusUseCase {
+	return &use_cases.UpdateTrainingDatasetStatusUseCaseImpl{
+		TrainingDatasetRepository: trainingDatasetRepo,
+	}
+}
+
+func NewUpdateTrainingDatasetStatusController(updateTrainingDatasetStatusUseCase in.UpdateTrainingDatasetStatusUseCase) *web.UpdateTrainingDatasetStatusController {
+	return &web.UpdateTrainingDatasetStatusController{
+		UpdateTrainingDatasetStatusUseCase: updateTrainingDatasetStatusUseCase,
+	}
+}
+
+func NewExternalAPIMiddleware() *server.ExternalAPIMiddleware {
+	return &server.ExternalAPIMiddleware{}
+}
+
 func NewTrainingDatasetJobClient() clientsPort.TrainingDatasetJobClient {
 	client, err := clients.NewTrainingDatasetJobClientImpl()
 	if err != nil {
@@ -179,10 +195,13 @@ var Module = fx.Options(
 	fx.Provide(NewGetProjectUseCase),
 	fx.Provide(NewListProjectsUseCase),
 	fx.Provide(NewCreateTrainingDatasetUseCase),
+	fx.Provide(NewUpdateTrainingDatasetStatusUseCase),
 	fx.Provide(NewLoginController),
 	fx.Provide(NewCreateProjectController),
 	fx.Provide(NewGetProjectController),
 	fx.Provide(NewListProjectsController),
 	fx.Provide(NewCreateTrainingDatasetController),
+	fx.Provide(NewUpdateTrainingDatasetStatusController),
 	fx.Provide(NewAuthMiddleware),
+	fx.Provide(NewExternalAPIMiddleware),
 )

@@ -44,7 +44,7 @@ func (c *CreateTrainingDatasetController) CreateTrainingDataset(ctx *gin.Context
 	// Set default values for generate model and runner if not provided
 	generateModel := request.GenerateModel
 	if generateModel == "" {
-		generateModel = "gemma3:8b"
+		generateModel = "qwen3:30b-a3b-instruct-2507-q4_K_M"
 	}
 	generateModelRunner := request.GenerateModelRunner
 	if generateModelRunner == "" {

@@ -1,5 +1,7 @@
 Add an endpoint to create a new project. You can find information about the database models in `plans/database_models.md`. For now we only want one more POST endpoint `/api/projects` that reveives a `{"name": "Project name"}` JSON. The owner will be the currently logged in user. The training dataset and finetune are empty. The status is `ACTIVE`.
 
+---
+
 Add an endpoint to create a new initial training dateset for a project. You can find information about the database models in `plans/database_models.md`. For now we only want one more POST endpoint `/api/projects/{project_id}/training-datasets` that reveives the following JSON (the values are examples):
 
 {
@@ -12,3 +14,7 @@ Add an endpoint to create a new initial training dateset for a project. You can 
 }
 
 The status is `PLANNING`. The prompt history is empty.
+
+---
+
+Add an endpoint to update the status of a training dataset. The endpoint will be available at `/api/external/training-datasets/{training_dataset_id}/update-status` and will be only accessible via a given API key. Create a new protected API group for `/api/external`, we will add more endpoints later. The API key is available in the environment variable `APP_EXTERNAL_API_KEY`. The allowed status to set via this endpoint are `RUNNING`, `FAILED` and `DONE`.

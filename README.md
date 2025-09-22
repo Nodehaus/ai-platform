@@ -130,6 +130,7 @@ BLUEPRINT_DB_USERNAME=nodehaus
 BLUEPRINT_DB_PASSWORD=your-password
 BLUEPRINT_DB_SCHEMA=public
 JWT_SECRET_KEY=your-jwt-secret
+APP_EXTERNAL_API_KEY=VerySecureKey
 ```
 
 Then run:
