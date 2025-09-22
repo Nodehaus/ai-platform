@@ -15,7 +15,7 @@ type CreateTrainingDatasetController struct {
 
 
 func (c *CreateTrainingDatasetController) CreateTrainingDataset(ctx *gin.Context) {
-	_, exists := GetUserIDFromContext(ctx)
+	userID, exists := GetUserIDFromContext(ctx)
 	if !exists {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "User ID not found in context",
@@ -41,7 +41,18 @@ func (c *CreateTrainingDatasetController) CreateTrainingDataset(ctx *gin.Context
 		return
 	}
 
+	// Set default values for generate model and runner if not provided
+	generateModel := request.GenerateModel
+	if generateModel == "" {
+		generateModel = "gemma3:8b"
+	}
+	generateModelRunner := request.GenerateModelRunner
+	if generateModelRunner == "" {
+		generateModelRunner = "runpod_ollama"
+	}
+
 	command := in.CreateTrainingDatasetCommand{
+		UserID:                 userID,
 		ProjectID:              projectID,
 		CorpusName:             request.CorpusName,
 		InputField:             request.InputField,
@@ -50,6 +61,8 @@ func (c *CreateTrainingDatasetController) CreateTrainingDataset(ctx *gin.Context
 		FieldNames:             request.FieldNames,
 		GeneratePrompt:         request.GeneratePrompt,
 		GenerateExamplesNumber: request.GenerateExamplesNumber,
+		GenerateModel:          generateModel,
+		GenerateModelRunner:    generateModelRunner,
 	}
 
 	result, err := c.CreateTrainingDatasetUseCase.Execute(ctx.Request.Context(), command)

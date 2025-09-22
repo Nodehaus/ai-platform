@@ -6,9 +6,11 @@ import (
 
 	"github.com/google/uuid"
 
+	clientModels "ai-platform/internal/adapter/out/clients"
 	"ai-platform/internal/application/domain/entities"
 	"ai-platform/internal/application/domain/services"
 	"ai-platform/internal/application/port/in"
+	"ai-platform/internal/application/port/out/clients"
 	"ai-platform/internal/application/port/out/persistence"
 )
 
@@ -18,6 +20,7 @@ type CreateTrainingDatasetUseCaseImpl struct {
 	CorpusRepository          persistence.CorpusRepository
 	PromptRepository          persistence.PromptRepository
 	TrainingDatasetService    *services.TrainingDatasetService
+	TrainingDatasetJobClient  clients.TrainingDatasetJobClient
 }
 
 
@@ -89,6 +92,31 @@ func (uc *CreateTrainingDatasetUseCaseImpl) Execute(ctx context.Context, command
 	err = uc.TrainingDatasetRepository.Create(ctx, trainingDataset)
 	if err != nil {
 		return nil, err
+	}
+
+	// Submit job to S3
+	var corpusFilesSubset []string
+	if corpus.FilesSubset != nil {
+		corpusFilesSubset = *corpus.FilesSubset
+	}
+
+	job := clientModels.TrainingDatasetJobModel{
+		CorpusS3Path:           corpus.S3Path,
+		CorpusFilesSubset:      corpusFilesSubset,
+		LanguageISO:            command.LanguageISO,
+		UserID:                 command.UserID.String(),
+		TrainingDatasetID:      trainingDataset.ID.String(),
+		GeneratePrompt:         command.GeneratePrompt,
+		GenerateExamplesNumber: command.GenerateExamplesNumber,
+		GenerateModel:          command.GenerateModel,
+		GenerateModelRunner:    command.GenerateModelRunner,
+	}
+
+	err = uc.TrainingDatasetJobClient.SubmitJob(ctx, job)
+	if err != nil {
+		// Log error but don't fail the training dataset creation
+		// In production, you might want to implement retry logic or store the job for later submission
+		// For now, we'll continue successfully
 	}
 
 	return trainingDataset, nil

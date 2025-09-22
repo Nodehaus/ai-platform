@@ -6,10 +6,12 @@ import (
 	"go.uber.org/fx"
 
 	"ai-platform/internal/adapter/in/web"
+	"ai-platform/internal/adapter/out/clients"
 	"ai-platform/internal/adapter/out/persistence"
 	"ai-platform/internal/application/domain/services"
 	"ai-platform/internal/application/domain/use_cases"
 	"ai-platform/internal/application/port/in"
+	clientsPort "ai-platform/internal/application/port/out/clients"
 	persistencePort "ai-platform/internal/application/port/out/persistence"
 	"ai-platform/internal/database"
 	"ai-platform/internal/server"
@@ -103,6 +105,7 @@ func NewCreateTrainingDatasetUseCase(
 	corpusRepo persistencePort.CorpusRepository,
 	promptRepo persistencePort.PromptRepository,
 	trainingDatasetService *services.TrainingDatasetService,
+	trainingDatasetJobClient clientsPort.TrainingDatasetJobClient,
 ) in.CreateTrainingDatasetUseCase {
 	return &use_cases.CreateTrainingDatasetUseCaseImpl{
 		TrainingDatasetRepository: trainingDatasetRepo,
@@ -110,6 +113,7 @@ func NewCreateTrainingDatasetUseCase(
 		CorpusRepository:          corpusRepo,
 		PromptRepository:          promptRepo,
 		TrainingDatasetService:    trainingDatasetService,
+		TrainingDatasetJobClient:  trainingDatasetJobClient,
 	}
 }
 
@@ -145,6 +149,14 @@ func NewCreateTrainingDatasetController(
 	}
 }
 
+func NewTrainingDatasetJobClient() clientsPort.TrainingDatasetJobClient {
+	client, err := clients.NewTrainingDatasetJobClientImpl()
+	if err != nil {
+		panic(err)
+	}
+	return client
+}
+
 func NewAuthMiddleware(jwtService *services.JWTService) *server.AuthMiddleware {
 	return &server.AuthMiddleware{
 		JwtService: jwtService,
@@ -157,6 +169,7 @@ var Module = fx.Options(
 	fx.Provide(NewTrainingDatasetRepository),
 	fx.Provide(NewCorpusRepository),
 	fx.Provide(NewPromptRepository),
+	fx.Provide(NewTrainingDatasetJobClient),
 	fx.Provide(NewUserService),
 	fx.Provide(NewProjectService),
 	fx.Provide(NewTrainingDatasetService),
