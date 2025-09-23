@@ -121,14 +121,20 @@ templ TrainingDatasetIndex(data TrainingDatasetIndexData) {
 
 						<!-- Action Buttons -->
 						<div class="mt-4 flex space-x-3">
-							<button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
+							<button disabled class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
 								View All and Review
 							</button>
-							<button class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium">
+							<button disabled class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium">
 								Create More
 							</button>
 							<button class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm font-medium">
 								Download
+							</button>
+							<button class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm font-medium">
+								Upload and Replace
+							</button>
+							<button class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm font-medium">
+								Upload and Add
 							</button>
 						</div>
 					</div>
@@ -159,7 +165,7 @@ templ TrainingDatasetIndex(data TrainingDatasetIndexData) {
 								</div>
 								<div>
 									<label for="examples-count" class="block text-sm font-medium text-gray-700 mb-2">
-										Number of Examples
+										Number of examples to train on
 									</label>
 									<div class="flex items-center space-x-2">
 										<input
@@ -173,7 +179,7 @@ templ TrainingDatasetIndex(data TrainingDatasetIndexData) {
 										/>
 										<label class="flex items-center text-sm text-gray-600">
 											<input type="checkbox" id="random-selection" name="random-selection" class="mr-2"/>
-											Random
+											Select randomly
 										</label>
 									</div>
 								</div>
