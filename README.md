@@ -114,6 +114,11 @@ docker build -t ai-platform .
 docker build -t ai-platform:latest .
 ```
 
+```bash
+docker tag ai-platform pebouda/ai-platform
+docker push pebouda/ai-platform
+```
+
 ### Running with Docker
 
 #### Using Environment File
@@ -130,7 +135,13 @@ BLUEPRINT_DB_USERNAME=nodehaus
 BLUEPRINT_DB_PASSWORD=your-password
 BLUEPRINT_DB_SCHEMA=public
 JWT_SECRET_KEY=your-jwt-secret
+AWS_ENDPOINT_URL=http://s3.peterbouda.eu:3900
+AWS_DEFAULT_REGION=garage
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+APP_S3_BUCKET=nodehaus
 APP_EXTERNAL_API_KEY=VerySecureKey
+GIN_MODE=release
 ```
 
 Then run:
@@ -142,7 +153,7 @@ docker run -d \
   -p 8081:8081 \
   --env-file .env \
   --add-host=host.docker.internal:host-gateway \
-  ai-platform
+  pebouda/ai-platform
 ```
 
 Add `--add-host=host.docker.internal:host-gateway` if you want to access postgres on the host.
