@@ -159,9 +159,29 @@ func NewUpdateTrainingDatasetStatusUseCase(
 	}
 }
 
+func NewGetTrainingDatasetUseCase(
+	trainingDatasetService *services.TrainingDatasetService,
+	trainingDatasetRepo persistencePort.TrainingDatasetRepository,
+	promptRepo persistencePort.PromptRepository,
+	corpusRepo persistencePort.CorpusRepository,
+) in.GetTrainingDatasetUseCase {
+	return &use_cases.GetTrainingDatasetUseCaseImpl{
+		TrainingDatasetService:    trainingDatasetService,
+		TrainingDatasetRepository: trainingDatasetRepo,
+		PromptRepository:          promptRepo,
+		CorpusRepository:          corpusRepo,
+	}
+}
+
 func NewUpdateTrainingDatasetStatusController(updateTrainingDatasetStatusUseCase in.UpdateTrainingDatasetStatusUseCase) *web.UpdateTrainingDatasetStatusController {
 	return &web.UpdateTrainingDatasetStatusController{
 		UpdateTrainingDatasetStatusUseCase: updateTrainingDatasetStatusUseCase,
+	}
+}
+
+func NewGetTrainingDatasetController(getTrainingDatasetUseCase in.GetTrainingDatasetUseCase) *web.GetTrainingDatasetController {
+	return &web.GetTrainingDatasetController{
+		GetTrainingDatasetUseCase: getTrainingDatasetUseCase,
 	}
 }
 
@@ -208,12 +228,14 @@ var Module = fx.Options(
 	fx.Provide(NewGetProjectUseCase),
 	fx.Provide(NewListProjectsUseCase),
 	fx.Provide(NewCreateTrainingDatasetUseCase),
+	fx.Provide(NewGetTrainingDatasetUseCase),
 	fx.Provide(NewUpdateTrainingDatasetStatusUseCase),
 	fx.Provide(NewLoginController),
 	fx.Provide(NewCreateProjectController),
 	fx.Provide(NewGetProjectController),
 	fx.Provide(NewListProjectsController),
 	fx.Provide(NewCreateTrainingDatasetController),
+	fx.Provide(NewGetTrainingDatasetController),
 	fx.Provide(NewUpdateTrainingDatasetStatusController),
 	fx.Provide(NewAuthMiddleware),
 	fx.Provide(NewExternalAPIMiddleware),

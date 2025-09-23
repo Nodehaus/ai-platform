@@ -18,3 +18,20 @@ The status is `PLANNING`. The prompt history is empty.
 ---
 
 Add an endpoint to update the status of a training dataset. The endpoint will be available at `/api/external/training-datasets/{training_dataset_id}/update-status` and will be only accessible via a given API key. Create a new protected API group for `/api/external`, we will add more endpoints later. The API key is available in the environment variable `APP_EXTERNAL_API_KEY`. The allowed status to set via this endpoint are `RUNNING`, `FAILED` and `DONE`.
+
+---
+
+Add an endpoint that returns a training dataset with its metadata and the first 10 training data items. THe endpoint will be available at `/api/projects/{project_id}/training-datasets/{training_dataset_id}`. We need the the following fields from the metadata:
+
+- version
+- generate_prompt
+- input_field
+- output_field
+- generate_examples_number
+- corpus_name
+- language_iso
+- status
+- field_names
+- data_items_sample
+
+If the status is not `DONE` then the data_items_sample will be an empty list, otherwise it will contain the first 10 data items that are not deleted and where there is no other data item that `corrects` them. Each data item in the sample will be just a list of its `values`, we will not need the other fields.

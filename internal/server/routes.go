@@ -35,6 +35,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	protected.GET("/projects", s.listProjectsController.ListProjects)
 	protected.GET("/projects/:project_id", s.getProjectController.GetProject)
 	protected.POST("/projects/:project_id/training-datasets", s.createTrainingDatasetController.CreateTrainingDataset)
+	protected.GET("/projects/:project_id/training-datasets/:training_dataset_id", s.getTrainingDatasetController.GetTrainingDataset)
 
 	// External API routes (API key protected)
 	external := r.Group("/api/external")
