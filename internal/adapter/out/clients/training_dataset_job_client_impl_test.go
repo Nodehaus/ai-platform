@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 
-	portClients "ai-platform/internal/application/port/out/clients"
+	"ai-platform/internal/application/domain/entities"
 )
 
 func TestTrainingDatasetJobClientImpl_SubmitJob_ValidatesEnvironmentVariables(t *testing.T) {
@@ -43,7 +43,7 @@ func TestTrainingDatasetJobClientImpl_SubmitJob_ValidatesJobMarshaling(t *testin
 		t.Fatalf("Failed to create client: %v", err)
 	}
 
-	job := portClients.TrainingDatasetJobModel{
+	job := entities.TrainingDatasetJob{
 		CorpusS3Path:           "/documents/eurlex",
 		CorpusFilesSubset:      []string{},
 		LanguageISO:            "deu",

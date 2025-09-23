@@ -1,6 +1,6 @@
 package clients
 
-type TrainingDatasetJobModel struct {
+type TrainingDatasetJobClientModel struct {
 	CorpusS3Path            string   `json:"corpus_s3_path"`
 	CorpusFilesSubset       []string `json:"corpus_files_subset"`
 	LanguageISO             string   `json:"language_iso"`

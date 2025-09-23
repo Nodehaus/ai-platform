@@ -12,7 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 
-	portClients "ai-platform/internal/application/port/out/clients"
+	"ai-platform/internal/application/domain/entities"
 )
 
 type TrainingDatasetJobClientImpl struct {
@@ -49,13 +49,26 @@ func NewTrainingDatasetJobClientImpl() (*TrainingDatasetJobClientImpl, error) {
 	}, nil
 }
 
-func (c *TrainingDatasetJobClientImpl) SubmitJob(ctx context.Context, job portClients.TrainingDatasetJobModel) error {
-	jobJSON, err := json.Marshal(job)
+func (c *TrainingDatasetJobClientImpl) SubmitJob(ctx context.Context, job entities.TrainingDatasetJob) error {
+	// Adapt domain entity to client model
+	clientModel := TrainingDatasetJobClientModel{
+		CorpusS3Path:            job.CorpusS3Path,
+		CorpusFilesSubset:       job.CorpusFilesSubset,
+		LanguageISO:             job.LanguageISO,
+		UserID:                  job.UserID,
+		TrainingDatasetID:       job.TrainingDatasetID,
+		GeneratePrompt:          job.GeneratePrompt,
+		GenerateExamplesNumber:  job.GenerateExamplesNumber,
+		GenerateModel:           job.GenerateModel,
+		GenerateModelRunner:     job.GenerateModelRunner,
+	}
+
+	jobJSON, err := json.Marshal(clientModel)
 	if err != nil {
 		return fmt.Errorf("failed to marshal job to JSON: %w", err)
 	}
 
-	key := fmt.Sprintf("jobs/%s_%s.json", time.Now().Format("060102150405"), job.TrainingDatasetID)
+	key := fmt.Sprintf("jobs/datasets/%s_%s.json", time.Now().Format("060102150405"), job.TrainingDatasetID)
 
 	_, err = c.s3Client.PutObject(ctx, &s3.PutObjectInput{
 		Bucket:      aws.String(c.bucket),

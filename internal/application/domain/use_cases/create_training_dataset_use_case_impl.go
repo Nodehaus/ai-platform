@@ -99,7 +99,7 @@ func (uc *CreateTrainingDatasetUseCaseImpl) Execute(ctx context.Context, command
 		corpusFilesSubset = *corpus.FilesSubset
 	}
 
-	job := clients.TrainingDatasetJobModel{
+	job := entities.TrainingDatasetJob{
 		CorpusS3Path:           corpus.S3Path,
 		CorpusFilesSubset:      corpusFilesSubset,
 		LanguageISO:            command.LanguageISO,

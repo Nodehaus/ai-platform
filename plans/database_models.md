@@ -97,6 +97,8 @@ The `Finetune` stored information about the model training and the final model.
     -   model_quantization: string
     -   inference_samples: list of InferenceSample
     -   training_dataset: TrainingDataset (required)
+    -   training_dataset_number_examples: int
+    -   training_dataset_select_random: bool
     -   training_time_seconds: float (rounded to 2 decimals)
     -   status: enum of [RUNNING, ABORTED, FAILED, DONE, DELETED] (required)
 
