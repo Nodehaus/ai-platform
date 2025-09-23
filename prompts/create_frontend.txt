@@ -20,3 +20,9 @@ In the UI we will collect the data in 4 steps:
 4) Generate training data: Display the prompt, input field, output field, field names, base corpus and language (all read-only) and a number field "Number of training examples to generate".
 
 All pages will have a "Next" and "Back" button. Your task is to implement the 4 steps in the UI. Keep the pages as simple as possible with only the content needed to collect the data.
+
+---
+
+Add a front-end page in `cmd/web/training_datasets/index.templ` and `cmd/web/training_datasets/index.go` that displays the training dataset at `/web/projects/{project_id}/training-datasets/{training_dataset_id}`. The metadata like prompt etc. will be collapsed, the user can click a button/link to see (uncollapse) all the metadata. The data item samples will be visible in a table, the header are the `field_names`, above the table we will display the total number of items. Add three buttons below the table: "Review", "Create More" and "Download". Then below add a separator and below a select to choose a base model, a number of example to use (with a checkbox to select random) and a button to start the finetune.
+
+In `cmd/web/home` add a link to the training dataset index page when the training dataset is not null.

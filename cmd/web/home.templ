@@ -39,14 +39,17 @@ templ Home(projectsData ProjectsData) {
 											{ project.TrainingDataset.Status }
 										</span>
 									</div>
-									if project.TrainingDataset.Status == "DONE" {
+									<div class="flex items-center space-x-3">
 										<a
-											href={ templ.URL(fmt.Sprintf("/web/projects/%s/finetune", project.ID)) }
+											href={ templ.URL(fmt.Sprintf("/web/projects/%s/training-datasets/%s", project.ID, project.TrainingDataset.ID)) }
 											class="text-blue-600 hover:text-blue-800 text-sm font-medium"
 										>
-											Start fine-tuning
+											View Dataset
+											if project.TrainingDataset.Status == "DONE" {
+												and Start Finetune
+											}
 										</a>
-									}
+									</div>
 								</div>
 							}
 						</div>
