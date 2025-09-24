@@ -32,24 +32,44 @@ templ Home(projectsData ProjectsData) {
 									</a>
 								</div>
 							} else {
-								<div class="mt-2 flex items-center justify-between">
-									<div class="flex items-center space-x-2">
-										<span class="text-sm text-gray-600">Training Dataset:</span>
-										<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-800">
-											{ project.TrainingDataset.Status }
-										</span>
+								<div class="mt-2">
+									<div class="flex items-center justify-between mb-2">
+										<div class="flex items-center space-x-2">
+											<span class="text-sm text-gray-600">Training Dataset:</span>
+											<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-800">
+												{ project.TrainingDataset.Status }
+											</span>
+										</div>
+										<div class="flex items-center space-x-3">
+											<a
+												href={ templ.URL(fmt.Sprintf("/web/projects/%s/training-datasets/%s", project.ID, project.TrainingDataset.ID)) }
+												class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+											>
+												View Dataset
+												if project.TrainingDataset.Status == "DONE" && project.Finetune == nil {
+													and Start Finetune
+												}
+											</a>
+										</div>
 									</div>
-									<div class="flex items-center space-x-3">
-										<a
-											href={ templ.URL(fmt.Sprintf("/web/projects/%s/training-datasets/%s", project.ID, project.TrainingDataset.ID)) }
-											class="text-blue-600 hover:text-blue-800 text-sm font-medium"
-										>
-											View Dataset
-											if project.TrainingDataset.Status == "DONE" {
-												and Start Finetune
-											}
-										</a>
-									</div>
+									if project.Finetune != nil {
+										<div class="flex items-center justify-between">
+											<div class="flex items-center space-x-2">
+												<span class="text-sm text-gray-600">Finetune:</span>
+												<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-800">
+													{ project.Finetune.Status }
+												</span>
+											</div>
+											<div class="flex items-center space-x-3">
+												<a
+													href={ templ.URL(fmt.Sprintf("/web/projects/%s/finetunes/%s", project.ID, project.Finetune.ID)) }
+													class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+												>
+													View Finetune
+												</a>
+											</div>
+										</div>
+									}
 								</div>
 							}
 						</div>

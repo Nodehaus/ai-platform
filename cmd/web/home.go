@@ -17,11 +17,17 @@ type TrainingDatasetData struct {
 	Status string    `json:"status"`
 }
 
+type FinetuneData struct {
+	ID     uuid.UUID `json:"id"`
+	Status string    `json:"status"`
+}
+
 type ProjectData struct {
 	ID              uuid.UUID             `json:"id"`
 	Name            string                `json:"name"`
 	Status          string                `json:"status"`
 	TrainingDataset *TrainingDatasetData  `json:"training_dataset"`
+	Finetune        *FinetuneData         `json:"finetune"`
 	CreatedAt       string                `json:"created_at"`
 	UpdatedAt       string                `json:"updated_at"`
 }
@@ -35,11 +41,17 @@ type TrainingDatasetResponse struct {
 	Status string    `json:"status"`
 }
 
+type FinetuneResponse struct {
+	ID     uuid.UUID `json:"id"`
+	Status string    `json:"status"`
+}
+
 type ProjectResponse struct {
 	ID              uuid.UUID                `json:"id"`
 	Name            string                   `json:"name"`
 	Status          string                   `json:"status"`
 	TrainingDataset *TrainingDatasetResponse `json:"training_dataset"`
+	Finetune        *FinetuneResponse        `json:"finetune"`
 	CreatedAt       string                   `json:"created_at"`
 	UpdatedAt       string                   `json:"updated_at"`
 }
@@ -129,11 +141,20 @@ func fetchProjectsData(r *http.Request, token string) (*ProjectsData, error) {
 			}
 		}
 
+		var finetune *FinetuneData
+		if project.Finetune != nil {
+			finetune = &FinetuneData{
+				ID:     project.Finetune.ID,
+				Status: project.Finetune.Status,
+			}
+		}
+
 		projectsData.Projects[i] = ProjectData{
 			ID:              project.ID,
 			Name:            project.Name,
 			Status:          project.Status,
 			TrainingDataset: trainingDataset,
+			Finetune:        finetune,
 			CreatedAt:       formattedCreatedAt,
 			UpdatedAt:       project.UpdatedAt,
 		}
