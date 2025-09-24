@@ -8,6 +8,7 @@ import (
 
 	"ai-platform/cmd/web"
 	"ai-platform/cmd/web/training_datasets"
+	"ai-platform/cmd/web/finetunes"
 	"io/fs"
 )
 
@@ -100,6 +101,10 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	r.POST("/web/projects/:project_id/finetunes/create", func(c *gin.Context) {
 		training_datasets.CreateFinetuneHandler(c.Writer, c.Request)
+	})
+
+	r.GET("/web/projects/:project_id/finetunes/:finetune_id", func(c *gin.Context) {
+		finetunes.FinetuneIndexHandler(c.Writer, c.Request)
 	})
 
 	return r

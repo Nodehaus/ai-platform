@@ -1,0 +1,208 @@
+package finetunes
+
+import "ai-platform/cmd/web"
+import "fmt"
+
+templ FinetuneIndex(data FinetuneIndexData) {
+	@web.App("max-w-6xl") {
+		<div class="max-w-6xl mx-auto">
+			<div class="bg-white border border-gray-200 rounded-lg p-8 shadow-md mb-8">
+				<div class="mb-6">
+					<div class="flex justify-between items-center mb-4">
+						<div>
+							<h1 class="text-2xl font-bold text-gray-900 mb-2">Fine-tuned Model</h1>
+							<p class="text-gray-600">Project: { data.ProjectName }</p>
+						</div>
+						<div class="flex items-center space-x-2">
+							<span class="text-sm text-gray-600">Status:</span>
+							<span class={
+								"inline-flex items-center px-3 py-1 rounded-full text-sm font-medium",
+								templ.KV("bg-green-100 text-green-800", data.Finetune.Status == "DONE"),
+								templ.KV("bg-yellow-100 text-yellow-800", data.Finetune.Status == "RUNNING"),
+								templ.KV("bg-blue-100 text-blue-800", data.Finetune.Status == "PLANNING"),
+								templ.KV("bg-red-100 text-red-800", data.Finetune.Status == "FAILED" || data.Finetune.Status == "ABORTED"),
+							}>
+								{ data.Finetune.Status }
+							</span>
+						</div>
+					</div>
+
+					if data.Finetune.Status != "DONE" {
+						<!-- Status Information Only -->
+						<div class="text-center py-8 bg-gray-50 rounded-lg">
+							<div class="mb-4">
+								<svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+								</svg>
+							</div>
+							<h3 class="text-lg font-medium text-gray-900 mb-2">Fine-tuning in Progress</h3>
+							<p class="text-gray-500 mb-4">
+								if data.Finetune.Status == "PLANNING" {
+									Your model fine-tuning is being planned and will start shortly.
+								} else if data.Finetune.Status == "RUNNING" {
+									Your model is currently being fine-tuned. This may take some time.
+								} else if data.Finetune.Status == "FAILED" {
+									Fine-tuning has failed. Please check the logs or try again.
+								} else if data.Finetune.Status == "ABORTED" {
+									Fine-tuning was aborted. You can start a new fine-tuning job if needed.
+								}
+							</p>
+							<p class="text-sm text-gray-400">Detailed metadata will be available once the status is DONE.</p>
+						</div>
+					} else {
+						<!-- Full Metadata Display for DONE status -->
+						<div class="border border-gray-200 rounded-lg">
+							<button
+								id="metadata-toggle"
+								class="w-full px-4 py-3 text-left text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-t-lg flex justify-between items-center"
+							>
+								<span>Fine-tuned Model Metadata</span>
+								<svg id="metadata-icon" class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+								</svg>
+							</button>
+							<div id="metadata-content" class="hidden px-4 py-3 border-t border-gray-200">
+								<div class="grid grid-cols-2 gap-4 text-sm">
+									<div>
+										<span class="font-medium text-gray-700">Version:</span>
+										<span class="ml-2 text-gray-600">{ fmt.Sprintf("%d", data.Finetune.Version) }</span>
+									</div>
+									<div>
+										<span class="font-medium text-gray-700">Base Model:</span>
+										<span class="ml-2 text-gray-600">{ data.Finetune.BaseModelName }</span>
+									</div>
+									if data.Finetune.TrainingDatasetNumberExamples != nil {
+										<div>
+											<span class="font-medium text-gray-700">Training Examples:</span>
+											<span class="ml-2 text-gray-600">{ fmt.Sprintf("%d", *data.Finetune.TrainingDatasetNumberExamples) }</span>
+										</div>
+									}
+									<div>
+										<span class="font-medium text-gray-700">Random Selection:</span>
+										<span class="ml-2 text-gray-600">
+											if data.Finetune.TrainingDatasetSelectRandom {
+												Yes
+											} else {
+												No
+											}
+										</span>
+									</div>
+									if data.Finetune.ModelSizeGB != nil {
+										<div>
+											<span class="font-medium text-gray-700">Model Size (GB):</span>
+											<span class="ml-2 text-gray-600">{ fmt.Sprintf("%d", *data.Finetune.ModelSizeGB) }</span>
+										</div>
+									}
+									if data.Finetune.ModelSizeParameter != nil {
+										<div>
+											<span class="font-medium text-gray-700">Parameters:</span>
+											<span class="ml-2 text-gray-600">{ fmt.Sprintf("%d", *data.Finetune.ModelSizeParameter) }</span>
+										</div>
+									}
+									if data.Finetune.ModelDtype != nil {
+										<div>
+											<span class="font-medium text-gray-700">Data Type:</span>
+											<span class="ml-2 text-gray-600">{ *data.Finetune.ModelDtype }</span>
+										</div>
+									}
+									if data.Finetune.ModelQuantization != nil {
+										<div>
+											<span class="font-medium text-gray-700">Quantization:</span>
+											<span class="ml-2 text-gray-600">{ *data.Finetune.ModelQuantization }</span>
+										</div>
+									}
+									if data.Finetune.TrainingTimeSeconds != nil {
+										<div>
+											<span class="font-medium text-gray-700">Training Time:</span>
+											<span class="ml-2 text-gray-600">{ fmt.Sprintf("%.1f seconds", *data.Finetune.TrainingTimeSeconds) }</span>
+										</div>
+									}
+									<div>
+										<span class="font-medium text-gray-700">Training Dataset:</span>
+										<a
+											href={ templ.URL(fmt.Sprintf("/web/projects/%s/training-datasets/%s", data.ProjectID, data.Finetune.TrainingDatasetID.String())) }
+											class="ml-2 text-blue-600 hover:text-blue-800 text-sm font-medium underline"
+										>
+											View Training Dataset
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						if len(data.Finetune.InferenceSamples) > 0 {
+							<!-- Inference Samples -->
+							<div class="mt-6">
+								<h2 class="text-lg font-semibold text-gray-900 mb-4">Inference Samples</h2>
+								for _, sample := range data.Finetune.InferenceSamples {
+									<div class="mb-4 border border-gray-200 rounded-lg">
+										<div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+											<span class="text-sm font-medium text-gray-700">Step { fmt.Sprintf("%d", sample.AtStep) }</span>
+										</div>
+										<div class="p-4">
+											for _, item := range sample.Items {
+												<div class="mb-4 last:mb-0">
+													<div class="mb-2">
+														<span class="text-xs font-medium text-gray-500 uppercase">Input</span>
+														<div class="mt-1 p-2 bg-blue-50 rounded text-sm text-gray-700">
+															{ item.Input }
+														</div>
+													</div>
+													<div>
+														<span class="text-xs font-medium text-gray-500 uppercase">Output</span>
+														<div class="mt-1 p-2 bg-green-50 rounded text-sm text-gray-700">
+															{ item.Output }
+														</div>
+													</div>
+												</div>
+											}
+										</div>
+									</div>
+								}
+							</div>
+						}
+
+						<!-- Action Buttons -->
+						<div class="mt-6 flex space-x-3">
+							<button class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
+								Download Model
+							</button>
+						</div>
+						<div class="mt-6 flex space-x-3">
+							Chat with Model coming soon...
+						</div>
+					}
+				</div>
+
+				<!-- Back Button -->
+				<div class="mt-8 pt-6 border-t border-gray-200">
+					<a
+						href="/web/home"
+						class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+					>
+						← Back to Projects
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			// Toggle metadata visibility if the toggle exists
+			const metadataToggle = document.getElementById('metadata-toggle');
+			if (metadataToggle) {
+				metadataToggle.addEventListener('click', function() {
+					const content = document.getElementById('metadata-content');
+					const icon = document.getElementById('metadata-icon');
+
+					if (content.classList.contains('hidden')) {
+						content.classList.remove('hidden');
+						icon.classList.add('rotate-180');
+					} else {
+						content.classList.add('hidden');
+						icon.classList.remove('rotate-180');
+					}
+				});
+			}
+		</script>
+	}
+}
