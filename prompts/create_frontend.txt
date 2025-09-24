@@ -30,3 +30,8 @@ In `cmd/web/home` add a link to the training dataset index page when the trainin
 ---
 
 Add the functionality of creating a finetune to the button "Start Fine-tuning" in `cmd/web/training_datasets/index.templ`. You will implement the functionality similar to creating a new training dataset in `cmd/web/training_datasets/step4.templ` and `cmd/web/training_datasets/step4.go`. The POST endpoint to create a new finetune is at `http://localhost:8080/api/projects/fb0006b0-7e64-4e28-bba3-085bf12d3d27/finetunes`.
+
+---
+
+Add a front-end page in `cmd/web/finetunes/index.templ` and `cmd/web/finetunes/index.go` that displays the finetune at `/web/projects/{project_id}/finetunes/{finetune_id}`. Display the metadata of the finetune on the page, but only show fields if they exist. If the status is not `DONE` then only show status information. Have a look at `cmd/web/training_datasets/index.templ` and implement it similar. Add two buttons ""Download Model" and "Chat with Model" below the metadata.
+

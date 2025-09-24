@@ -52,3 +52,20 @@ The status is `PLANNING`. The `model_name` we will create from `{base_model_name
 ---
 
 Add an endpoint to update the status of a finetune. The endpoint will be available at `/api/external/finetunes/{finetune_id}/update-status` and will be only accessible via a given API key. Add it to the protected API group for `/api/external`. The API key is available in the environment variable `APP_EXTERNAL_API_KEY`. The allowed status to set via this endpoint are `RUNNING`, `FAILED` and `DONE`. Implement this endpoint in the same way that `/api/external/training-datasets/{training_dataset_id}/update-status`, just for now we do not run any specific code in the use case when the status is set to `DONE`.
+
+---
+
+Add an endpoint that returns a finetune with its metadata. The endpoint will be available at `/api/projects/{project_id}/finetunes/{finetune_id}`. We need the the following fields from the metadata:
+
+- version
+- status
+- base_model_name
+- training_dataset_id
+- training_dataset_nubmer_example
+- training_dataset_select_random
+- model_size_gb
+- model_size_parameter
+- model_dtype
+- model_quantization
+- inference_samples
+- training_time_seconds

@@ -218,6 +218,18 @@ func NewUpdateFinetuneStatusController(updateFinetuneStatusUseCase in.UpdateFine
 	}
 }
 
+func NewGetFinetuneUseCase(finetuneRepo persistencePort.FinetuneRepository) in.GetFinetuneUseCase {
+	return &use_cases.GetFinetuneUseCaseImpl{
+		FinetuneRepository: finetuneRepo,
+	}
+}
+
+func NewGetFinetuneController(getFinetuneUseCase in.GetFinetuneUseCase) *web.GetFinetuneController {
+	return &web.GetFinetuneController{
+		GetFinetuneUseCase: getFinetuneUseCase,
+	}
+}
+
 func NewGetTrainingDatasetController(getTrainingDatasetUseCase in.GetTrainingDatasetUseCase) *web.GetTrainingDatasetController {
 	return &web.GetTrainingDatasetController{
 		GetTrainingDatasetUseCase: getTrainingDatasetUseCase,
@@ -279,6 +291,7 @@ var Module = fx.Options(
 	fx.Provide(NewGetTrainingDatasetUseCase),
 	fx.Provide(NewUpdateTrainingDatasetStatusUseCase),
 	fx.Provide(NewUpdateFinetuneStatusUseCase),
+	fx.Provide(NewGetFinetuneUseCase),
 	fx.Provide(NewLoginController),
 	fx.Provide(NewCreateProjectController),
 	fx.Provide(NewGetProjectController),
@@ -288,6 +301,7 @@ var Module = fx.Options(
 	fx.Provide(NewGetTrainingDatasetController),
 	fx.Provide(NewUpdateTrainingDatasetStatusController),
 	fx.Provide(NewUpdateFinetuneStatusController),
+	fx.Provide(NewGetFinetuneController),
 	fx.Provide(NewAuthMiddleware),
 	fx.Provide(NewExternalAPIMiddleware),
 )
