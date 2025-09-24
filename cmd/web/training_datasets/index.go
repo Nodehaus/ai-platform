@@ -181,13 +181,13 @@ func CreateFinetuneHandler(w http.ResponseWriter, r *http.Request) {
 	createReq := struct {
 		BaseModelName                    string    `json:"base_model_name"`
 		TrainingDatasetID                uuid.UUID `json:"training_dataset_id"`
-		TrainingDatasetNumberExample     int       `json:"training_dataset_nubmer_example"`
+		TrainingDatasetNumberExamples    int       `json:"training_dataset_number_examples"`
 		TrainingDatasetSelectRandom      bool      `json:"training_dataset_select_random"`
 	}{
-		BaseModelName:                baseModel,
-		TrainingDatasetID:            trainingDatasetID,
-		TrainingDatasetNumberExample: examplesCount,
-		TrainingDatasetSelectRandom:  randomSelection,
+		BaseModelName:                 baseModel,
+		TrainingDatasetID:             trainingDatasetID,
+		TrainingDatasetNumberExamples: examplesCount,
+		TrainingDatasetSelectRandom:   randomSelection,
 	}
 
 	jsonData, err := json.Marshal(createReq)
