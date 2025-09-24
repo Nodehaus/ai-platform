@@ -23,12 +23,13 @@ type Server struct {
 	createTrainingDatasetController          *web.CreateTrainingDatasetController
 	getTrainingDatasetController             *web.GetTrainingDatasetController
 	updateTrainingDatasetStatusController    *web.UpdateTrainingDatasetStatusController
+	updateFinetuneStatusController           *web.UpdateFinetuneStatusController
 	createFinetuneController                 *web.CreateFinetuneController
 	authMiddleware                           *AuthMiddleware
 	externalAPIMiddleware                    *ExternalAPIMiddleware
 }
 
-func NewServer(db database.Service, loginController *web.LoginController, createProjectController *web.CreateProjectController, getProjectController *web.GetProjectController, listProjectsController *web.ListProjectsController, createTrainingDatasetController *web.CreateTrainingDatasetController, getTrainingDatasetController *web.GetTrainingDatasetController, updateTrainingDatasetStatusController *web.UpdateTrainingDatasetStatusController, createFinetuneController *web.CreateFinetuneController, authMiddleware *AuthMiddleware, externalAPIMiddleware *ExternalAPIMiddleware) *http.Server {
+func NewServer(db database.Service, loginController *web.LoginController, createProjectController *web.CreateProjectController, getProjectController *web.GetProjectController, listProjectsController *web.ListProjectsController, createTrainingDatasetController *web.CreateTrainingDatasetController, getTrainingDatasetController *web.GetTrainingDatasetController, updateTrainingDatasetStatusController *web.UpdateTrainingDatasetStatusController, updateFinetuneStatusController *web.UpdateFinetuneStatusController, createFinetuneController *web.CreateFinetuneController, authMiddleware *AuthMiddleware, externalAPIMiddleware *ExternalAPIMiddleware) *http.Server {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
 	serverInstance := &Server{
 		port:                                     port,
@@ -40,6 +41,7 @@ func NewServer(db database.Service, loginController *web.LoginController, create
 		createTrainingDatasetController:          createTrainingDatasetController,
 		getTrainingDatasetController:             getTrainingDatasetController,
 		updateTrainingDatasetStatusController:    updateTrainingDatasetStatusController,
+		updateFinetuneStatusController:           updateFinetuneStatusController,
 		createFinetuneController:                 createFinetuneController,
 		authMiddleware:                           authMiddleware,
 		externalAPIMiddleware:                    externalAPIMiddleware,

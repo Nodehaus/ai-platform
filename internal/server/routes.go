@@ -42,6 +42,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	external := r.Group("/api/external")
 	external.Use(s.externalAPIMiddleware.RequireAPIKey())
 	external.PUT("/training-datasets/:training_dataset_id/update-status", s.updateTrainingDatasetStatusController.UpdateStatus)
+	external.PUT("/finetunes/:finetune_id/update-status", s.updateFinetuneStatusController.UpdateStatus)
 
 	staticFiles, _ := fs.Sub(web.Files, "assets")
 	r.StaticFS("/assets", http.FS(staticFiles))
