@@ -57,10 +57,11 @@ func NewUserService() *services.UserService {
 	return &services.UserService{}
 }
 
-func NewProjectService(projectRepo persistencePort.ProjectRepository, trainingDatasetRepo persistencePort.TrainingDatasetRepository) *services.ProjectService {
+func NewProjectService(projectRepo persistencePort.ProjectRepository, trainingDatasetRepo persistencePort.TrainingDatasetRepository, finetuneRepo persistencePort.FinetuneRepository) *services.ProjectService {
 	return &services.ProjectService{
 		ProjectRepository:         projectRepo,
 		TrainingDatasetRepository: trainingDatasetRepo,
+		FinetuneRepository:        finetuneRepo,
 	}
 }
 

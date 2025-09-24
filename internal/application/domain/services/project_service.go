@@ -11,11 +11,13 @@ import (
 type ProjectWithTrainingDataset struct {
 	Project         entities.Project
 	TrainingDataset *entities.TrainingDataset
+	Finetune        *entities.Finetune
 }
 
 type ProjectService struct {
 	ProjectRepository         persistence.ProjectRepository
 	TrainingDatasetRepository persistence.TrainingDatasetRepository
+	FinetuneRepository        persistence.FinetuneRepository
 }
 
 
@@ -81,9 +83,15 @@ func (s *ProjectService) ListProjects(ctx context.Context, ownerID uuid.UUID) ([
 			latestTrainingDataset = nil
 		}
 
+		latestFinetune, err := s.FinetuneRepository.GetLatestByProjectID(ctx, project.ID)
+		if err != nil {
+			latestFinetune = nil
+		}
+
 		result[i] = ProjectWithTrainingDataset{
 			Project:         project,
 			TrainingDataset: latestTrainingDataset,
+			Finetune:        latestFinetune,
 		}
 	}
 

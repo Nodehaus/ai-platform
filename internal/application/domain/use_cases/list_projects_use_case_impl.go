@@ -22,6 +22,7 @@ func (uc *ListProjectsUseCaseImpl) ListProjects(command in.ListProjectsCommand) 
 		result[i] = in.ProjectWithTrainingDataset{
 			Project:         projectWithDataset.Project,
 			TrainingDataset: projectWithDataset.TrainingDataset,
+			Finetune:        projectWithDataset.Finetune,
 		}
 	}
 

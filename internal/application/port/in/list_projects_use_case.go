@@ -7,6 +7,7 @@ import (
 type ProjectWithTrainingDataset struct {
 	Project         entities.Project
 	TrainingDataset *entities.TrainingDataset
+	Finetune        *entities.Finetune
 }
 
 type ListProjectsResult struct {
