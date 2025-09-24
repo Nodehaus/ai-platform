@@ -1,9 +1,12 @@
 package training_datasets
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -14,9 +17,11 @@ import (
 )
 
 type TrainingDatasetIndexData struct {
-	ProjectName      string
-	TrainingDataset  TrainingDatasetData
-	TotalDataItems   int
+	ProjectID           string
+	ProjectName         string
+	TrainingDatasetID   string
+	TrainingDataset     TrainingDatasetData
+	TotalDataItems      int
 }
 
 type TrainingDatasetData struct {
@@ -83,9 +88,11 @@ func TrainingDatasetIndexHandler(w http.ResponseWriter, r *http.Request) {
 	totalDataItems := trainingDatasetData.GenerateExamplesNumber
 
 	indexData := TrainingDatasetIndexData{
-		ProjectName:     projectName,
-		TrainingDataset: *trainingDatasetData,
-		TotalDataItems:  totalDataItems,
+		ProjectID:           projectIDStr,
+		ProjectName:         projectName,
+		TrainingDatasetID:   trainingDatasetIDStr,
+		TrainingDataset:     *trainingDatasetData,
+		TotalDataItems:      totalDataItems,
 	}
 
 	templ.Handler(TrainingDatasetIndex(indexData)).ServeHTTP(w, r)
@@ -118,4 +125,116 @@ func fetchTrainingDatasetData(r *http.Request, token string, projectID uuid.UUID
 	}
 
 	return &trainingDataset, nil
+}
+
+func CreateFinetuneHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	token := web.GetTokenFromCookie(r)
+	if token == "" {
+		http.Redirect(w, r, "/web/login", http.StatusSeeOther)
+		return
+	}
+
+	// Extract project ID from URL path
+	pathParts := strings.Split(r.URL.Path, "/")
+	if len(pathParts) < 4 || pathParts[3] == "" {
+		http.Error(w, "Invalid project ID", http.StatusBadRequest)
+		return
+	}
+
+	projectIDStr := pathParts[3]
+	projectID, err := uuid.Parse(projectIDStr)
+	if err != nil {
+		http.Error(w, "Invalid project ID format", http.StatusBadRequest)
+		return
+	}
+
+	// Get form values
+	baseModel := r.FormValue("base-model")
+	examplesCountStr := r.FormValue("examples-count")
+	randomSelection := r.FormValue("random-selection") == "on"
+	trainingDatasetIDStr := r.FormValue("training-dataset-id")
+
+	// Validate required fields
+	if baseModel == "" || examplesCountStr == "" || trainingDatasetIDStr == "" {
+		w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">All fields are required</div>`))
+		return
+	}
+
+	examplesCount, err := strconv.Atoi(examplesCountStr)
+	if err != nil || examplesCount < 1 {
+		w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">Please enter a valid number of examples</div>`))
+		return
+	}
+
+	trainingDatasetID, err := uuid.Parse(trainingDatasetIDStr)
+	if err != nil {
+		w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">Invalid training dataset ID</div>`))
+		return
+	}
+
+	// Create finetune request
+	createReq := struct {
+		BaseModelName                    string    `json:"base_model_name"`
+		TrainingDatasetID                uuid.UUID `json:"training_dataset_id"`
+		TrainingDatasetNumberExample     int       `json:"training_dataset_nubmer_example"`
+		TrainingDatasetSelectRandom      bool      `json:"training_dataset_select_random"`
+	}{
+		BaseModelName:                baseModel,
+		TrainingDatasetID:            trainingDatasetID,
+		TrainingDatasetNumberExample: examplesCount,
+		TrainingDatasetSelectRandom:  randomSelection,
+	}
+
+	jsonData, err := json.Marshal(createReq)
+	if err != nil {
+		w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">Failed to process request</div>`))
+		return
+	}
+
+	apiBaseURL := web.GetAPIBaseURL(r)
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/api/projects/%s/finetunes", apiBaseURL, projectID), bytes.NewBuffer(jsonData))
+	if err != nil {
+		w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">Failed to create request</div>`))
+		return
+	}
+
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{Timeout: 30 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">Failed to connect to API</div>`))
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusCreated {
+		// Extract error message from API response
+		var apiError struct {
+			Error string `json:"error"`
+		}
+
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">Failed to create finetune</div>`))
+			return
+		}
+
+		if err := json.Unmarshal(body, &apiError); err != nil || apiError.Error == "" {
+			w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">Failed to create finetune</div>`))
+			return
+		}
+
+		w.Write([]byte(fmt.Sprintf(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">%s</div>`, apiError.Error)))
+		return
+	}
+
+	// Success response
+	w.Write([]byte(`<div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">Fine-tuning started successfully! <a href="/web/home" class="underline">Check status on home page</a></div>`))
 }

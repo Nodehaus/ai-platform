@@ -26,3 +26,7 @@ All pages will have a "Next" and "Back" button. Your task is to implement the 4 
 Add a front-end page in `cmd/web/training_datasets/index.templ` and `cmd/web/training_datasets/index.go` that displays the training dataset at `/web/projects/{project_id}/training-datasets/{training_dataset_id}`. The metadata like prompt etc. will be collapsed, the user can click a button/link to see (uncollapse) all the metadata. The data item samples will be visible in a table, the header are the `field_names`, above the table we will display the total number of items. Add three buttons below the table: "Review", "Create More" and "Download". Then below add a separator and below a select to choose a base model, a number of example to use (with a checkbox to select random) and a button to start the finetune.
 
 In `cmd/web/home` add a link to the training dataset index page when the training dataset is not null.
+
+---
+
+Add the functionality of creating a finetune to the button "Start Fine-tuning" in `cmd/web/training_datasets/index.templ`. You will implement the functionality similar to creating a new training dataset in `cmd/web/training_datasets/step4.templ` and `cmd/web/training_datasets/step4.go`. The POST endpoint to create a new finetune is at `http://localhost:8080/api/projects/fb0006b0-7e64-4e28-bba3-085bf12d3d27/finetunes`.

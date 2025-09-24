@@ -145,7 +145,8 @@ templ TrainingDatasetIndex(data TrainingDatasetIndexData) {
 					<!-- Fine-tuning Section -->
 					<div>
 						<h2 class="text-lg font-semibold text-gray-900 mb-4">Start Fine-tuning</h2>
-						<form class="space-y-4">
+						<form hx-post={ "/web/projects/" + data.ProjectID + "/finetunes/create" } hx-target="#finetune-result" hx-swap="innerHTML" hx-on::after-request="if(event.detail.xhr.responseText.includes('bg-green-50')) { document.getElementById('finetune-form-buttons').style.display = 'none'; }" class="space-y-4">
+							<input type="hidden" name="training-dataset-id" value={ data.TrainingDatasetID }/>
 							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 								<div>
 									<label for="base-model" class="block text-sm font-medium text-gray-700 mb-2">
@@ -154,6 +155,7 @@ templ TrainingDatasetIndex(data TrainingDatasetIndexData) {
 									<select
 										id="base-model"
 										name="base-model"
+										required
 										class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
 									>
 										<option value="">Select a model...</option>
@@ -175,6 +177,7 @@ templ TrainingDatasetIndex(data TrainingDatasetIndexData) {
 											min="1"
 											max={ fmt.Sprintf("%d", data.TotalDataItems) }
 											value={ fmt.Sprintf("%d", data.TotalDataItems) }
+											required
 											class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
 										/>
 										<label class="flex items-center text-sm text-gray-600">
@@ -184,7 +187,8 @@ templ TrainingDatasetIndex(data TrainingDatasetIndexData) {
 									</div>
 								</div>
 							</div>
-							<div class="pt-4">
+							<div id="finetune-result" class="mt-4"></div>
+							<div id="finetune-form-buttons" class="pt-4">
 								<button
 									type="submit"
 									class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm font-medium"

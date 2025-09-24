@@ -96,6 +96,10 @@ func (s *Server) RegisterRoutes() http.Handler {
 		training_datasets.TrainingDatasetIndexHandler(c.Writer, c.Request)
 	})
 
+	r.POST("/web/projects/:project_id/finetunes/create", func(c *gin.Context) {
+		training_datasets.CreateFinetuneHandler(c.Writer, c.Request)
+	})
+
 	return r
 }
 
