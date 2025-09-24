@@ -47,6 +47,12 @@ func NewPromptRepository(dbService database.Service) persistencePort.PromptRepos
 	}
 }
 
+func NewFinetuneRepository(dbService database.Service) persistencePort.FinetuneRepository {
+	return &persistence.FinetuneRepositoryImpl{
+		Db: dbService.GetDB(),
+	}
+}
+
 func NewUserService() *services.UserService {
 	return &services.UserService{}
 }
@@ -60,6 +66,10 @@ func NewProjectService(projectRepo persistencePort.ProjectRepository, trainingDa
 
 func NewTrainingDatasetService() *services.TrainingDatasetService {
 	return &services.TrainingDatasetService{}
+}
+
+func NewFinetuneService() *services.FinetuneService {
+	return &services.FinetuneService{}
 }
 
 func NewJWTService() *services.JWTService {
@@ -114,6 +124,20 @@ func NewCreateTrainingDatasetUseCase(
 		PromptRepository:          promptRepo,
 		TrainingDatasetService:    trainingDatasetService,
 		TrainingDatasetJobClient:  trainingDatasetJobClient,
+	}
+}
+
+func NewCreateFinetuneUseCase(
+	finetuneRepo persistencePort.FinetuneRepository,
+	projectRepo persistencePort.ProjectRepository,
+	trainingDatasetRepo persistencePort.TrainingDatasetRepository,
+	finetuneService *services.FinetuneService,
+) in.CreateFinetuneUseCase {
+	return &use_cases.CreateFinetuneUseCaseImpl{
+		FinetuneRepository:        finetuneRepo,
+		ProjectRepository:         projectRepo,
+		TrainingDatasetRepository: trainingDatasetRepo,
+		FinetuneService:           finetuneService,
 	}
 }
 
@@ -185,6 +209,12 @@ func NewGetTrainingDatasetController(getTrainingDatasetUseCase in.GetTrainingDat
 	}
 }
 
+func NewCreateFinetuneController(createFinetuneUseCase in.CreateFinetuneUseCase) *web.CreateFinetuneController {
+	return &web.CreateFinetuneController{
+		CreateFinetuneUseCase: createFinetuneUseCase,
+	}
+}
+
 func NewExternalAPIMiddleware() *server.ExternalAPIMiddleware {
 	return &server.ExternalAPIMiddleware{}
 }
@@ -217,17 +247,20 @@ var Module = fx.Options(
 	fx.Provide(NewTrainingDatasetRepository),
 	fx.Provide(NewCorpusRepository),
 	fx.Provide(NewPromptRepository),
+	fx.Provide(NewFinetuneRepository),
 	fx.Provide(NewTrainingDatasetJobClient),
 	fx.Provide(NewTrainingDatasetResultsClient),
 	fx.Provide(NewUserService),
 	fx.Provide(NewProjectService),
 	fx.Provide(NewTrainingDatasetService),
+	fx.Provide(NewFinetuneService),
 	fx.Provide(NewJWTService),
 	fx.Provide(NewLoginUseCase),
 	fx.Provide(NewCreateProjectUseCase),
 	fx.Provide(NewGetProjectUseCase),
 	fx.Provide(NewListProjectsUseCase),
 	fx.Provide(NewCreateTrainingDatasetUseCase),
+	fx.Provide(NewCreateFinetuneUseCase),
 	fx.Provide(NewGetTrainingDatasetUseCase),
 	fx.Provide(NewUpdateTrainingDatasetStatusUseCase),
 	fx.Provide(NewLoginController),
@@ -235,6 +268,7 @@ var Module = fx.Options(
 	fx.Provide(NewGetProjectController),
 	fx.Provide(NewListProjectsController),
 	fx.Provide(NewCreateTrainingDatasetController),
+	fx.Provide(NewCreateFinetuneController),
 	fx.Provide(NewGetTrainingDatasetController),
 	fx.Provide(NewUpdateTrainingDatasetStatusController),
 	fx.Provide(NewAuthMiddleware),

@@ -35,3 +35,16 @@ Add an endpoint that returns a training dataset with its metadata and the first 
 - data_items_sample
 
 If the status is not `DONE` then the data_items_sample will be an empty list, otherwise it will contain the first 10 data items that are not deleted and where there is no other data item that `corrects` them. Each data item in the sample will be just a list of its `values`, we will not need the other fields.
+
+---
+
+Add an endpoint to create a new finetune. You can find information about the database models in `plans/database_models.md`. For now we only want one more POST endpoint `/api/projects/{project_id}/finetunes` that reveives the following JSON (the values are examples):
+
+{
+    "base_model_name": "qwen3b:4b",
+    "training_dataset_id": "{training_dataset_id}",
+    "training_dataset_nubmer_example: 1000,
+    "training_dataset_select_random: false
+}
+
+The status is `PLANNING`. The `model_name` we will create from `{base_model_name}_{project_name_model_string}_v{version}`. The project name model string consists of the small letter model name (alphanumeric character only), empty spaces replaced by underscore.

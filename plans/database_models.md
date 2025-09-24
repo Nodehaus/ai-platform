@@ -100,7 +100,7 @@ The `Finetune` stored information about the model training and the final model.
     -   training_dataset_number_examples: int
     -   training_dataset_select_random: bool
     -   training_time_seconds: float (rounded to 2 decimals)
-    -   status: enum of [RUNNING, ABORTED, FAILED, DONE, DELETED] (required)
+    -   status: enum of [PLANNING. RUNNING, ABORTED, FAILED, DONE, DELETED] (required)
 
 The `InferenceSample` contains generated output with their input from the validation dataset, we create those during training at specific training steps:
 
