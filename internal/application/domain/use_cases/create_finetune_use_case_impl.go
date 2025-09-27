@@ -7,6 +7,7 @@ import (
 	"ai-platform/internal/application/domain/entities"
 	"ai-platform/internal/application/domain/services"
 	"ai-platform/internal/application/port/in"
+	"ai-platform/internal/application/port/out/clients"
 	"ai-platform/internal/application/port/out/persistence"
 )
 
@@ -15,6 +16,8 @@ type CreateFinetuneUseCaseImpl struct {
 	ProjectRepository         persistence.ProjectRepository
 	TrainingDatasetRepository persistence.TrainingDatasetRepository
 	FinetuneService           *services.FinetuneService
+	TrainingDatasetService    *services.TrainingDatasetService
+	FinetuneJobClient         clients.FinetuneJobClient
 }
 
 func (uc *CreateFinetuneUseCaseImpl) Execute(ctx context.Context, command in.CreateFinetuneCommand) (*entities.Finetune, error) {
@@ -72,6 +75,35 @@ func (uc *CreateFinetuneUseCaseImpl) Execute(ctx context.Context, command in.Cre
 
 	// Save to repository
 	err = uc.FinetuneRepository.Create(ctx, finetune)
+	if err != nil {
+		return nil, err
+	}
+
+	// Select subset of training data
+	selectedData := uc.TrainingDatasetService.SelectTrainingDataSubset(
+		trainingDataset.Data,
+		command.TrainingDatasetNumberExamples,
+		command.TrainingDatasetSelectRandom,
+	)
+
+	// Convert training data to finetune job format
+	jobData := uc.TrainingDatasetService.ConvertToFinetuneJobData(
+		selectedData,
+		trainingDataset.FieldNames,
+		trainingDataset.InputField,
+	)
+
+	// Create finetune job
+	finetuneJob := entities.FinetuneJob{
+		TrainingDatasetID: trainingDataset.ID.String(),
+		InputField:        trainingDataset.InputField,
+		OutputField:       trainingDataset.OutputField,
+		UserID:            command.UserID.String(),
+		TrainingData:      jobData,
+	}
+
+	// Submit job to S3
+	err = uc.FinetuneJobClient.SubmitJob(ctx, finetuneJob)
 	if err != nil {
 		return nil, err
 	}

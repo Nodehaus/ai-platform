@@ -133,12 +133,16 @@ func NewCreateFinetuneUseCase(
 	projectRepo persistencePort.ProjectRepository,
 	trainingDatasetRepo persistencePort.TrainingDatasetRepository,
 	finetuneService *services.FinetuneService,
+	trainingDatasetService *services.TrainingDatasetService,
+	finetuneJobClient clientsPort.FinetuneJobClient,
 ) in.CreateFinetuneUseCase {
 	return &use_cases.CreateFinetuneUseCaseImpl{
 		FinetuneRepository:        finetuneRepo,
 		ProjectRepository:         projectRepo,
 		TrainingDatasetRepository: trainingDatasetRepo,
 		FinetuneService:           finetuneService,
+		TrainingDatasetService:    trainingDatasetService,
+		FinetuneJobClient:         finetuneJobClient,
 	}
 }
 
@@ -262,6 +266,14 @@ func NewTrainingDatasetResultsClient() clientsPort.TrainingDatasetResultsClient 
 	return client
 }
 
+func NewFinetuneJobClient() clientsPort.FinetuneJobClient {
+	client, err := clients.NewFinetuneJobClientImpl()
+	if err != nil {
+		panic(err)
+	}
+	return client
+}
+
 func NewAuthMiddleware(jwtService *services.JWTService) *server.AuthMiddleware {
 	return &server.AuthMiddleware{
 		JwtService: jwtService,
@@ -277,6 +289,7 @@ var Module = fx.Options(
 	fx.Provide(NewFinetuneRepository),
 	fx.Provide(NewTrainingDatasetJobClient),
 	fx.Provide(NewTrainingDatasetResultsClient),
+	fx.Provide(NewFinetuneJobClient),
 	fx.Provide(NewUserService),
 	fx.Provide(NewProjectService),
 	fx.Provide(NewTrainingDatasetService),

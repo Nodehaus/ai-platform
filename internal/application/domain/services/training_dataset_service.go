@@ -2,6 +2,8 @@ package services
 
 import (
 	"errors"
+	"math/rand"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -108,4 +110,82 @@ func (s *TrainingDatasetService) GetNextVersion(projectID uuid.UUID, getLatest f
 		return 1, nil
 	}
 	return latest.Version + 1, nil
+}
+
+func (s *TrainingDatasetService) SelectTrainingDataSubset(
+	trainingData []entities.TrainingDataItem,
+	numberExamples *int,
+	selectRandom bool,
+) []entities.TrainingDataItem {
+	// Filter out deleted items
+	var availableData []entities.TrainingDataItem
+	for _, item := range trainingData {
+		if !item.Deleted {
+			availableData = append(availableData, item)
+		}
+	}
+
+	// If no number specified or number is greater than available, return all
+	if numberExamples == nil || *numberExamples >= len(availableData) {
+		return availableData
+	}
+
+	// If number is less than or equal to 0, return empty slice
+	if *numberExamples <= 0 {
+		return []entities.TrainingDataItem{}
+	}
+
+	// Select subset
+	if selectRandom {
+		// Create a copy to avoid modifying the original slice
+		dataCopy := make([]entities.TrainingDataItem, len(availableData))
+		copy(dataCopy, availableData)
+
+		// Shuffle the data
+		rand.Seed(time.Now().UnixNano())
+		rand.Shuffle(len(dataCopy), func(i, j int) {
+			dataCopy[i], dataCopy[j] = dataCopy[j], dataCopy[i]
+		})
+
+		return dataCopy[:*numberExamples]
+	} else {
+		// Return first N items in order
+		return availableData[:*numberExamples]
+	}
+}
+
+func (s *TrainingDatasetService) ConvertToFinetuneJobData(
+	trainingDataItems []entities.TrainingDataItem,
+	fieldNames []string,
+	inputField string,
+) []map[string]interface{} {
+	var jobData []map[string]interface{}
+
+	for _, item := range trainingDataItems {
+		dataItem := make(map[string]interface{})
+
+		// Map values to field names
+		for i, fieldName := range fieldNames {
+			if i < len(item.Values) {
+				dataItem[fieldName] = item.Values[i]
+			}
+		}
+
+		// Add extra fields if input field is "source_text"
+		if inputField == "source_text" {
+			if item.SourceDocument != nil {
+				dataItem["source_document"] = *item.SourceDocument
+			}
+			if item.SourceDocumentStart != nil {
+				dataItem["source_document_start"] = *item.SourceDocumentStart
+			}
+			if item.SourceDocumentEnd != nil {
+				dataItem["source_document_end"] = *item.SourceDocumentEnd
+			}
+		}
+
+		jobData = append(jobData, dataItem)
+	}
+
+	return jobData
 }
