@@ -15,9 +15,11 @@ type CreateFinetuneUseCaseImpl struct {
 	FinetuneRepository        persistence.FinetuneRepository
 	ProjectRepository         persistence.ProjectRepository
 	TrainingDatasetRepository persistence.TrainingDatasetRepository
+	CorpusRepository          persistence.CorpusRepository
 	FinetuneService           *services.FinetuneService
 	TrainingDatasetService    *services.TrainingDatasetService
 	FinetuneJobClient         clients.FinetuneJobClient
+	RunpodClient              clients.RunpodClient
 }
 
 func (uc *CreateFinetuneUseCaseImpl) Execute(ctx context.Context, command in.CreateFinetuneCommand) (*entities.Finetune, error) {
@@ -103,7 +105,22 @@ func (uc *CreateFinetuneUseCaseImpl) Execute(ctx context.Context, command in.Cre
 	}
 
 	// Submit job to S3
-	err = uc.FinetuneJobClient.SubmitJob(ctx, finetuneJob)
+	s3Key, err := uc.FinetuneJobClient.SubmitJob(ctx, finetuneJob)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get corpus information for documents S3 path
+	corpus, err := uc.CorpusRepository.GetByID(ctx, trainingDataset.CorpusID)
+	if err != nil {
+		return nil, err
+	}
+	if corpus == nil {
+		return nil, errors.New("corpus not found")
+	}
+
+	// Start finetune job on Runpod
+	err = uc.RunpodClient.StartFinetuneJob(ctx, s3Key, corpus.S3Path, command.BaseModelName, modelName)
 	if err != nil {
 		return nil, err
 	}

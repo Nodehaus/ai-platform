@@ -61,11 +61,13 @@ func TestFinetuneJobClientImpl_SubmitJob_ValidatesJobMarshaling(t *testing.T) {
 	// This will fail without proper AWS credentials, but we're testing the JSON marshaling
 	// and the method signature, not the actual S3 upload
 	ctx := context.Background()
-	err = client.SubmitJob(ctx, job)
+	s3Key, err := client.SubmitJob(ctx, job)
 	// We expect this to fail due to AWS configuration, but not due to JSON marshaling
 	if err != nil {
 		// This is expected in a test environment without AWS credentials
 		t.Logf("Expected AWS error: %v", err)
+	} else {
+		t.Logf("S3 key returned: %s", s3Key)
 	}
 }
 
@@ -102,10 +104,12 @@ func TestFinetuneJobClientImpl_SubmitJob_ValidatesJobMarshalingWithSourceText(t 
 	// This will fail without proper AWS credentials, but we're testing the JSON marshaling
 	// and the method signature, not the actual S3 upload
 	ctx := context.Background()
-	err = client.SubmitJob(ctx, job)
+	s3Key, err := client.SubmitJob(ctx, job)
 	// We expect this to fail due to AWS configuration, but not due to JSON marshaling
 	if err != nil {
 		// This is expected in a test environment without AWS credentials
 		t.Logf("Expected AWS error: %v", err)
+	} else {
+		t.Logf("S3 key returned: %s", s3Key)
 	}
 }

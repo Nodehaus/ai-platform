@@ -7,5 +7,5 @@ import (
 )
 
 type FinetuneJobClient interface {
-	SubmitJob(ctx context.Context, job entities.FinetuneJob) error
+	SubmitJob(ctx context.Context, job entities.FinetuneJob) (string, error)
 }

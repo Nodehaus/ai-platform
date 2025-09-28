@@ -50,3 +50,19 @@ Implement also, in the training dataset service, a subset selection of the data 
 We will configure the S3 client with three environment variables, you can assume they exist: AWS_ENDPOINT_URL, AWS_DEFAULT_REGION and APP_S3_BUCKET. The path for the job files is `/jobs/finetunes`.
 
 The job file will be written in the create finetune use case after we created the finetune in the database.
+
+---
+
+We now need a client that start the finetune training job on Runpod. Send the following JSON with information about the finetune to the runpod API (the values are examples):
+
+{
+    "s3_bucket": "nodehaus",
+    "training_dataset_s3_path": "jobs/finetunes/250927101726_cb1b846e-ab09-417e-823c-475107bda72a.json",
+    "documents_s3_path": "documents/eurlex/eng",
+    "base_model_name": "qwen3:4b",
+    "model_name": "qwen3b_4b_test_radio_buttons_v11"
+}
+
+There are two environment variables `RUNPOD_API_KEY` and `RUNPOD_POD_ID` to access the Runpod API.
+
+We will call the API after the JSON job file has been written in the create finetune use case.

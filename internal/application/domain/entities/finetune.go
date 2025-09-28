@@ -54,3 +54,4 @@ type FinetuneJob struct {
 	UserID            string                   `json:"user_id"`
 	TrainingData      []map[string]interface{} `json:"training_data"`
 }
+

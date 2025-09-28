@@ -49,7 +49,7 @@ func NewFinetuneJobClientImpl() (*FinetuneJobClientImpl, error) {
 	}, nil
 }
 
-func (c *FinetuneJobClientImpl) SubmitJob(ctx context.Context, job entities.FinetuneJob) error {
+func (c *FinetuneJobClientImpl) SubmitJob(ctx context.Context, job entities.FinetuneJob) (string, error) {
 	// Adapt domain entity to client model
 	clientModel := FinetuneJobClientModel{
 		TrainingDatasetID: job.TrainingDatasetID,
@@ -61,7 +61,7 @@ func (c *FinetuneJobClientImpl) SubmitJob(ctx context.Context, job entities.Fine
 
 	jobJSON, err := json.Marshal(clientModel)
 	if err != nil {
-		return fmt.Errorf("failed to marshal job to JSON: %w", err)
+		return "", fmt.Errorf("failed to marshal job to JSON: %w", err)
 	}
 
 	key := fmt.Sprintf("jobs/finetunes/%s_%s.json", time.Now().Format("060102150405"), job.TrainingDatasetID)
@@ -73,8 +73,8 @@ func (c *FinetuneJobClientImpl) SubmitJob(ctx context.Context, job entities.Fine
 		ContentType: aws.String("application/json"),
 	})
 	if err != nil {
-		return fmt.Errorf("failed to upload job to S3: %w", err)
+		return "", fmt.Errorf("failed to upload job to S3: %w", err)
 	}
 
-	return nil
+	return key, nil
 }
