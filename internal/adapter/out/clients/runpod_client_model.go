@@ -6,4 +6,5 @@ type RunpodClientModel struct {
 	DocumentsS3Path        string `json:"documents_s3_path"`
 	BaseModelName          string `json:"base_model_name"`
 	ModelName              string `json:"model_name"`
+	FinetuneID			   string `json:"finetune_id"`
 }

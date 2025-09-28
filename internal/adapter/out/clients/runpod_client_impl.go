@@ -36,7 +36,7 @@ func NewRunpodClientImpl() (*RunpodClientImpl, error) {
 	}, nil
 }
 
-func (c *RunpodClientImpl) StartFinetuneJob(ctx context.Context, s3Key string, documentsS3Path string, baseModelName string, modelName string) error {
+func (c *RunpodClientImpl) StartFinetuneJob(ctx context.Context, s3Key string, documentsS3Path string, baseModelName string, modelName string, finetuneID string) error {
 	// Create client model with environment configuration
 	clientModel := RunpodClientModel{
 		S3Bucket:               os.Getenv("APP_S3_BUCKET"),
@@ -44,6 +44,7 @@ func (c *RunpodClientImpl) StartFinetuneJob(ctx context.Context, s3Key string, d
 		DocumentsS3Path:        documentsS3Path,
 		BaseModelName:          baseModelName,
 		ModelName:              modelName,
+		FinetuneID:				finetuneID,
 	}
 
 	// Wrap the data in the required "input" field for Runpod API

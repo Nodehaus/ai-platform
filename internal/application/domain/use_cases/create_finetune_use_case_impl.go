@@ -120,7 +120,7 @@ func (uc *CreateFinetuneUseCaseImpl) Execute(ctx context.Context, command in.Cre
 	}
 
 	// Start finetune job on Runpod
-	err = uc.RunpodClient.StartFinetuneJob(ctx, s3Key, corpus.S3Path, command.BaseModelName, modelName)
+	err = uc.RunpodClient.StartFinetuneJob(ctx, s3Key, corpus.S3Path, command.BaseModelName, modelName, finetune.ID.String())
 	if err != nil {
 		return nil, err
 	}
