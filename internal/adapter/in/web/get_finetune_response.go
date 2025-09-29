@@ -10,6 +10,7 @@ type GetFinetuneResponse struct {
 	Version                          int                          `json:"version"`
 	Status                           entities.FinetuneStatus     `json:"status"`
 	BaseModelName                    string                       `json:"base_model_name"`
+	ModelName                        string                       `json:"model_name"`
 	TrainingDatasetID                uuid.UUID                   `json:"training_dataset_id"`
 	TrainingDatasetNumberExamples    *int                         `json:"training_dataset_number_examples"`
 	TrainingDatasetSelectRandom      bool                         `json:"training_dataset_select_random"`
@@ -27,6 +28,7 @@ func ToGetFinetuneResponse(finetune *entities.Finetune) *GetFinetuneResponse {
 		Version:                          finetune.Version,
 		Status:                           finetune.Status,
 		BaseModelName:                    finetune.BaseModelName,
+		ModelName:                        finetune.ModelName,
 		TrainingDatasetID:                finetune.TrainingDatasetID,
 		TrainingDatasetNumberExamples:    finetune.TrainingDatasetNumberExamples,
 		TrainingDatasetSelectRandom:      finetune.TrainingDatasetSelectRandom,

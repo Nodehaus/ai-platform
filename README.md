@@ -108,7 +108,7 @@ restart capabilities:
 
 ```bash
 # Build the Docker image
-docker build -t ai-platform .
+docker build --platform linux/amd64 -t ai-platform .
 
 # Or with a specific tag
 docker build -t ai-platform:latest .

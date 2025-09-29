@@ -25,7 +25,8 @@ type FinetuneData struct {
 	Version                          int                    `json:"version"`
 	Status                           string                 `json:"status"`
 	BaseModelName                    string                 `json:"base_model_name"`
-	TrainingDatasetID                uuid.UUID             `json:"training_dataset_id"`
+	ModelName                        string                 `json:"model_name"`
+	TrainingDatasetID                uuid.UUID              `json:"training_dataset_id"`
 	TrainingDatasetNumberExamples    *int                   `json:"training_dataset_number_examples"`
 	TrainingDatasetSelectRandom      bool                   `json:"training_dataset_select_random"`
 	ModelSizeGB                      *int                   `json:"model_size_gb"`

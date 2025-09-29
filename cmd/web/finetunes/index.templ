@@ -4,7 +4,7 @@ import "ai-platform/cmd/web"
 import "fmt"
 
 templ FinetuneIndex(data FinetuneIndexData) {
-	@web.App("max-w-6xl") {
+	@web.App("max-w-3xl") {
 		<div class="max-w-6xl mx-auto">
 			<div class="bg-white border border-gray-200 rounded-lg p-8 shadow-md mb-8">
 				<div class="mb-6">
@@ -164,7 +164,7 @@ templ FinetuneIndex(data FinetuneIndexData) {
 
 						<!-- Action Buttons -->
 						<div class="mt-6 flex space-x-3">
-							<button class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
+							<button onclick={ templ.ComponentScript{Call: fmt.Sprintf("window.open('https://huggingface.co/pbouda/%s', '_blank')", data.Finetune.ModelName)} } class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
 								Download Model
 							</button>
 						</div>
