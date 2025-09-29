@@ -16,24 +16,32 @@ type AuthMiddleware struct {
 
 func (m *AuthMiddleware) RequireAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		var tokenString string
+
+		// Try to get token from Authorization header first
 		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Authorization header is required",
-			})
-			c.Abort()
-			return
+		if authHeader != "" {
+			if !strings.HasPrefix(authHeader, "Bearer ") {
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"error": "Authorization header must start with 'Bearer '",
+				})
+				c.Abort()
+				return
+			}
+			tokenString = strings.TrimPrefix(authHeader, "Bearer ")
+		} else {
+			// Fallback to cookie for web requests
+			cookie, err := c.Cookie("auth_token")
+			if err != nil {
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"error": "Authorization header or auth_token cookie is required",
+				})
+				c.Abort()
+				return
+			}
+			tokenString = cookie
 		}
 
-		if !strings.HasPrefix(authHeader, "Bearer ") {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Authorization header must start with 'Bearer '",
-			})
-			c.Abort()
-			return
-		}
-
-		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 		if tokenString == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "Token is required",

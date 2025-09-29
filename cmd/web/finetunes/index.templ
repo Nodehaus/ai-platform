@@ -164,7 +164,7 @@ templ FinetuneIndex(data FinetuneIndexData) {
 
 						<!-- Action Buttons -->
 						<div class="mt-6 flex space-x-3">
-							<button onclick={ templ.ComponentScript{Call: fmt.Sprintf("window.open('https://huggingface.co/pbouda/%s', '_blank')", data.Finetune.ModelName)} } class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
+							<button onclick={ templ.ComponentScript{Call: fmt.Sprintf("downloadModel('%s', '%s')", data.ProjectID, data.FinetuneID)} } class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
 								Download Model
 							</button>
 						</div>
@@ -202,6 +202,55 @@ templ FinetuneIndex(data FinetuneIndexData) {
 						icon.classList.remove('rotate-180');
 					}
 				});
+			}
+
+			// Function to download model with authentication
+			async function downloadModel(projectId, finetuneId) {
+				// Show loading state on button
+				const button = event.target;
+				const originalText = button.textContent;
+				button.textContent = 'Downloading...';
+				button.disabled = true;
+
+				// Fetch with credentials (cookies will be sent automatically)
+				const response = await fetch(`/api/projects/${projectId}/finetunes/${finetuneId}/download`, {
+					method: 'GET',
+					credentials: 'same-origin', // Include cookies
+				});
+
+				// Reset button state
+				button.textContent = originalText;
+				button.disabled = false;
+
+				if (!response.ok) {
+					console.log(response)
+					if (response.status === 401) {
+						alert('Your session has expired. Please log in again.');
+						window.location.href = '/web/login';
+					}
+					return;
+				}
+
+				// Get filename from Content-Disposition header
+				const contentDisposition = response.headers.get('Content-Disposition');
+				let filename = 'model.gguf';
+				if (contentDisposition) {
+					const filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
+					if (filenameMatch) {
+						filename = filenameMatch[1];
+					}
+				}
+
+				// Create blob and download
+				const blob = await response.blob();
+				const url = window.URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				window.URL.revokeObjectURL(url);
+				document.body.removeChild(a);
 			}
 		</script>
 	}

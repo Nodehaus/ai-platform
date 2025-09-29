@@ -238,6 +238,19 @@ func NewGetFinetuneController(getFinetuneUseCase in.GetFinetuneUseCase) *web.Get
 	}
 }
 
+func NewDownloadModelUseCase(finetuneRepo persistencePort.FinetuneRepository, downloadModelClient clientsPort.DownloadModelClient) in.DownloadModelUseCase {
+	return &use_cases.DownloadModelUseCaseImpl{
+		FinetuneRepository:  finetuneRepo,
+		DownloadModelClient: downloadModelClient,
+	}
+}
+
+func NewDownloadModelController(downloadModelUseCase in.DownloadModelUseCase) *web.DownloadModelController {
+	return &web.DownloadModelController{
+		DownloadModelUseCase: downloadModelUseCase,
+	}
+}
+
 func NewGetTrainingDatasetController(getTrainingDatasetUseCase in.GetTrainingDatasetUseCase) *web.GetTrainingDatasetController {
 	return &web.GetTrainingDatasetController{
 		GetTrainingDatasetUseCase: getTrainingDatasetUseCase,
@@ -286,6 +299,14 @@ func NewRunpodClient() clientsPort.RunpodClient {
 	return client
 }
 
+func NewDownloadModelClient() clientsPort.DownloadModelClient {
+	client, err := clients.NewDownloadModelClientImpl()
+	if err != nil {
+		panic(err)
+	}
+	return client
+}
+
 func NewAuthMiddleware(jwtService *services.JWTService) *server.AuthMiddleware {
 	return &server.AuthMiddleware{
 		JwtService: jwtService,
@@ -303,6 +324,7 @@ var Module = fx.Options(
 	fx.Provide(NewTrainingDatasetResultsClient),
 	fx.Provide(NewFinetuneJobClient),
 	fx.Provide(NewRunpodClient),
+	fx.Provide(NewDownloadModelClient),
 	fx.Provide(NewUserService),
 	fx.Provide(NewProjectService),
 	fx.Provide(NewTrainingDatasetService),
@@ -318,6 +340,7 @@ var Module = fx.Options(
 	fx.Provide(NewUpdateTrainingDatasetStatusUseCase),
 	fx.Provide(NewUpdateFinetuneStatusUseCase),
 	fx.Provide(NewGetFinetuneUseCase),
+	fx.Provide(NewDownloadModelUseCase),
 	fx.Provide(NewLoginController),
 	fx.Provide(NewCreateProjectController),
 	fx.Provide(NewGetProjectController),
@@ -328,6 +351,7 @@ var Module = fx.Options(
 	fx.Provide(NewUpdateTrainingDatasetStatusController),
 	fx.Provide(NewUpdateFinetuneStatusController),
 	fx.Provide(NewGetFinetuneController),
+	fx.Provide(NewDownloadModelController),
 	fx.Provide(NewAuthMiddleware),
 	fx.Provide(NewExternalAPIMiddleware),
 )

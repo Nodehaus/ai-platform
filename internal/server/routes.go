@@ -39,6 +39,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	protected.GET("/projects/:project_id/training-datasets/:training_dataset_id", s.getTrainingDatasetController.GetTrainingDataset)
 	protected.POST("/projects/:project_id/finetunes", s.createFinetuneController.CreateFinetune)
 	protected.GET("/projects/:project_id/finetunes/:finetune_id", s.getFinetuneController.GetFinetune)
+	protected.GET("/projects/:project_id/finetunes/:finetune_id/download", s.downloadModelController.DownloadModel)
 
 	// External API routes (API key protected)
 	external := r.Group("/api/external")
