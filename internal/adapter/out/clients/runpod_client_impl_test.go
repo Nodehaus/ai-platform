@@ -66,7 +66,8 @@ func TestRunpodClientImpl_StartFinetuneJob_ValidatesRequestMarshaling(t *testing
 		"jobs/finetunes/250927101726_cb1b846e-ab09-417e-823c-475107bda72a.json",
 		"documents/eurlex/eng",
 		"qwen3:4b",
-		"qwen3b_4b_test_radio_buttons_v11")
+		"qwen3b_4b_test_radio_buttons_v11",
+		"12345678-1234-1234-1234-123456789012")
 	// We expect this to fail due to invalid endpoint/credentials, but not due to JSON marshaling
 	if err != nil {
 		// This is expected in a test environment without valid Runpod credentials

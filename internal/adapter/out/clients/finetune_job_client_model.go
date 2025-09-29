@@ -1,6 +1,7 @@
 package clients
 
 type FinetuneJobClientModel struct {
+	FinetuneID        string                   `json:"finetune_id"`
 	TrainingDatasetID string                   `json:"training_dataset_id"`
 	InputField        string                   `json:"input_field"`
 	OutputField       string                   `json:"output_field"`

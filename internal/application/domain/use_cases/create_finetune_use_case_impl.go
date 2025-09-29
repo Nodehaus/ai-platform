@@ -97,6 +97,7 @@ func (uc *CreateFinetuneUseCaseImpl) Execute(ctx context.Context, command in.Cre
 
 	// Create finetune job
 	finetuneJob := entities.FinetuneJob{
+		FinetuneID:        finetune.ID.String(),
 		TrainingDatasetID: trainingDataset.ID.String(),
 		InputField:        trainingDataset.InputField,
 		OutputField:       trainingDataset.OutputField,

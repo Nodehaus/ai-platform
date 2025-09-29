@@ -52,6 +52,7 @@ func NewFinetuneJobClientImpl() (*FinetuneJobClientImpl, error) {
 func (c *FinetuneJobClientImpl) SubmitJob(ctx context.Context, job entities.FinetuneJob) (string, error) {
 	// Adapt domain entity to client model
 	clientModel := FinetuneJobClientModel{
+		FinetuneID:        job.FinetuneID,
 		TrainingDatasetID: job.TrainingDatasetID,
 		InputField:        job.InputField,
 		OutputField:       job.OutputField,
@@ -64,7 +65,7 @@ func (c *FinetuneJobClientImpl) SubmitJob(ctx context.Context, job entities.Fine
 		return "", fmt.Errorf("failed to marshal job to JSON: %w", err)
 	}
 
-	key := fmt.Sprintf("jobs/finetunes/%s_%s.json", time.Now().Format("060102150405"), job.TrainingDatasetID)
+	key := fmt.Sprintf("jobs/finetunes/%s_%s.json", time.Now().Format("060102150405"), job.FinetuneID)
 
 	_, err = c.s3Client.PutObject(ctx, &s3.PutObjectInput{
 		Bucket:      aws.String(c.bucket),

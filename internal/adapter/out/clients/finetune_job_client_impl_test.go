@@ -42,6 +42,7 @@ func TestFinetuneJobClientImpl_SubmitJob_ValidatesJobMarshaling(t *testing.T) {
 	}
 
 	job := entities.FinetuneJob{
+		FinetuneID:        "12345678-1234-1234-1234-123456789012",
 		TrainingDatasetID: "9c29d344-bade-4e98-ae0b-910841068790",
 		InputField:        "question",
 		OutputField:       "answer",
@@ -86,6 +87,7 @@ func TestFinetuneJobClientImpl_SubmitJob_ValidatesJobMarshalingWithSourceText(t 
 	}
 
 	job := entities.FinetuneJob{
+		FinetuneID:        "12345678-1234-1234-1234-123456789012",
 		TrainingDatasetID: "9c29d344-bade-4e98-ae0b-910841068790",
 		InputField:        "source_text",
 		OutputField:       "summary",
