@@ -30,12 +30,16 @@ func (s *FinetuneService) GenerateModelName(baseModelName string, projectName st
 }
 
 func (s *FinetuneService) convertBaseModelNameToModelString(baseModelName string) string {
-	result := strings.ToLower(baseModelName)
+	// Remove orgname/ prefix if present
+	result := regexp.MustCompile(`^[^/]+/`).ReplaceAllString(baseModelName, "")
+
+	result = strings.ToLower(result)
 	result = regexp.MustCompile(`[^a-z0-9]`).ReplaceAllString(result, "_")
 	result = regexp.MustCompile(`_+`).ReplaceAllString(result, "_")
 	result = strings.Trim(result, "_")
 
-	return result
+	// Add nodehaus_ prefix
+	return "nodehaus_" + result
 }
 
 func (s *FinetuneService) convertProjectNameToModelString(projectName string) string {
