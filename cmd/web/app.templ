@@ -2,21 +2,18 @@ package web
 
 templ App(maxWidth string) {
 	@Base(maxWidth) {
-		<div class="bg-white border border-gray-200 rounded-lg shadow-md mb-8">
-			<div class="max-w-7xl mx-auto px-4">
+		<div class="mb-6">
+			<div class="max-w-7xl mx-auto px-6">
 				<div class="flex justify-between items-center h-16">
-					<a href="/web/home" class="flex items-center text-gray-600 hover:text-gray-900">
-						<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-						</svg>
-						<span class="ml-1 text-sm">Home</span>
+					<a href="/web/home" class="flex items-center">
+						<img src="/assets/images/logo.png" style="height:60px">
+						<img src="/assets/images/nodehaus.png" style="height:30px">
 					</a>
-					<h1 class="text-xl font-medium text-gray-800">Nodehaus AI Platform</h1>
-					<a href="/web/logout" class="btn btn-danger">Logout</a>
+					<a href="/web/logout" class="btn">Logout</a>
 				</div>
 			</div>
 		</div>
-		<div>
+		<div id="main-content">
 			{ children... }
 		</div>
 	}

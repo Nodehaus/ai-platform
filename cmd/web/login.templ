@@ -2,8 +2,12 @@ package web
 
 templ LoginPage() {
 	@Base("max-w-sm") {
-		<div class="mt-20 border border-gray-200 rounded-lg shadow-md bg-white p-8">
-			<h1 style="text-align: center; margin-bottom: 2rem; color: #1f2937;" class="text-xl">Nodehaus AI Platform Login</h1>
+		<div class="max-w-3xl mx-auto mt-20 border border-gray-200 rounded-lg shadow-md bg-white p-8">
+			<div class="flex items-center justify-center">
+				<img src="/assets/images/logo.png" style="height:60px">
+				<img src="/assets/images/nodehaus.png" style="height:30px">
+			</div>
+			<h1 style="text-align: center; margin-bottom: 2rem; color: #1f2937;" class="text-xl">AI Platform Login</h1>
 			<form
 				hx-post="/web/login"
 				hx-target="#login-form"
