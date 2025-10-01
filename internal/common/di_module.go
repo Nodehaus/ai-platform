@@ -275,6 +275,38 @@ func NewDownloadTrainingDatasetController(downloadTrainingDatasetUseCase in.Down
 	}
 }
 
+func NewUploadTrainingDatasetUseCase(
+	trainingDatasetService *services.TrainingDatasetService,
+	trainingDatasetRepo persistencePort.TrainingDatasetRepository,
+) in.UploadTrainingDatasetUseCase {
+	return &use_cases.UploadTrainingDatasetUseCaseImpl{
+		TrainingDatasetService:    trainingDatasetService,
+		TrainingDatasetRepository: trainingDatasetRepo,
+	}
+}
+
+func NewUploadTrainingDatasetController(uploadTrainingDatasetUseCase in.UploadTrainingDatasetUseCase) *web.UploadTrainingDatasetController {
+	return &web.UploadTrainingDatasetController{
+		UploadTrainingDatasetUseCase: uploadTrainingDatasetUseCase,
+	}
+}
+
+func NewUploadNewTrainingDatasetVersionUseCase(
+	trainingDatasetService *services.TrainingDatasetService,
+	trainingDatasetRepo persistencePort.TrainingDatasetRepository,
+) in.UploadNewTrainingDatasetVersionUseCase {
+	return &use_cases.UploadNewTrainingDatasetVersionUseCaseImpl{
+		TrainingDatasetService:    trainingDatasetService,
+		TrainingDatasetRepository: trainingDatasetRepo,
+	}
+}
+
+func NewUploadNewTrainingDatasetVersionController(uploadNewTrainingDatasetVersionUseCase in.UploadNewTrainingDatasetVersionUseCase) *web.UploadNewTrainingDatasetVersionController {
+	return &web.UploadNewTrainingDatasetVersionController{
+		UploadNewTrainingDatasetVersionUseCase: uploadNewTrainingDatasetVersionUseCase,
+	}
+}
+
 func NewCreateFinetuneController(createFinetuneUseCase in.CreateFinetuneUseCase) *web.CreateFinetuneController {
 	return &web.CreateFinetuneController{
 		CreateFinetuneUseCase: createFinetuneUseCase,
@@ -356,6 +388,8 @@ var Module = fx.Options(
 	fx.Provide(NewCreateFinetuneUseCase),
 	fx.Provide(NewGetTrainingDatasetUseCase),
 	fx.Provide(NewDownloadTrainingDatasetUseCase),
+	fx.Provide(NewUploadTrainingDatasetUseCase),
+	fx.Provide(NewUploadNewTrainingDatasetVersionUseCase),
 	fx.Provide(NewUpdateTrainingDatasetStatusUseCase),
 	fx.Provide(NewUpdateFinetuneStatusUseCase),
 	fx.Provide(NewGetFinetuneUseCase),
@@ -368,6 +402,8 @@ var Module = fx.Options(
 	fx.Provide(NewCreateFinetuneController),
 	fx.Provide(NewGetTrainingDatasetController),
 	fx.Provide(NewDownloadTrainingDatasetController),
+	fx.Provide(NewUploadTrainingDatasetController),
+	fx.Provide(NewUploadNewTrainingDatasetVersionController),
 	fx.Provide(NewUpdateTrainingDatasetStatusController),
 	fx.Provide(NewUpdateFinetuneStatusController),
 	fx.Provide(NewGetFinetuneController),

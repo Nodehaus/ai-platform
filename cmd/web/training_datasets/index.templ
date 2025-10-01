@@ -130,8 +130,8 @@ templ TrainingDatasetIndex(data TrainingDatasetIndexData) {
 							<button onclick={ templ.ComponentScript{Call: fmt.Sprintf("downloadTrainingDataset('%s', '%s')", data.ProjectID, data.TrainingDatasetID)} } class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm font-medium">
 								Download
 							</button>
-							<button disabled class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm font-medium">
-								Upload (soon)
+							<button onclick="openUploadModal()" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm font-medium">
+								Upload
 							</button>
 						</div>
 					</div>
@@ -217,7 +217,65 @@ templ TrainingDatasetIndex(data TrainingDatasetIndexData) {
 			</div>
 		</div>
 
+		<!-- Upload Training Dataset Modal -->
+		<div id="uploadModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+			<div class="bg-white rounded-lg p-6 w-96 max-w-md mx-4">
+				<h2 class="text-xl font-semibold mb-4">Upload Training Dataset</h2>
+				<form id="uploadForm" enctype="multipart/form-data">
+					<div id="upload-error" class="mb-4 min-h-[1rem]"></div>
+					<div id="upload-success" class="mb-4 min-h-[1rem]"></div>
+
+					<div class="mb-4">
+						<label class="block text-sm font-medium text-gray-700 mb-2">Upload Mode</label>
+						<div class="space-y-2">
+							<label class="flex items-center">
+								<input type="radio" name="uploadMode" value="add" checked class="mr-2"/>
+								<span class="text-sm">Add to training data</span>
+							</label>
+							<label class="flex items-center">
+								<input type="radio" name="uploadMode" value="replace" class="mr-2"/>
+								<span class="text-sm">Replace training data (new version)</span>
+							</label>
+						</div>
+					</div>
+
+					<div class="mb-4">
+						<label for="csvFile" class="block text-sm font-medium text-gray-700 mb-2">CSV File</label>
+						<input
+							type="file"
+							id="csvFile"
+							name="file"
+							accept=".csv"
+							required
+							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+						/>
+						<p class="mt-1 text-xs text-gray-500">Select a CSV file to upload</p>
+					</div>
+
+					<div class="flex justify-end space-x-3">
+						<button
+							type="button"
+							onclick="closeUploadModal()"
+							class="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+						>
+							Cancel
+						</button>
+						<button
+							type="submit"
+							class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+						>
+							Upload
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
 		<script>
+			// Page data
+			const PAGE_PROJECT_ID = {{ data.ProjectID }};
+			const PAGE_TRAINING_DATASET_ID = {{ data.TrainingDatasetID }};
+
 			// Toggle metadata visibility
 			document.getElementById('metadata-toggle').addEventListener('click', function() {
 				const content = document.getElementById('metadata-content');
@@ -238,6 +296,100 @@ templ TrainingDatasetIndex(data TrainingDatasetIndexData) {
 				// The browser will automatically include cookies and trigger the download
 				window.open(`/api/projects/${projectId}/training-datasets/${trainingDatasetId}/download`, '_blank');
 			}
+
+			// Upload modal functions
+			function openUploadModal() {
+				document.getElementById('uploadModal').classList.remove('hidden');
+				// Clear any previous messages
+				document.getElementById('upload-error').innerHTML = '';
+				document.getElementById('upload-success').innerHTML = '';
+				// Reset form
+				document.getElementById('uploadForm').reset();
+			}
+
+			function closeUploadModal() {
+				document.getElementById('uploadModal').classList.add('hidden');
+			}
+
+			// Close modal when clicking outside
+			document.getElementById('uploadModal').addEventListener('click', function(e) {
+				if (e.target === this) {
+					closeUploadModal();
+				}
+			});
+
+			// Handle form submission
+			document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+				e.preventDefault();
+
+				// Disable submit button to prevent double submission
+				const submitButton = e.target.querySelector('button[type="submit"]');
+				submitButton.disabled = true;
+				submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+
+				const formData = new FormData(e.target);
+				const uploadMode = formData.get('uploadMode');
+
+				// Determine endpoint based on upload mode
+				let endpoint;
+				if (uploadMode === 'add') {
+					endpoint = '/api/projects/' + PAGE_PROJECT_ID + '/training-datasets/' + PAGE_TRAINING_DATASET_ID + '/upload';
+				} else {
+					endpoint = '/api/projects/' + PAGE_PROJECT_ID + '/training-datasets/upload';
+				}
+
+				// Clear previous messages
+				document.getElementById('upload-error').innerHTML = '';
+				document.getElementById('upload-success').innerHTML = '';
+
+				try {
+					const response = await fetch(endpoint, {
+						method: 'POST',
+						body: formData,
+						credentials: 'include'
+					});
+
+					const data = await response.json();
+
+					if (response.ok) {
+						// Show success message
+						document.getElementById('upload-success').innerHTML =
+							'<div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">' +
+							data.message +
+							'</div>';
+
+						// Redirect or reload based on upload mode
+						setTimeout(() => {
+							if (uploadMode === 'replace' && data.training_dataset_id) {
+								// Redirect to the new training dataset
+								window.location.href = '/web/projects/' + PAGE_PROJECT_ID + '/training-datasets/' + data.training_dataset_id;
+							} else {
+								// Reload current page for 'add' mode
+								window.location.reload();
+							}
+						}, 1500);
+					} else {
+						// Show error message
+						document.getElementById('upload-error').innerHTML =
+							'<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">' +
+							(data.error || 'Upload failed') +
+							'</div>';
+
+						// Re-enable submit button on error
+						submitButton.disabled = false;
+						submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+					}
+				} catch (error) {
+					document.getElementById('upload-error').innerHTML =
+						'<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">' +
+						'Network error. Please try again.' +
+						'</div>';
+
+					// Re-enable submit button on error
+					submitButton.disabled = false;
+					submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+				}
+			});
 		</script>
 	}
 }
