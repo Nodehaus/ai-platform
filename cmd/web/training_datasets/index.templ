@@ -122,19 +122,16 @@ templ TrainingDatasetIndex(data TrainingDatasetIndexData) {
 						<!-- Action Buttons -->
 						<div class="mt-4 flex space-x-3">
 							<button disabled class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
-								View All and Review
+								Review All (soon)
 							</button>
 							<button disabled class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium">
-								Create More
+								Create More (soon)
 							</button>
-							<button class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm font-medium">
+							<button onclick={ templ.ComponentScript{Call: fmt.Sprintf("downloadTrainingDataset('%s', '%s')", data.ProjectID, data.TrainingDatasetID)} } class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm font-medium">
 								Download
 							</button>
-							<button class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm font-medium">
-								Upload and Replace
-							</button>
-							<button class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm font-medium">
-								Upload and Add
+							<button disabled class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm font-medium">
+								Upload (soon)
 							</button>
 						</div>
 					</div>
@@ -234,6 +231,13 @@ templ TrainingDatasetIndex(data TrainingDatasetIndexData) {
 					icon.classList.remove('rotate-180');
 				}
 			});
+
+			// Function to download training dataset with authentication
+			function downloadTrainingDataset(projectId, trainingDatasetId) {
+				// Open the download URL in a new tab/window
+				// The browser will automatically include cookies and trigger the download
+				window.open(`/api/projects/${projectId}/training-datasets/${trainingDatasetId}/download`, '_blank');
+			}
 		</script>
 	}
 }

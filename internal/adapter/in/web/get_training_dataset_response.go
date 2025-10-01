@@ -39,7 +39,7 @@ func ToGetTrainingDatasetResponse(td *entities.TrainingDataset, prompt string, c
 			if sampleCount >= 10 {
 				break
 			}
-			if !item.Deleted && item.CorrectsID == nil {
+			if !item.Deleted {
 				response.DataItemsSample = append(response.DataItemsSample, item.Values)
 				sampleCount++
 			}

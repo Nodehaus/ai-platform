@@ -257,6 +257,24 @@ func NewGetTrainingDatasetController(getTrainingDatasetUseCase in.GetTrainingDat
 	}
 }
 
+func NewDownloadTrainingDatasetUseCase(
+	trainingDatasetService *services.TrainingDatasetService,
+	trainingDatasetRepo persistencePort.TrainingDatasetRepository,
+	projectRepo persistencePort.ProjectRepository,
+) in.DownloadTrainingDatasetUseCase {
+	return &use_cases.DownloadTrainingDatasetUseCaseImpl{
+		TrainingDatasetService:    trainingDatasetService,
+		TrainingDatasetRepository: trainingDatasetRepo,
+		ProjectRepository:         projectRepo,
+	}
+}
+
+func NewDownloadTrainingDatasetController(downloadTrainingDatasetUseCase in.DownloadTrainingDatasetUseCase) *web.DownloadTrainingDatasetController {
+	return &web.DownloadTrainingDatasetController{
+		DownloadTrainingDatasetUseCase: downloadTrainingDatasetUseCase,
+	}
+}
+
 func NewCreateFinetuneController(createFinetuneUseCase in.CreateFinetuneUseCase) *web.CreateFinetuneController {
 	return &web.CreateFinetuneController{
 		CreateFinetuneUseCase: createFinetuneUseCase,
@@ -337,6 +355,7 @@ var Module = fx.Options(
 	fx.Provide(NewCreateTrainingDatasetUseCase),
 	fx.Provide(NewCreateFinetuneUseCase),
 	fx.Provide(NewGetTrainingDatasetUseCase),
+	fx.Provide(NewDownloadTrainingDatasetUseCase),
 	fx.Provide(NewUpdateTrainingDatasetStatusUseCase),
 	fx.Provide(NewUpdateFinetuneStatusUseCase),
 	fx.Provide(NewGetFinetuneUseCase),
@@ -348,6 +367,7 @@ var Module = fx.Options(
 	fx.Provide(NewCreateTrainingDatasetController),
 	fx.Provide(NewCreateFinetuneController),
 	fx.Provide(NewGetTrainingDatasetController),
+	fx.Provide(NewDownloadTrainingDatasetController),
 	fx.Provide(NewUpdateTrainingDatasetStatusController),
 	fx.Provide(NewUpdateFinetuneStatusController),
 	fx.Provide(NewGetFinetuneController),

@@ -73,3 +73,7 @@ Add an endpoint that returns a finetune with its metadata. The endpoint will be 
 ---
 
 Add an endpoint that allows a user to download a finetune model. The endpoint will be available at `/api/projects/{project_id}/finetunes/{finetune_id}/download`. The models are on S3 in a folder as single files `/finetunes/{finetune_id}/{model_name}.gguf`. You need to implement a new `DownloadModelClient` to get the file from S3 and then forward it to the API endpoint. The files might be large, find a memory efficient solution for streaming.
+
+---
+
+Add an endpoint that allows users to download a training dataset. The endpoint will be available at `/api/projects/{project_id}/training-datasets/{training_dataset_id}/download`. The download will be CSV file that contains all data items of the training dataset. The CVS has a header with the `field_names`. The goal is that users can open the CSV files in Excel or Google Sheets.

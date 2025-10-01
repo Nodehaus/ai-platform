@@ -37,6 +37,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	protected.GET("/projects/:project_id", s.getProjectController.GetProject)
 	protected.POST("/projects/:project_id/training-datasets", s.createTrainingDatasetController.CreateTrainingDataset)
 	protected.GET("/projects/:project_id/training-datasets/:training_dataset_id", s.getTrainingDatasetController.GetTrainingDataset)
+	protected.GET("/projects/:project_id/training-datasets/:training_dataset_id/download", s.downloadTrainingDatasetController.DownloadTrainingDataset)
 	protected.POST("/projects/:project_id/finetunes", s.createFinetuneController.CreateFinetune)
 	protected.GET("/projects/:project_id/finetunes/:finetune_id", s.getFinetuneController.GetFinetune)
 	protected.GET("/projects/:project_id/finetunes/:finetune_id/download", s.downloadModelController.DownloadModel)

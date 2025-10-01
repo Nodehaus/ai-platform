@@ -2,7 +2,10 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"math/rand"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -188,4 +191,28 @@ func (s *TrainingDatasetService) ConvertToFinetuneJobData(
 	}
 
 	return jobData
+}
+
+// GenerateCsvFilename creates a filename in the format: dataset_{project_name}_v{version}.csv
+// Project name is converted to lowercase, non-alphanumeric and non-space characters are removed,
+// and spaces are replaced with underscores
+func (s *TrainingDatasetService) GenerateCsvFilename(projectName string, version int) string {
+	// Convert to lowercase
+	name := strings.ToLower(projectName)
+
+	// Remove all non-alphanumeric, non-space, and non-underscore characters
+	reg := regexp.MustCompile(`[^a-z0-9\s_]`)
+	name = reg.ReplaceAllString(name, "")
+
+	// Replace spaces with underscores
+	name = strings.ReplaceAll(name, " ", "_")
+
+	// Remove any multiple consecutive underscores
+	reg = regexp.MustCompile(`_+`)
+	name = reg.ReplaceAllString(name, "_")
+
+	// Trim underscores from start and end
+	name = strings.Trim(name, "_")
+
+	return fmt.Sprintf("dataset_%s_v%d.csv", name, version)
 }
