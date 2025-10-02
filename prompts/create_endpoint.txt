@@ -77,3 +77,47 @@ Add an endpoint that allows a user to download a finetune model. The endpoint wi
 ---
 
 Add an endpoint that allows users to download a training dataset. The endpoint will be available at `/api/projects/{project_id}/training-datasets/{training_dataset_id}/download`. The download will be CSV file that contains all data items of the training dataset. The CVS has a header with the `field_names`. The goal is that users can open the CSV files in Excel or Google Sheets.
+
+---
+
+And an endpoint to analyze a prompt that the user entered to create a training dataset. The endpoint will be avaible at `/api/analyze-training-dataset-prompt`. It will accept one prompt as a string and return the folowing:
+
+```
+- analysis_result (string, text about how to improve the prompt)
+- json_object_fields (string, a JSON object with field names and descriptions)
+- input_field (string)
+- output_field (string)
+- expected_output_size_chars (int)
+```
+
+For the values the use case will make two calls to the LLM with the OllamaLLMClient with specific prompts. The first ask the LLM for the `analysis_result`. The second will have the following prompt:
+
+```
+Tell me what list of JSON objects an LLM would output for a given prompt. \
+It does not need to output any source text or reference, **ignore** any mentions of source text. \
+Include minimum 2 fields, maximum 4 fields. We want to use the output data for LLM training. \
+Decide which fields we will use as input and output of the training. \
+Also return the expected size of the output in characters based on your output field description. \
+Use the following output format:
+
+```json
+{
+  "json_object_fields": {
+    "field_name": "Description of what this field represents",
+    "another_field": "Description of this field",
+    "yet_another_field": "More descriptions"
+  },
+  "input_field": "field_name",
+  "output_field": "another_field",
+  "expected_output_size_chars": a_reasonable_int_for_output_size
+}
+```
+
+PROMPT:
+
+[Prompt from endpoint command]
+
+JSON:
+```
+
+Add a service with two functions and their prompts for those LLM calls.

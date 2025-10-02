@@ -66,3 +66,24 @@ We now need a client that start the finetune training job on Runpod. Send the fo
 There are two environment variables `RUNPOD_API_KEY` and `RUNPOD_POD_ID` to access the Runpod API.
 
 We will call the API after the JSON job file has been written in the create finetune use case.
+
+---
+
+Implement a client to call an LLM inference endpoint on Runpod. The endpoint accepts the following payload:
+
+```
+{
+    "input": {
+        "openai_route": "/v1/completions",
+        "openai_input": {
+            "model": model,
+            "prompt": prompt,
+            "max_tokens": max_tokens,
+            "temperature": temperature,
+            "top_p": top_p,
+        },
+    }
+}
+```
+
+The model is `qwen3:30b-a3b-instruct-2507-q4_K_M`, the rest are parameters for the client. Return just the response string from the LLM. The runpod ID is in the environment variable `RUNPOD_POD_ID_OLLAMA`, the runpod API key is in `RUNPOD_API_KEY`.

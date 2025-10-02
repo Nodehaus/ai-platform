@@ -357,6 +357,14 @@ func NewDownloadModelClient() clientsPort.DownloadModelClient {
 	return client
 }
 
+func NewOllamaLLMClient() clientsPort.OllamaLLMClient {
+	client, err := clients.NewOllamaLLMClientImpl()
+	if err != nil {
+		panic(err)
+	}
+	return client
+}
+
 func NewAuthMiddleware(jwtService *services.JWTService) *server.AuthMiddleware {
 	return &server.AuthMiddleware{
 		JwtService: jwtService,
@@ -375,6 +383,7 @@ var Module = fx.Options(
 	fx.Provide(NewFinetuneJobClient),
 	fx.Provide(NewRunpodClient),
 	fx.Provide(NewDownloadModelClient),
+	fx.Provide(NewOllamaLLMClient),
 	fx.Provide(NewUserService),
 	fx.Provide(NewProjectService),
 	fx.Provide(NewTrainingDatasetService),
