@@ -41,11 +41,12 @@ func TrainingDatasetStep4Handler(w http.ResponseWriter, r *http.Request) {
 	corpus := r.URL.Query().Get("corpus")
 	language := r.URL.Query().Get("language")
 	prompt := r.URL.Query().Get("prompt")
-	fieldNames := r.URL.Query().Get("field_names")
+	jsonObjectFields := r.URL.Query().Get("json_object_fields")
 	inputField := r.URL.Query().Get("input_field")
 	outputField := r.URL.Query().Get("output_field")
+	expectedOutputSizeChars := r.URL.Query().Get("expected_output_size_chars")
 
-	if language == "" || prompt == "" || fieldNames == "" || inputField == "" || outputField == "" {
+	if language == "" || prompt == "" || jsonObjectFields == "" || inputField == "" || outputField == "" || expectedOutputSizeChars == "" {
 		http.Redirect(w, r, "/web/projects/"+projectIDStr+"/training-datasets/step1", http.StatusSeeOther)
 		return
 	}
@@ -58,7 +59,7 @@ func TrainingDatasetStep4Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	templ.Handler(TrainingDatasetStep4(projectIDStr, projectName, corpus, language, prompt, fieldNames, inputField, outputField)).ServeHTTP(w, r)
+	templ.Handler(TrainingDatasetStep4(projectIDStr, projectName, corpus, language, prompt, jsonObjectFields, inputField, outputField, expectedOutputSizeChars)).ServeHTTP(w, r)
 }
 
 func CreateTrainingDatasetHandler(w http.ResponseWriter, r *http.Request) {
@@ -91,13 +92,14 @@ func CreateTrainingDatasetHandler(w http.ResponseWriter, r *http.Request) {
 	corpus := r.FormValue("corpus")
 	language := r.FormValue("language")
 	prompt := r.FormValue("prompt")
-	fieldNames := r.FormValue("field_names")
+	jsonObjectFields := r.FormValue("json_object_fields")
 	inputField := r.FormValue("input_field")
 	outputField := r.FormValue("output_field")
+	expectedOutputSizeCharsStr := r.FormValue("expected_output_size_chars")
 	examplesCountStr := r.FormValue("examples_count")
 
 	// Validate required fields
-	if language == "" || prompt == "" || fieldNames == "" || inputField == "" || outputField == "" || examplesCountStr == "" {
+	if language == "" || prompt == "" || jsonObjectFields == "" || inputField == "" || outputField == "" || expectedOutputSizeCharsStr == "" || examplesCountStr == "" {
 		w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">All fields are required</div>`))
 		return
 	}
@@ -108,13 +110,23 @@ func CreateTrainingDatasetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Split field names by comma and trim spaces
-	fieldNamesSlice := make([]string, 0)
-	for _, name := range strings.Split(fieldNames, ",") {
-		trimmed := strings.TrimSpace(name)
-		if trimmed != "" {
-			fieldNamesSlice = append(fieldNamesSlice, trimmed)
-		}
+	expectedOutputSizeChars, err := strconv.Atoi(expectedOutputSizeCharsStr)
+	if err != nil || expectedOutputSizeChars < 1 {
+		w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">Please enter a valid expected output size</div>`))
+		return
+	}
+
+	// Parse JSON object fields
+	var jsonFieldsMap map[string]string
+	if err := json.Unmarshal([]byte(jsonObjectFields), &jsonFieldsMap); err != nil {
+		w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">Invalid JSON object fields format</div>`))
+		return
+	}
+
+	// Extract field names from JSON object fields
+	fieldNamesSlice := make([]string, 0, len(jsonFieldsMap))
+	for fieldName := range jsonFieldsMap {
+		fieldNamesSlice = append(fieldNamesSlice, fieldName)
 	}
 
 	// Create training dataset request

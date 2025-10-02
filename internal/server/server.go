@@ -30,11 +30,12 @@ type Server struct {
 	createFinetuneController                 *web.CreateFinetuneController
 	getFinetuneController                    *web.GetFinetuneController
 	downloadModelController                  *web.DownloadModelController
+	analyzePromptController                  *web.AnalyzePromptController
 	authMiddleware                           *AuthMiddleware
 	externalAPIMiddleware                    *ExternalAPIMiddleware
 }
 
-func NewServer(db database.Service, loginController *web.LoginController, createProjectController *web.CreateProjectController, getProjectController *web.GetProjectController, listProjectsController *web.ListProjectsController, createTrainingDatasetController *web.CreateTrainingDatasetController, getTrainingDatasetController *web.GetTrainingDatasetController, downloadTrainingDatasetController *web.DownloadTrainingDatasetController, uploadTrainingDatasetController *web.UploadTrainingDatasetController, uploadNewTrainingDatasetVersionController *web.UploadNewTrainingDatasetVersionController, updateTrainingDatasetStatusController *web.UpdateTrainingDatasetStatusController, updateFinetuneStatusController *web.UpdateFinetuneStatusController, createFinetuneController *web.CreateFinetuneController, getFinetuneController *web.GetFinetuneController, downloadModelController *web.DownloadModelController, authMiddleware *AuthMiddleware, externalAPIMiddleware *ExternalAPIMiddleware) *http.Server {
+func NewServer(db database.Service, loginController *web.LoginController, createProjectController *web.CreateProjectController, getProjectController *web.GetProjectController, listProjectsController *web.ListProjectsController, createTrainingDatasetController *web.CreateTrainingDatasetController, getTrainingDatasetController *web.GetTrainingDatasetController, downloadTrainingDatasetController *web.DownloadTrainingDatasetController, uploadTrainingDatasetController *web.UploadTrainingDatasetController, uploadNewTrainingDatasetVersionController *web.UploadNewTrainingDatasetVersionController, updateTrainingDatasetStatusController *web.UpdateTrainingDatasetStatusController, updateFinetuneStatusController *web.UpdateFinetuneStatusController, createFinetuneController *web.CreateFinetuneController, getFinetuneController *web.GetFinetuneController, downloadModelController *web.DownloadModelController, analyzePromptController *web.AnalyzePromptController, authMiddleware *AuthMiddleware, externalAPIMiddleware *ExternalAPIMiddleware) *http.Server {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
 	serverInstance := &Server{
 		port:                                     port,
@@ -53,6 +54,7 @@ func NewServer(db database.Service, loginController *web.LoginController, create
 		createFinetuneController:                 createFinetuneController,
 		getFinetuneController:                    getFinetuneController,
 		downloadModelController:                  downloadModelController,
+		analyzePromptController:                  analyzePromptController,
 		authMiddleware:                           authMiddleware,
 		externalAPIMiddleware:                    externalAPIMiddleware,
 	}

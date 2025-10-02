@@ -17,19 +17,7 @@ Create questions of three complexity levels:
 - Medium: Relationships, implications, comparisons
 - Complex: Analysis, synthesis, evaluation, critical thinking
 
-Ensure variety in question types and complexity levels. Return your response as valid JSON with the following structure:
-
-{
-  "items": [
-    {
-      "question": "Clear, specific question about the text",
-      "answer": "Complete, accurate answer based on the text",
-      "complexity": "simple|medium|complex"
-    }
-  ]
-}
-
-Only return valid JSON. If the text doesn't contain enough information for meaningful questions, return {"items": []}.`
+Ensure variety in question types and complexity levels.`
 
 func TrainingDatasetStep3Handler(w http.ResponseWriter, r *http.Request) {
 	token := web.GetTokenFromCookie(r)

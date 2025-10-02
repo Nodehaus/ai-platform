@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"time"
@@ -57,7 +58,7 @@ func (c *OllamaLLMClientImpl) GenerateCompletion(ctx context.Context, prompt str
 	}
 
 	// Create HTTP request to Runpod API
-	url := fmt.Sprintf("https://api.runpod.ai/v2/%s/run", c.podID)
+	url := fmt.Sprintf("https://api.runpod.ai/v2/%s/runsync", c.podID)
 	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(requestJSON))
 	if err != nil {
 		return "", fmt.Errorf("failed to create HTTP request: %w", err)
@@ -77,16 +78,31 @@ func (c *OllamaLLMClientImpl) GenerateCompletion(ctx context.Context, prompt str
 		return "", fmt.Errorf("Runpod API returned status code %d", resp.StatusCode)
 	}
 
+	// Read response body
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("failed to read response body: %w", err)
+	}
+
 	// Parse response
 	var responseData OllamaLLMResponseModel
-	if err := json.NewDecoder(resp.Body).Decode(&responseData); err != nil {
+	if err := json.Unmarshal(bodyBytes, &responseData); err != nil {
 		return "", fmt.Errorf("failed to decode response: %w", err)
 	}
 
+	// Check if status is COMPLETED
+	if responseData.Status != "COMPLETED" {
+		return "", fmt.Errorf("runpod job status is %s, not COMPLETED", responseData.Status)
+	}
+
 	// Extract the response text from the completion
-	if len(responseData.Output.Choices) == 0 {
+	if len(responseData.Output) == 0 {
+		return "", fmt.Errorf("no output in response")
+	}
+
+	if len(responseData.Output[0].Choices) == 0 {
 		return "", fmt.Errorf("no completion choices in response")
 	}
 
-	return responseData.Output.Choices[0].Text, nil
+	return responseData.Output[0].Choices[0].Text, nil
 }

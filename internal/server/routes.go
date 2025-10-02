@@ -32,6 +32,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	// Protected routes (authentication required)
 	protected := r.Group("/api")
 	protected.Use(s.authMiddleware.RequireAuth())
+	protected.POST("/analyze-training-dataset-prompt", s.analyzePromptController.AnalyzePrompt)
 	protected.POST("/projects", s.createProjectController.CreateProject)
 	protected.GET("/projects", s.listProjectsController.ListProjects)
 	protected.GET("/projects/:project_id", s.getProjectController.GetProject)

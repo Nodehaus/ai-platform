@@ -73,6 +73,12 @@ func NewFinetuneService() *services.FinetuneService {
 	return &services.FinetuneService{}
 }
 
+func NewPromptAnalysisService(ollamaLLMClient clientsPort.OllamaLLMClient) *services.PromptAnalysisService {
+	return &services.PromptAnalysisService{
+		OllamaLLMClient: ollamaLLMClient,
+	}
+}
+
 func NewJWTService() *services.JWTService {
 	secretKey := os.Getenv("JWT_SECRET_KEY")
 	if secretKey == "" {
@@ -245,9 +251,21 @@ func NewDownloadModelUseCase(finetuneRepo persistencePort.FinetuneRepository, do
 	}
 }
 
+func NewAnalyzePromptUseCase(promptAnalysisService *services.PromptAnalysisService) in.AnalyzePromptUseCase {
+	return &use_cases.AnalyzePromptUseCaseImpl{
+		PromptAnalysisService: promptAnalysisService,
+	}
+}
+
 func NewDownloadModelController(downloadModelUseCase in.DownloadModelUseCase) *web.DownloadModelController {
 	return &web.DownloadModelController{
 		DownloadModelUseCase: downloadModelUseCase,
+	}
+}
+
+func NewAnalyzePromptController(analyzePromptUseCase in.AnalyzePromptUseCase) *web.AnalyzePromptController {
+	return &web.AnalyzePromptController{
+		AnalyzePromptUseCase: analyzePromptUseCase,
 	}
 }
 
@@ -388,6 +406,7 @@ var Module = fx.Options(
 	fx.Provide(NewProjectService),
 	fx.Provide(NewTrainingDatasetService),
 	fx.Provide(NewFinetuneService),
+	fx.Provide(NewPromptAnalysisService),
 	fx.Provide(NewJWTService),
 	fx.Provide(NewLoginUseCase),
 	fx.Provide(NewCreateProjectUseCase),
@@ -403,6 +422,7 @@ var Module = fx.Options(
 	fx.Provide(NewUpdateFinetuneStatusUseCase),
 	fx.Provide(NewGetFinetuneUseCase),
 	fx.Provide(NewDownloadModelUseCase),
+	fx.Provide(NewAnalyzePromptUseCase),
 	fx.Provide(NewLoginController),
 	fx.Provide(NewCreateProjectController),
 	fx.Provide(NewGetProjectController),
@@ -417,6 +437,7 @@ var Module = fx.Options(
 	fx.Provide(NewUpdateFinetuneStatusController),
 	fx.Provide(NewGetFinetuneController),
 	fx.Provide(NewDownloadModelController),
+	fx.Provide(NewAnalyzePromptController),
 	fx.Provide(NewAuthMiddleware),
 	fx.Provide(NewExternalAPIMiddleware),
 )

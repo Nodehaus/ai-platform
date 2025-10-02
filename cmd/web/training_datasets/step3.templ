@@ -19,28 +19,45 @@ templ TrainingDatasetStep3(projectID string, projectName string, corpus string, 
 						<textarea
 							id="prompt"
 							name="prompt"
-							rows="20"
+							rows="10"
 							required
 							placeholder="Describe the task that you want to train on in detail and add a JSON output format"
 							class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
 						>{ defaultPrompt }</textarea>
+						<button
+							type="button"
+							id="analyze-btn"
+							class="mt-2 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+						>
+							<svg class="hidden animate-spin -ml-1 mr-2 h-4 w-4 text-gray-700" id="analyze-spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+								<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+								<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+							</svg>
+							Analyze Prompt
+						</button>
+					</div>
+
+					<!-- Analysis Results -->
+					<div id="analysis-results" class="hidden p-4 bg-blue-50 border border-blue-200 rounded-md">
+						<h3 class="text-sm font-semibold text-gray-900 mb-2">Analysis & Suggestions</h3>
+						<p id="analysis-text" class="text-sm text-gray-700 whitespace-pre-wrap"></p>
+						<p class="text-xs text-gray-500 mt-2 italic">The fields below have been automatically populated based on the analysis.</p>
 					</div>
 
 					<div class="grid grid-cols-1 gap-4">
 						<div>
-							<label for="field-names" class="block text-sm font-medium text-gray-700 mb-2">
-								Field Names
+							<label for="json-object-fields" class="block text-sm font-medium text-gray-700 mb-2">
+								JSON Object Fields
 							</label>
-							<input
-								type="text"
-								id="field-names"
-								name="field-names"
+							<textarea
+								id="json-object-fields"
+								name="json-object-fields"
+								rows="7"
 								required
-								placeholder="Comma-separated fields of your JSON output"
-								value="question,answer,complexity"
-								class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-							/>
-							<p class="text-xs text-gray-500 mt-1">Comma separated</p>
+								placeholder='{"field1": "Description of field1", "field2": "Description of field2"}'
+								class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+							></textarea>
+							<p class="text-xs text-gray-500 mt-1">JSON object with field names as keys and descriptions as values</p>
 						</div>
 
 						<div>
@@ -53,7 +70,7 @@ templ TrainingDatasetStep3(projectID string, projectName string, corpus string, 
 								name="input-field"
 								required
 								placeholder="The excepted input field of your JSON"
-								value="question"
+								value=""
 								class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
 							/>
 						</div>
@@ -68,9 +85,26 @@ templ TrainingDatasetStep3(projectID string, projectName string, corpus string, 
 								name="output-field"
 								required
 								placeholder="The expected output field of your JSON"
-								value="answer"
+								value=""
 								class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
 							/>
+						</div>
+
+						<div>
+							<label for="expected-output-size-chars" class="block text-sm font-medium text-gray-700 mb-2">
+								Expected Output Size (Characters)
+							</label>
+							<input
+								type="number"
+								id="expected-output-size-chars"
+								name="expected-output-size-chars"
+								required
+								placeholder="Expected number of characters in output"
+								value=""
+								min="1"
+								class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+							/>
+							<p class="text-xs text-gray-500 mt-1">Approximate character count for the output field</p>
 						</div>
 					</div>
 				</form>
@@ -97,24 +131,84 @@ templ TrainingDatasetStep3(projectID string, projectName string, corpus string, 
 			const corpus = {{ corpus }};
 			const language = {{ language }};
 
+			let analysisData = null;
+
+			// Analyze Prompt
+			document.getElementById('analyze-btn').addEventListener('click', async function() {
+				const prompt = document.getElementById('prompt').value.trim();
+
+				if (!prompt) {
+					alert('Please enter a prompt first');
+					return;
+				}
+
+				const analyzeBtn = document.getElementById('analyze-btn');
+				const spinner = document.getElementById('analyze-spinner');
+				const resultsDiv = document.getElementById('analysis-results');
+
+				// Show loading state
+				analyzeBtn.disabled = true;
+				spinner.classList.remove('hidden');
+				resultsDiv.classList.add('hidden');
+
+				try {
+					const response = await fetch('/api/analyze-training-dataset-prompt', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						credentials: 'include',
+						body: JSON.stringify({ prompt: prompt })
+					});
+
+					if (!response.ok) {
+						throw new Error('Failed to analyze prompt');
+					}
+
+					const data = await response.json();
+					analysisData = data;
+
+					// Display analysis text only
+					document.getElementById('analysis-text').textContent = data.analysis_result;
+
+					// Automatically populate form fields
+					document.getElementById('json-object-fields').value = JSON.stringify(data.json_object_fields, null, 2);
+					document.getElementById('input-field').value = data.input_field;
+					document.getElementById('output-field').value = data.output_field;
+					document.getElementById('expected-output-size-chars').value = data.expected_output_size_chars;
+
+					// Trigger validation
+					validateForm();
+
+					resultsDiv.classList.remove('hidden');
+				} catch (error) {
+					alert('Error analyzing prompt: ' + error.message);
+				} finally {
+					analyzeBtn.disabled = false;
+					spinner.classList.add('hidden');
+				}
+			});
+
 			function validateForm() {
 				const prompt = document.getElementById('prompt').value.trim();
-				const fieldNames = document.getElementById('field-names').value.trim();
+				const jsonObjectFields = document.getElementById('json-object-fields').value.trim();
 				const inputField = document.getElementById('input-field').value.trim();
 				const outputField = document.getElementById('output-field').value.trim();
+				const expectedOutputSizeChars = document.getElementById('expected-output-size-chars').value.trim();
 
 				const nextBtn = document.getElementById('next-btn');
 
-				if (prompt && fieldNames && inputField && outputField) {
+				if (prompt && jsonObjectFields && inputField && outputField && expectedOutputSizeChars) {
 					nextBtn.disabled = false;
 					nextBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
 					nextBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
 					nextBtn.onclick = function() {
 						const promptParam = encodeURIComponent(prompt);
-						const fieldNamesParam = encodeURIComponent(fieldNames);
+						const jsonObjectFieldsParam = encodeURIComponent(jsonObjectFields);
 						const inputFieldParam = encodeURIComponent(inputField);
 						const outputFieldParam = encodeURIComponent(outputField);
-						window.location.href = '/web/projects/' + projectId + '/training-datasets/step4?corpus=' + encodeURIComponent(corpus) + '&language=' + encodeURIComponent(language) + '&prompt=' + promptParam + '&field_names=' + fieldNamesParam + '&input_field=' + inputFieldParam + '&output_field=' + outputFieldParam;
+						const expectedOutputSizeCharsParam = encodeURIComponent(expectedOutputSizeChars);
+						window.location.href = '/web/projects/' + projectId + '/training-datasets/step4?corpus=' + encodeURIComponent(corpus) + '&language=' + encodeURIComponent(language) + '&prompt=' + promptParam + '&json_object_fields=' + jsonObjectFieldsParam + '&input_field=' + inputFieldParam + '&output_field=' + outputFieldParam + '&expected_output_size_chars=' + expectedOutputSizeCharsParam;
 					};
 				} else {
 					nextBtn.disabled = true;
@@ -125,9 +219,10 @@ templ TrainingDatasetStep3(projectID string, projectName string, corpus string, 
 			}
 
 			document.getElementById('prompt').addEventListener('input', validateForm);
-			document.getElementById('field-names').addEventListener('input', validateForm);
+			document.getElementById('json-object-fields').addEventListener('input', validateForm);
 			document.getElementById('input-field').addEventListener('input', validateForm);
 			document.getElementById('output-field').addEventListener('input', validateForm);
+			document.getElementById('expected-output-size-chars').addEventListener('input', validateForm);
 			validateForm();
 		</script>
 	}
