@@ -141,7 +141,9 @@ templ TrainingDatasetStep1(projectID string, projectName string) {
 						if (corpusSelect.value) {
 							enableNextButton();
 						}
-					} else if (this.value === 'no-corpus' || this.value === 'upload-corpus') {
+					} else if (this.value === 'no-corpus') {
+						enableNextButton();
+					} else if (this.value === 'upload-corpus') {
 						if (this.value === 'upload-corpus') {
 							uploadCorpusSection.classList.remove('hidden');
 						}
@@ -168,7 +170,12 @@ templ TrainingDatasetStep1(projectID string, projectName string) {
 				nextBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
 				nextBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
 				nextBtn.onclick = function() {
-					window.location.href = '/web/projects/' + projectId + '/training-datasets/step2?corpus=' + encodeURIComponent(corpusSelect.value);
+					let corpus = '';
+					if (corpusSelect.value) {
+						corpus = corpusSelect.value;
+					}
+					console.log(corpus);
+					window.location.href = '/web/projects/' + projectId + '/training-datasets/step2?corpus=' + encodeURIComponent(corpus);
 				};
 			}
 

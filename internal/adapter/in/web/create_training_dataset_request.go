@@ -1,7 +1,7 @@
 package web
 
 type CreateTrainingDatasetRequest struct {
-	CorpusName             string   `json:"corpus_name" binding:"required"`
+	CorpusName             string   `json:"corpus_name"`
 	InputField             string   `json:"input_field" binding:"required"`
 	OutputField            string   `json:"output_field" binding:"required"`
 	LanguageISO            string   `json:"language_iso" binding:"required"`

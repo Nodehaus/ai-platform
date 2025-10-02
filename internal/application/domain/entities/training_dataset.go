@@ -31,7 +31,7 @@ type TrainingDataset struct {
 	TotalGenerationTimeSeconds      *float64              `json:"total_generation_time_seconds,omitempty"`
 	GeneratePromptHistoryIDs        []uuid.UUID           `json:"generate_prompt_history_ids"`
 	GeneratePromptID                uuid.UUID             `json:"generate_prompt_id"`
-	CorpusID                        uuid.UUID             `json:"corpus_id"`
+	CorpusID                        *uuid.UUID            `json:"corpus_id,omitempty"`
 	LanguageISO                     string                `json:"language_iso"`
 	Status                          TrainingDatasetStatus `json:"status"`
 	FieldNames                      []string              `json:"field_names"`

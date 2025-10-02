@@ -33,21 +33,20 @@ func (uc *CreateTrainingDatasetUseCaseImpl) Execute(ctx context.Context, command
 		return nil, errors.New("project not found")
 	}
 
-	// Validate corpus name and generate prompt
-	if err := uc.TrainingDatasetService.ValidateCorpusName(command.CorpusName); err != nil {
-		return nil, err
-	}
 	if err := uc.TrainingDatasetService.ValidateGeneratePrompt(command.GeneratePrompt); err != nil {
 		return nil, err
 	}
 
 	// Verify corpus exists (assuming it exists as stated in requirements)
-	corpus, err := uc.CorpusRepository.GetByName(ctx, command.CorpusName)
-	if err != nil {
-		return nil, err
-	}
-	if corpus == nil {
-		return nil, errors.New("corpus not found")
+	var corpus *entities.Corpus
+	if (command.CorpusName != "") {
+		corpus, err = uc.CorpusRepository.GetByName(ctx, command.CorpusName)
+		if err != nil {
+			return nil, err
+		}
+		if corpus == nil {
+			return nil, errors.New("corpus not found")
+		}
 	}
 
 	// Create prompt entity
@@ -70,9 +69,13 @@ func (uc *CreateTrainingDatasetUseCaseImpl) Execute(ctx context.Context, command
 	}
 
 	// Create training dataset
+	var corpusID *uuid.UUID
+	if corpus != nil {
+		corpusID = &corpus.ID
+	}
 	trainingDataset, err := uc.TrainingDatasetService.CreateTrainingDataset(
 		command.ProjectID,
-		corpus.ID,
+		corpusID,
 		prompt.ID,
 		command.InputField,
 		command.OutputField,
@@ -94,13 +97,21 @@ func (uc *CreateTrainingDatasetUseCaseImpl) Execute(ctx context.Context, command
 	}
 
 	// Submit job to S3
+	var corpusS3Path string
 	var corpusFilesSubset []string
-	if corpus.FilesSubset != nil {
-		corpusFilesSubset = *corpus.FilesSubset
+
+	if corpus != nil {
+		corpusS3Path = corpus.S3Path
+		if corpus.FilesSubset != nil {
+			corpusFilesSubset = *corpus.FilesSubset
+		}
+	} else {
+		corpusS3Path = ""
+		corpusFilesSubset = []string{}
 	}
 
 	job := entities.TrainingDatasetJob{
-		CorpusS3Path:           corpus.S3Path,
+		CorpusS3Path:           corpusS3Path,
 		CorpusFilesSubset:      corpusFilesSubset,
 		LanguageISO:            command.LanguageISO,
 		UserID:                 command.UserID.String(),

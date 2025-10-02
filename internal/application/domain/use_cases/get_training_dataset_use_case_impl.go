@@ -43,14 +43,15 @@ func (uc *GetTrainingDatasetUseCaseImpl) GetTrainingDataset(command in.GetTraini
 	}
 
 	// Get the corpus name
-	corpus, err := uc.CorpusRepository.GetByID(context.Background(), trainingDataset.CorpusID)
-	if err != nil {
-		return nil, err
-	}
-
 	corpusName := ""
-	if corpus != nil {
-		corpusName = corpus.Name
+	if trainingDataset.CorpusID != nil {
+		corpus, err := uc.CorpusRepository.GetByID(context.Background(), *trainingDataset.CorpusID)
+		if err != nil {
+			return nil, err
+		}
+		if corpus != nil {
+			corpusName = corpus.Name
+		}
 	}
 
 	return &in.GetTrainingDatasetResult{

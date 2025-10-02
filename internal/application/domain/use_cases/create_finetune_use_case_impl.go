@@ -112,16 +112,22 @@ func (uc *CreateFinetuneUseCaseImpl) Execute(ctx context.Context, command in.Cre
 	}
 
 	// Get corpus information for documents S3 path
-	corpus, err := uc.CorpusRepository.GetByID(ctx, trainingDataset.CorpusID)
-	if err != nil {
-		return nil, err
-	}
-	if corpus == nil {
-		return nil, errors.New("corpus not found")
+	var corpusS3Path string
+	if trainingDataset.CorpusID != nil {
+		corpus, err := uc.CorpusRepository.GetByID(ctx, *trainingDataset.CorpusID)
+		if err != nil {
+			return nil, err
+		}
+		if corpus == nil {
+			return nil, errors.New("corpus not found")
+		}
+		corpusS3Path = corpus.S3Path
+	} else {
+		corpusS3Path = ""
 	}
 
 	// Start finetune job on Runpod
-	err = uc.RunpodClient.StartFinetuneJob(ctx, s3Key, corpus.S3Path, command.BaseModelName, modelName, finetune.ID.String())
+	err = uc.RunpodClient.StartFinetuneJob(ctx, s3Key, corpusS3Path, command.BaseModelName, modelName, finetune.ID.String())
 	if err != nil {
 		return nil, err
 	}

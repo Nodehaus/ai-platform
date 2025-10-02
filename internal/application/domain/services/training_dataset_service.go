@@ -18,7 +18,7 @@ type TrainingDatasetService struct{}
 
 func (s *TrainingDatasetService) CreateTrainingDataset(
 	projectID uuid.UUID,
-	corpusID uuid.UUID,
+	corpusID *uuid.UUID,
 	promptID uuid.UUID,
 	inputField string,
 	outputField string,
@@ -30,7 +30,7 @@ func (s *TrainingDatasetService) CreateTrainingDataset(
 		return nil, err
 	}
 
-	return &entities.TrainingDataset{
+	trainingDataset := &entities.TrainingDataset{
 		ID:                       uuid.New(),
 		ProjectID:                projectID,
 		Version:                  1,
@@ -44,7 +44,9 @@ func (s *TrainingDatasetService) CreateTrainingDataset(
 		FieldNames:               fieldNames,
 		GenerateExamplesNumber:   generateExamplesNumber,
 		Data:                     []entities.TrainingDataItem{},
-	}, nil
+	}
+
+	return trainingDataset, nil
 }
 
 func (s *TrainingDatasetService) ValidateCreateTrainingDatasetRequest(
@@ -87,13 +89,6 @@ func (s *TrainingDatasetService) ValidateCreateTrainingDatasetRequest(
 		return errors.New("output_field must be present in field_names")
 	}
 
-	return nil
-}
-
-func (s *TrainingDatasetService) ValidateCorpusName(corpusName string) error {
-	if corpusName == "" {
-		return errors.New("corpus_name is required")
-	}
 	return nil
 }
 

@@ -60,10 +60,12 @@ templ TrainingDatasetIndex(data TrainingDatasetIndexData) {
 									<span class="font-medium text-gray-700">Examples Generated:</span>
 									<span class="ml-2 text-gray-600">{ fmt.Sprintf("%d", data.TrainingDataset.GenerateExamplesNumber) }</span>
 								</div>
-								<div>
-									<span class="font-medium text-gray-700">Corpus:</span>
-									<span class="ml-2 text-gray-600">{ data.TrainingDataset.CorpusName }</span>
-								</div>
+								if data.TrainingDataset.CorpusName != "" {
+									<div>
+										<span class="font-medium text-gray-700">Corpus:</span>
+										<span class="ml-2 text-gray-600">{ data.TrainingDataset.CorpusName }</span>
+									</div>
+								}
 								<div class="col-span-2">
 									<span class="font-medium text-gray-700">Generation Prompt:</span>
 									<div class="mt-1 p-2 bg-gray-50 rounded text-gray-600 text-xs">

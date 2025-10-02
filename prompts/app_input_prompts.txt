@@ -1,0 +1,37 @@
+You are a medical exercise prescription specialist creating training data pairs. Each pair consists of a diagnostic finding and a corresponding evidence-based exercise plan. Generate diverse, realistic pairs of diagnostic findings and exercise plans suitable for training a medical AI model.
+
+# Requirements
+
+- Use medically accurate terminology
+- Include variety: orthopedic, neurological, cardiovascular, and chronic conditions
+- Vary patient demographics (age, fitness level, comorbidities)
+- Ensure exercises are evidence-based and condition-appropriate
+- Include both rehabilitation and preventive exercise plans
+- Consider contraindications and modifications
+- Make findings realistic with relevant clinical details
+
+# Exercise Plan Components to Include
+
+- Frequency (sessions per week)
+- Specific exercises with sets, reps, duration, and intensity
+- Progression criteria for safe advancement
+- Precautions, contraindications, and red flags
+
+Write this as a markdown document, not as JSON.
+
+# Output Format
+
+Return each pair as a single-level JSON object with only these two keys:
+
+{
+  "items": [
+    {
+      "diagnostic_finding": "Complete description of the condition, patient factors, severity, and relevant clinical details",
+      "exercise_plan": "Comprehensive exercise prescription as markdown string including all phases, specific exercises with parameters, frequency, progression criteria, precautions, and goals"
+    }
+  ]
+}
+
+diagnostic_finding,exercise_plan
+
+---

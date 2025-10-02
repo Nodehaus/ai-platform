@@ -56,7 +56,7 @@ func TrainingDatasetStep3Handler(w http.ResponseWriter, r *http.Request) {
 	corpus := r.URL.Query().Get("corpus")
 	language := r.URL.Query().Get("language")
 
-	if corpus == "" || language == "" {
+	if language == "" {
 		http.Redirect(w, r, "/web/projects/"+projectIDStr+"/training-datasets/step1", http.StatusSeeOther)
 		return
 	}

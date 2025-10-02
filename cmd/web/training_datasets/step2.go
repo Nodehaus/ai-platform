@@ -33,10 +33,6 @@ func TrainingDatasetStep2Handler(w http.ResponseWriter, r *http.Request) {
 
 	// Get corpus from query parameter
 	corpus := r.URL.Query().Get("corpus")
-	if corpus == "" {
-		http.Redirect(w, r, "/web/projects/"+projectIDStr+"/training-datasets/step1", http.StatusSeeOther)
-		return
-	}
 
 	// Fetch project details to get the project name
 	projectName, err := fetchProjectName(r, token, projectID)

@@ -21,10 +21,10 @@ type TrainingDatasetRepositoryModel struct {
 	InputField                      string    `db:"input_field"`
 	OutputField                     string    `db:"output_field"`
 	TotalGenerationTimeSeconds      *float64  `db:"total_generation_time_seconds"`
-	GeneratePromptHistoryIDsJSON    string    `db:"generate_prompt_history_ids_json"`
-	GeneratePromptID                uuid.UUID `db:"generate_prompt_id"`
-	CorpusID                        uuid.UUID `db:"corpus_id"`
-	LanguageISO                     string    `db:"language_iso"`
+	GeneratePromptHistoryIDsJSON    string     `db:"generate_prompt_history_ids_json"`
+	GeneratePromptID                uuid.UUID  `db:"generate_prompt_id"`
+	CorpusID                        *uuid.UUID `db:"corpus_id"`
+	LanguageISO                     string     `db:"language_iso"`
 	Status                          string    `db:"status"`
 	FieldNamesJSON                  string    `db:"field_names_json"`
 	GenerateExamplesNumber          int       `db:"generate_examples_number"`

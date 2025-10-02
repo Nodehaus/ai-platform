@@ -45,7 +45,7 @@ func TrainingDatasetStep4Handler(w http.ResponseWriter, r *http.Request) {
 	inputField := r.URL.Query().Get("input_field")
 	outputField := r.URL.Query().Get("output_field")
 
-	if corpus == "" || language == "" || prompt == "" || fieldNames == "" || inputField == "" || outputField == "" {
+	if language == "" || prompt == "" || fieldNames == "" || inputField == "" || outputField == "" {
 		http.Redirect(w, r, "/web/projects/"+projectIDStr+"/training-datasets/step1", http.StatusSeeOther)
 		return
 	}
@@ -97,7 +97,7 @@ func CreateTrainingDatasetHandler(w http.ResponseWriter, r *http.Request) {
 	examplesCountStr := r.FormValue("examples_count")
 
 	// Validate required fields
-	if corpus == "" || language == "" || prompt == "" || fieldNames == "" || inputField == "" || outputField == "" || examplesCountStr == "" {
+	if language == "" || prompt == "" || fieldNames == "" || inputField == "" || outputField == "" || examplesCountStr == "" {
 		w.Write([]byte(`<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">All fields are required</div>`))
 		return
 	}
