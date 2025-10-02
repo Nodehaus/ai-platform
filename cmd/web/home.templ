@@ -18,7 +18,7 @@ templ Home(projectsData ProjectsData) {
 					</div>
 				} else {
 					for _, project := range projectsData.Projects {
-						<div class="project-item">
+						<div class="project-item max-w-3xl mx-auto">
 							<div class="flex justify-between items-center">
 								<div class="project-name">{ project.Name }</div>
 								<span class="text-sm text-gray-500">Created { project.CreatedAt }</span>
