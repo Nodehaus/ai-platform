@@ -18,10 +18,11 @@ func (r *TrainingDatasetRepositoryImpl) Create(ctx context.Context, trainingData
 	query := `INSERT INTO training_datasets (
 		id, project_id, version, generate_model, generate_model_runner,
 		generate_gpu_info_card, generate_gpu_info_total_gb, generate_gpu_info_cuda_version,
-		input_field, output_field, total_generation_time_seconds,
+		input_field, output_field, json_object_fields_json, expected_output_size_chars,
+		total_generation_time_seconds,
 		generate_prompt_history_ids_json, generate_prompt_id, corpus_id,
 		language_iso, status, field_names_json, generate_examples_number, created_at, updated_at
-	) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)`
+	) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)`
 
 	now := time.Now()
 	trainingDataset.CreatedAt = now
@@ -43,6 +44,8 @@ func (r *TrainingDatasetRepositoryImpl) Create(ctx context.Context, trainingData
 		model.GenerateGPUInfoCudaVersion,
 		model.InputField,
 		model.OutputField,
+		model.JSONObjectFieldsJSON,
+		model.ExpectedOutputSizeChars,
 		model.TotalGenerationTimeSeconds,
 		model.GeneratePromptHistoryIDsJSON,
 		model.GeneratePromptID,
@@ -67,7 +70,8 @@ func (r *TrainingDatasetRepositoryImpl) GetByID(ctx context.Context, id uuid.UUI
 	query := `SELECT
 		id, project_id, version, generate_model, generate_model_runner,
 		generate_gpu_info_card, generate_gpu_info_total_gb, generate_gpu_info_cuda_version,
-		input_field, output_field, total_generation_time_seconds,
+		input_field, output_field, json_object_fields_json, expected_output_size_chars,
+		total_generation_time_seconds,
 		generate_prompt_history_ids_json, generate_prompt_id, corpus_id,
 		language_iso, status, field_names_json, generate_examples_number, created_at, updated_at
 	FROM training_datasets WHERE id = $1`
@@ -84,6 +88,8 @@ func (r *TrainingDatasetRepositoryImpl) GetByID(ctx context.Context, id uuid.UUI
 		&model.GenerateGPUInfoCudaVersion,
 		&model.InputField,
 		&model.OutputField,
+		&model.JSONObjectFieldsJSON,
+		&model.ExpectedOutputSizeChars,
 		&model.TotalGenerationTimeSeconds,
 		&model.GeneratePromptHistoryIDsJSON,
 		&model.GeneratePromptID,
@@ -121,7 +127,8 @@ func (r *TrainingDatasetRepositoryImpl) GetByProjectID(ctx context.Context, proj
 	query := `SELECT
 		id, project_id, version, generate_model, generate_model_runner,
 		generate_gpu_info_card, generate_gpu_info_total_gb, generate_gpu_info_cuda_version,
-		input_field, output_field, total_generation_time_seconds,
+		input_field, output_field, json_object_fields_json, expected_output_size_chars,
+		total_generation_time_seconds,
 		generate_prompt_history_ids_json, generate_prompt_id, corpus_id,
 		language_iso, status, field_names_json, generate_examples_number, created_at, updated_at
 	FROM training_datasets WHERE project_id = $1 ORDER BY version DESC`
@@ -146,6 +153,8 @@ func (r *TrainingDatasetRepositoryImpl) GetByProjectID(ctx context.Context, proj
 			&model.GenerateGPUInfoCudaVersion,
 			&model.InputField,
 			&model.OutputField,
+			&model.JSONObjectFieldsJSON,
+			&model.ExpectedOutputSizeChars,
 			&model.TotalGenerationTimeSeconds,
 			&model.GeneratePromptHistoryIDsJSON,
 			&model.GeneratePromptID,
@@ -182,7 +191,8 @@ func (r *TrainingDatasetRepositoryImpl) GetLatestByProjectID(ctx context.Context
 	query := `SELECT
 		id, project_id, version, generate_model, generate_model_runner,
 		generate_gpu_info_card, generate_gpu_info_total_gb, generate_gpu_info_cuda_version,
-		input_field, output_field, total_generation_time_seconds,
+		input_field, output_field, json_object_fields_json, expected_output_size_chars,
+		total_generation_time_seconds,
 		generate_prompt_history_ids_json, generate_prompt_id, corpus_id,
 		language_iso, status, field_names_json, generate_examples_number, created_at, updated_at
 	FROM training_datasets WHERE project_id = $1 ORDER BY version DESC LIMIT 1`
@@ -199,6 +209,8 @@ func (r *TrainingDatasetRepositoryImpl) GetLatestByProjectID(ctx context.Context
 		&model.GenerateGPUInfoCudaVersion,
 		&model.InputField,
 		&model.OutputField,
+		&model.JSONObjectFieldsJSON,
+		&model.ExpectedOutputSizeChars,
 		&model.TotalGenerationTimeSeconds,
 		&model.GeneratePromptHistoryIDsJSON,
 		&model.GeneratePromptID,
@@ -236,9 +248,10 @@ func (r *TrainingDatasetRepositoryImpl) Update(ctx context.Context, trainingData
 	query := `UPDATE training_datasets SET
 		generate_model = $3, generate_model_runner = $4, generate_gpu_info_card = $5,
 		generate_gpu_info_total_gb = $6, generate_gpu_info_cuda_version = $7,
-		input_field = $8, output_field = $9, total_generation_time_seconds = $10,
-		generate_prompt_history_ids_json = $11, generate_prompt_id = $12, corpus_id = $13,
-		language_iso = $14, status = $15, field_names_json = $16, generate_examples_number = $17, updated_at = $18
+		input_field = $8, output_field = $9, json_object_fields_json = $10, expected_output_size_chars = $11,
+		total_generation_time_seconds = $12,
+		generate_prompt_history_ids_json = $13, generate_prompt_id = $14, corpus_id = $15,
+		language_iso = $16, status = $17, field_names_json = $18, generate_examples_number = $19, updated_at = $20
 	WHERE id = $1 AND project_id = $2`
 
 	trainingDataset.UpdatedAt = time.Now()
@@ -258,6 +271,8 @@ func (r *TrainingDatasetRepositoryImpl) Update(ctx context.Context, trainingData
 		model.GenerateGPUInfoCudaVersion,
 		model.InputField,
 		model.OutputField,
+		model.JSONObjectFieldsJSON,
+		model.ExpectedOutputSizeChars,
 		model.TotalGenerationTimeSeconds,
 		model.GeneratePromptHistoryIDsJSON,
 		model.GeneratePromptID,

@@ -50,10 +50,12 @@ numbers.
     -   generate_prompt_history: list of Prompt (history of all prompts that the user saved, except the current_prompt)
     -   generate_prompt: Prompt (required)
     -   generate_examples_number: int (required)
-    -   corpus: Corpus (required)
+    -   corpus: Corpus
     -   language_iso: string (3-letter ISO code, required)
     -   status: enum of [PLANNING, RUNNING, ABORTED, FAILED, DONE, DELETED] (required)
     -   field_names: list of string (required)
+    -   json_object_fields: string (required)
+    -   expected_output_size_chars: int (required)
     -   data: list of TrainingDataItem
 
 Each `TrainingDataItem` is one example for training, validation and/or evaluation:

@@ -50,6 +50,12 @@ func NewTrainingDatasetJobClientImpl() (*TrainingDatasetJobClientImpl, error) {
 }
 
 func (c *TrainingDatasetJobClientImpl) SubmitJob(ctx context.Context, job entities.TrainingDatasetJob) error {
+	// Marshal JSONObjectFields to JSON string
+	jsonObjectFieldsJSON, err := json.Marshal(job.JSONObjectFields)
+	if err != nil {
+		return fmt.Errorf("failed to marshal json_object_fields: %w", err)
+	}
+
 	// Adapt domain entity to client model
 	clientModel := TrainingDatasetJobClientModel{
 		CorpusS3Path:            job.CorpusS3Path,
@@ -61,6 +67,8 @@ func (c *TrainingDatasetJobClientImpl) SubmitJob(ctx context.Context, job entiti
 		GenerateExamplesNumber:  job.GenerateExamplesNumber,
 		GenerateModel:           job.GenerateModel,
 		GenerateModelRunner:     job.GenerateModelRunner,
+		JSONObjectFields:        string(jsonObjectFieldsJSON),
+		ExpectedOutputSizeChars: job.ExpectedOutputSizeChars,
 	}
 
 	jobJSON, err := json.Marshal(clientModel)

@@ -52,17 +52,19 @@ func (c *CreateTrainingDatasetController) CreateTrainingDataset(ctx *gin.Context
 	}
 
 	command := in.CreateTrainingDatasetCommand{
-		UserID:                 userID,
-		ProjectID:              projectID,
-		CorpusName:             request.CorpusName,
-		InputField:             request.InputField,
-		OutputField:            request.OutputField,
-		LanguageISO:            request.LanguageISO,
-		FieldNames:             request.FieldNames,
-		GeneratePrompt:         request.GeneratePrompt,
-		GenerateExamplesNumber: request.GenerateExamplesNumber,
-		GenerateModel:          generateModel,
-		GenerateModelRunner:    generateModelRunner,
+		UserID:                  userID,
+		ProjectID:               projectID,
+		CorpusName:              request.CorpusName,
+		InputField:              request.InputField,
+		OutputField:             request.OutputField,
+		JSONObjectFields:        request.JSONObjectFields,
+		ExpectedOutputSizeChars: request.ExpectedOutputSizeChars,
+		LanguageISO:             request.LanguageISO,
+		FieldNames:              request.FieldNames,
+		GeneratePrompt:          request.GeneratePrompt,
+		GenerateExamplesNumber:  request.GenerateExamplesNumber,
+		GenerateModel:           generateModel,
+		GenerateModelRunner:     generateModelRunner,
 	}
 
 	result, err := c.CreateTrainingDatasetUseCase.Execute(ctx.Request.Context(), command)

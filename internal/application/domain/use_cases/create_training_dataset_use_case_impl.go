@@ -79,6 +79,8 @@ func (uc *CreateTrainingDatasetUseCaseImpl) Execute(ctx context.Context, command
 		prompt.ID,
 		command.InputField,
 		command.OutputField,
+		command.JSONObjectFields,
+		command.ExpectedOutputSizeChars,
 		command.LanguageISO,
 		command.FieldNames,
 		command.GenerateExamplesNumber,
@@ -111,15 +113,17 @@ func (uc *CreateTrainingDatasetUseCaseImpl) Execute(ctx context.Context, command
 	}
 
 	job := entities.TrainingDatasetJob{
-		CorpusS3Path:           corpusS3Path,
-		CorpusFilesSubset:      corpusFilesSubset,
-		LanguageISO:            command.LanguageISO,
-		UserID:                 command.UserID.String(),
-		TrainingDatasetID:      trainingDataset.ID.String(),
-		GeneratePrompt:         command.GeneratePrompt,
-		GenerateExamplesNumber: command.GenerateExamplesNumber,
-		GenerateModel:          command.GenerateModel,
-		GenerateModelRunner:    command.GenerateModelRunner,
+		CorpusS3Path:            corpusS3Path,
+		CorpusFilesSubset:       corpusFilesSubset,
+		LanguageISO:             command.LanguageISO,
+		UserID:                  command.UserID.String(),
+		TrainingDatasetID:       trainingDataset.ID.String(),
+		GeneratePrompt:          command.GeneratePrompt,
+		GenerateExamplesNumber:  command.GenerateExamplesNumber,
+		GenerateModel:           command.GenerateModel,
+		GenerateModelRunner:     command.GenerateModelRunner,
+		JSONObjectFields:        command.JSONObjectFields,
+		ExpectedOutputSizeChars: command.ExpectedOutputSizeChars,
 	}
 
 	err = uc.TrainingDatasetJobClient.SubmitJob(ctx, job)

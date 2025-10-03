@@ -88,6 +88,8 @@ func (uc *UploadNewTrainingDatasetVersionUseCaseImpl) UploadNewTrainingDatasetVe
 		GenerateGPUInfoCudaVersion: latestDataset.GenerateGPUInfoCudaVersion,
 		InputField:               latestDataset.InputField,
 		OutputField:              latestDataset.OutputField,
+		JSONObjectFields:         latestDataset.JSONObjectFields,
+		ExpectedOutputSizeChars:  latestDataset.ExpectedOutputSizeChars,
 		TotalGenerationTimeSeconds: nil,
 		GeneratePromptHistoryIDs: latestDataset.GeneratePromptHistoryIDs,
 		GeneratePromptID:         latestDataset.GeneratePromptID,

@@ -131,21 +131,25 @@ func CreateTrainingDatasetHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Create training dataset request
 	createReq := struct {
-		CorpusName              string   `json:"corpus_name"`
-		InputField              string   `json:"input_field"`
-		OutputField             string   `json:"output_field"`
-		LanguageISO             string   `json:"language_iso"`
-		FieldNames              []string `json:"field_names"`
-		GeneratePrompt          string   `json:"generate_prompt"`
-		GenerateExamplesNumber  int      `json:"generate_examples_number"`
+		CorpusName              string            `json:"corpus_name"`
+		InputField              string            `json:"input_field"`
+		OutputField             string            `json:"output_field"`
+		JSONObjectFields        map[string]string `json:"json_object_fields"`
+		ExpectedOutputSizeChars int               `json:"expected_output_size_chars"`
+		LanguageISO             string            `json:"language_iso"`
+		FieldNames              []string          `json:"field_names"`
+		GeneratePrompt          string            `json:"generate_prompt"`
+		GenerateExamplesNumber  int               `json:"generate_examples_number"`
 	}{
-		CorpusName:             corpus,
-		InputField:             inputField,
-		OutputField:            outputField,
-		LanguageISO:            language,
-		FieldNames:             fieldNamesSlice,
-		GeneratePrompt:         prompt,
-		GenerateExamplesNumber: examplesCount,
+		CorpusName:              corpus,
+		InputField:              inputField,
+		OutputField:             outputField,
+		JSONObjectFields:        jsonFieldsMap,
+		ExpectedOutputSizeChars: expectedOutputSizeChars,
+		LanguageISO:             language,
+		FieldNames:              fieldNamesSlice,
+		GeneratePrompt:          prompt,
+		GenerateExamplesNumber:  examplesCount,
 	}
 
 	jsonData, err := json.Marshal(createReq)

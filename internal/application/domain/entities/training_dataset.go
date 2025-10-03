@@ -28,6 +28,8 @@ type TrainingDataset struct {
 	GenerateGPUInfoCudaVersion      *string               `json:"generate_gpu_info_cuda_version,omitempty"`
 	InputField                      string                `json:"input_field"`
 	OutputField                     string                `json:"output_field"`
+	JSONObjectFields                map[string]string     `json:"json_object_fields"`
+	ExpectedOutputSizeChars         int                   `json:"expected_output_size_chars"`
 	TotalGenerationTimeSeconds      *float64              `json:"total_generation_time_seconds,omitempty"`
 	GeneratePromptHistoryIDs        []uuid.UUID           `json:"generate_prompt_history_ids"`
 	GeneratePromptID                uuid.UUID             `json:"generate_prompt_id"`
@@ -55,14 +57,16 @@ type TrainingDataItem struct {
 }
 
 type TrainingDatasetJob struct {
-	CorpusS3Path            string   `json:"corpus_s3_path"`
-	CorpusFilesSubset       []string `json:"corpus_files_subset"`
-	LanguageISO             string   `json:"language_iso"`
-	UserID                  string   `json:"user_id"`
-	TrainingDatasetID       string   `json:"training_dataset_id"`
-	GeneratePrompt          string   `json:"generate_prompt"`
-	GenerateExamplesNumber  int      `json:"generate_examples_number"`
-	GenerateModel           string   `json:"generate_model"`
-	GenerateModelRunner     string   `json:"generate_model_runner"`
+	CorpusS3Path            string            `json:"corpus_s3_path"`
+	CorpusFilesSubset       []string          `json:"corpus_files_subset"`
+	LanguageISO             string            `json:"language_iso"`
+	UserID                  string            `json:"user_id"`
+	TrainingDatasetID       string            `json:"training_dataset_id"`
+	GeneratePrompt          string            `json:"generate_prompt"`
+	GenerateExamplesNumber  int               `json:"generate_examples_number"`
+	GenerateModel           string            `json:"generate_model"`
+	GenerateModelRunner     string            `json:"generate_model_runner"`
+	JSONObjectFields        map[string]string `json:"json_object_fields"`
+	ExpectedOutputSizeChars int               `json:"expected_output_size_chars"`
 }
 

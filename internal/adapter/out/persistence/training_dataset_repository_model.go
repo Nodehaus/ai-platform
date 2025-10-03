@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -20,6 +21,8 @@ type TrainingDatasetRepositoryModel struct {
 	GenerateGPUInfoCudaVersion      *string   `db:"generate_gpu_info_cuda_version"`
 	InputField                      string    `db:"input_field"`
 	OutputField                     string    `db:"output_field"`
+	JSONObjectFieldsJSON            string    `db:"json_object_fields_json"`
+	ExpectedOutputSizeChars         int       `db:"expected_output_size_chars"`
 	TotalGenerationTimeSeconds      *float64  `db:"total_generation_time_seconds"`
 	GeneratePromptHistoryIDsJSON    string     `db:"generate_prompt_history_ids_json"`
 	GeneratePromptID                uuid.UUID  `db:"generate_prompt_id"`
@@ -45,6 +48,15 @@ func (m *TrainingDatasetRepositoryModel) ToEntity() (*entities.TrainingDataset, 
 		return nil, err
 	}
 
+	var jsonObjectFields map[string]string
+	if m.JSONObjectFieldsJSON != "" {
+		if err := json.Unmarshal([]byte(m.JSONObjectFieldsJSON), &jsonObjectFields); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal json_object_fields: %w (value: %s)", err, m.JSONObjectFieldsJSON)
+		}
+	}
+	if jsonObjectFields == nil {
+		jsonObjectFields = make(map[string]string)
+	}
 
 	return &entities.TrainingDataset{
 		ID:                              m.ID,
@@ -57,6 +69,8 @@ func (m *TrainingDatasetRepositoryModel) ToEntity() (*entities.TrainingDataset, 
 		GenerateGPUInfoCudaVersion:      m.GenerateGPUInfoCudaVersion,
 		InputField:                      m.InputField,
 		OutputField:                     m.OutputField,
+		JSONObjectFields:                jsonObjectFields,
+		ExpectedOutputSizeChars:         m.ExpectedOutputSizeChars,
 		TotalGenerationTimeSeconds:      m.TotalGenerationTimeSeconds,
 		GeneratePromptHistoryIDs:        generatePromptHistoryIDs,
 		GeneratePromptID:                m.GeneratePromptID,
@@ -82,6 +96,10 @@ func FromTrainingDatasetEntity(td *entities.TrainingDataset) (*TrainingDatasetRe
 		return nil, err
 	}
 
+	jsonObjectFieldsJSON, err := json.Marshal(td.JSONObjectFields)
+	if err != nil {
+		return nil, err
+	}
 
 	return &TrainingDatasetRepositoryModel{
 		ID:                              td.ID,
@@ -94,6 +112,8 @@ func FromTrainingDatasetEntity(td *entities.TrainingDataset) (*TrainingDatasetRe
 		GenerateGPUInfoCudaVersion:      td.GenerateGPUInfoCudaVersion,
 		InputField:                      td.InputField,
 		OutputField:                     td.OutputField,
+		JSONObjectFieldsJSON:            string(jsonObjectFieldsJSON),
+		ExpectedOutputSizeChars:         td.ExpectedOutputSizeChars,
 		TotalGenerationTimeSeconds:      td.TotalGenerationTimeSeconds,
 		GeneratePromptHistoryIDsJSON:    string(generatePromptHistoryIDsJSON),
 		GeneratePromptID:                td.GeneratePromptID,
