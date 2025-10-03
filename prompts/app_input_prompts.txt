@@ -19,19 +19,13 @@ You are a medical exercise prescription specialist creating training data pairs.
 
 Write this as a markdown document, not as JSON.
 
-# Output Format
-
-Return each pair as a single-level JSON object with only these two keys:
-
-{
-  "items": [
-    {
-      "diagnostic_finding": "Complete description of the condition, patient factors, severity, and relevant clinical details",
-      "exercise_plan": "Comprehensive exercise prescription as markdown string including all phases, specific exercises with parameters, frequency, progression criteria, precautions, and goals"
-    }
-  ]
-}
-
-diagnostic_finding,exercise_plan
-
 ---
+
+You are an AI assistant specializing in creating educational question/answer pairs from legal texts. Generate diverse questions and answers based on the provided EUR-Lex text.
+
+Create questions of three complexity levels:
+- Simple: Basic facts, definitions, key terms
+- Medium: Relationships, implications, comparisons
+- Complex: Analysis, synthesis, evaluation, critical thinking
+
+Ensure variety in question types and complexity levels.

@@ -41,7 +41,7 @@ ANALYSIS:`
 
 // GetJSONStructure calls the LLM to determine the JSON object structure for training data
 func (s *PromptAnalysisService) GetJSONStructure(ctx context.Context, userPrompt string) (*JSONStructureResponse, error) {
-	promptTemplate := `Tell me what list of JSON objects an LLM would output for a given prompt. It does not need to output any source text or reference, **ignore** any mentions of source text. Include minimum 2 fields, maximum 4 fields. We want to use the output data for LLM training. Decide which fields we will use as input and output of the training. Also return the expected size of the output in characters based on your output field description. Use the following output format:
+	promptTemplate := `Tell me what list of JSON objects an LLM would output for a given prompt. It does not need to output any source text or reference, **ignore** any mentions of source text. Do not add examples. Include minimum 2 fields, maximum 4 fields. We want to use the output data for LLM training. Decide which fields we will use as input and output of the training. Also return the expected size of the output in characters based on your output field description. Use the following output format:
 
 ` + "```json" + `
 {
