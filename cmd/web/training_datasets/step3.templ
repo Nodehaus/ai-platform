@@ -44,66 +44,81 @@ templ TrainingDatasetStep3(projectID string, projectName string, corpus string, 
 						<p class="text-xs text-gray-500 mt-2 italic">The fields below have been automatically populated based on the analysis.</p>
 					</div>
 
-					<div class="grid grid-cols-1 gap-4">
-						<div>
-							<label for="json-object-fields" class="block text-sm font-medium text-gray-700 mb-2">
-								JSON Object Fields
-							</label>
-							<textarea
-								id="json-object-fields"
-								name="json-object-fields"
-								rows="7"
-								required
-								placeholder='{"field1": "Description of field1", "field2": "Description of field2"}'
-								class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
-							></textarea>
-							<p class="text-xs text-gray-500 mt-1">JSON object with field names as keys and descriptions as values</p>
-						</div>
+					<!-- Collapsible Advanced Fields -->
+					<div class="border border-gray-200 rounded-lg">
+						<button
+							id="advanced-toggle"
+							type="button"
+							class="w-full px-4 py-3 text-left text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-t-lg flex justify-between items-center"
+						>
+							<span>Advanced Fields</span>
+							<svg id="advanced-icon" class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+							</svg>
+						</button>
+						<div id="advanced-content" class="hidden px-4 py-3 border-t border-gray-200">
+							<div class="grid grid-cols-1 gap-4">
+								<div>
+									<label for="json-object-fields" class="block text-sm font-medium text-gray-700 mb-2">
+										JSON Object Fields
+									</label>
+									<textarea
+										id="json-object-fields"
+										name="json-object-fields"
+										rows="7"
+										required
+										placeholder='{"field1": "Description of field1", "field2": "Description of field2"}'
+										class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+									></textarea>
+									<p class="text-xs text-gray-500 mt-1">JSON object with field names as keys and descriptions as values</p>
+								</div>
 
-						<div>
-							<label for="input-field" class="block text-sm font-medium text-gray-700 mb-2">
-								Input Field
-							</label>
-							<input
-								type="text"
-								id="input-field"
-								name="input-field"
-								required
-								placeholder="The excepted input field of your JSON"
-								value=""
-								class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-							/>
-						</div>
+								<div>
+									<label for="input-field" class="block text-sm font-medium text-gray-700 mb-2">
+										Input Field
+									</label>
+									<input
+										type="text"
+										id="input-field"
+										name="input-field"
+										required
+										placeholder="The excepted input field of your JSON"
+										value=""
+										class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+									/>
+								</div>
 
-						<div>
-							<label for="output-field" class="block text-sm font-medium text-gray-700 mb-2">
-								Output Field
-							</label>
-							<input
-								type="text"
-								id="output-field"
-								name="output-field"
-								required
-								placeholder="The expected output field of your JSON"
-								value=""
-								class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-							/>
-						</div>
+								<div>
+									<label for="output-field" class="block text-sm font-medium text-gray-700 mb-2">
+										Output Field
+									</label>
+									<input
+										type="text"
+										id="output-field"
+										name="output-field"
+										required
+										placeholder="The expected output field of your JSON"
+										value=""
+										class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+									/>
+								</div>
 
-						<div>
-							<label for="expected-output-size-chars" class="block text-sm font-medium text-gray-700 mb-2">
-								Expected Output Size (Characters)
-							</label>
-							<input
-								type="number"
-								id="expected-output-size-chars"
-								name="expected-output-size-chars"
-								required
-								placeholder="Expected number of characters in output"
-								value=""
-								min="1"
-								class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-							/>
+								<div>
+									<label for="expected-output-size-chars" class="block text-sm font-medium text-gray-700 mb-2">
+										Expected Output Size (Characters)
+									</label>
+									<input
+										type="number"
+										id="expected-output-size-chars"
+										name="expected-output-size-chars"
+										required
+										placeholder="Expected number of characters in output"
+										value=""
+										min="1"
+										class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+									/>
+								</div>
+							</div>
 						</div>
 					</div>
 				</form>
@@ -131,6 +146,20 @@ templ TrainingDatasetStep3(projectID string, projectName string, corpus string, 
 			const language = {{ language }};
 
 			let analysisData = null;
+
+			// Toggle advanced fields visibility
+			document.getElementById('advanced-toggle').addEventListener('click', function() {
+				const content = document.getElementById('advanced-content');
+				const icon = document.getElementById('advanced-icon');
+
+				if (content.classList.contains('hidden')) {
+					content.classList.remove('hidden');
+					icon.classList.add('rotate-180');
+				} else {
+					content.classList.add('hidden');
+					icon.classList.remove('rotate-180');
+				}
+			});
 
 			// Analyze Prompt
 			document.getElementById('analyze-btn').addEventListener('click', async function() {
