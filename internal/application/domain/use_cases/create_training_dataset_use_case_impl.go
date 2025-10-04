@@ -122,6 +122,8 @@ func (uc *CreateTrainingDatasetUseCaseImpl) Execute(ctx context.Context, command
 		GenerateExamplesNumber:  command.GenerateExamplesNumber,
 		GenerateModel:           command.GenerateModel,
 		GenerateModelRunner:     command.GenerateModelRunner,
+		InputField:              command.InputField,
+		OutputField:             command.OutputField,
 		JSONObjectFields:        command.JSONObjectFields,
 		ExpectedOutputSizeChars: command.ExpectedOutputSizeChars,
 	}

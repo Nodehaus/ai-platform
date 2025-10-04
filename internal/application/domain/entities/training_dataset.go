@@ -66,6 +66,8 @@ type TrainingDatasetJob struct {
 	GenerateExamplesNumber  int               `json:"generate_examples_number"`
 	GenerateModel           string            `json:"generate_model"`
 	GenerateModelRunner     string            `json:"generate_model_runner"`
+	InputField              string            `json:"input_field"`
+	OutputField             string            `json:"output_field"`
 	JSONObjectFields        map[string]string `json:"json_object_fields"`
 	ExpectedOutputSizeChars int               `json:"expected_output_size_chars"`
 }

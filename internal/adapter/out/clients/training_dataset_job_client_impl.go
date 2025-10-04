@@ -67,6 +67,8 @@ func (c *TrainingDatasetJobClientImpl) SubmitJob(ctx context.Context, job entiti
 		GenerateExamplesNumber:  job.GenerateExamplesNumber,
 		GenerateModel:           job.GenerateModel,
 		GenerateModelRunner:     job.GenerateModelRunner,
+		InputField:              job.InputField,
+		OutputField:             job.OutputField,
 		JSONObjectFields:        string(jsonObjectFieldsJSON),
 		ExpectedOutputSizeChars: job.ExpectedOutputSizeChars,
 	}
