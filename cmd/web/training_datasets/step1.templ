@@ -7,7 +7,7 @@ templ TrainingDatasetStep1(projectID string, projectName string) {
 		<div class="max-w-6xl mx-auto">
 			<div class="bg-white border border-gray-200 rounded-lg p-8 shadow-md mb-8">
 				<div class="mb-6">
-					<h1 class="text-2xl font-bold text-gray-900 mb-2">1/4 Base Corpus</h1>
+					<h1 class="text-2xl font-bold text-gray-900 mb-2">1/4 Add Document Collection as Training Basis</h1>
 					<p class="text-gray-600">Project: { projectName }</p>
 				</div>
 
@@ -22,7 +22,7 @@ templ TrainingDatasetStep1(projectID string, projectName string) {
 										value="no-corpus"
 										class="mr-3 text-blue-600"
 									/>
-									<span class="text-sm text-gray-700">Create without corpus</span>
+									<span class="text-sm text-gray-700">Create without existing documents</span>
 								</label>
 							</div>
 							<div>
@@ -33,7 +33,7 @@ templ TrainingDatasetStep1(projectID string, projectName string) {
 										value="base-corpus"
 										class="mr-3 text-blue-600"
 									/>
-									<span class="text-sm text-gray-700">Create with Nodehaus base corpus</span>
+									<span class="text-sm text-gray-700">Create with Nodehaus documents collection</span>
 								</label>
 							</div>
 							<div>
@@ -44,7 +44,7 @@ templ TrainingDatasetStep1(projectID string, projectName string) {
 										value="upload-corpus"
 										class="mr-3 text-blue-600"
 									/>
-									<span class="text-sm text-gray-700">Upload corpus as .zip (with one or more .json/.jsonl/.csv files)</span>
+									<span class="text-sm text-gray-700">Upload document collection as .zip (with one or more .json/.jsonl/.csv files)</span>
 								</label>
 							</div>
 						</div>
@@ -53,14 +53,14 @@ templ TrainingDatasetStep1(projectID string, projectName string) {
 					<!-- Base corpus selection (hidden by default) -->
 					<div id="base-corpus-section" class="hidden">
 						<label for="corpus" class="block text-sm font-medium text-gray-700 mb-2">
-							Select Base Corpus
+							Select Document Collection
 						</label>
 						<select
 							id="corpus"
 							name="corpus"
 							class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
 						>
-							<option value="">Choose a corpus...</option>
+							<option value="">Choose a document collection...</option>
 							<option value="eurlex">EUR-Lex</option>
 						</select>
 					</div>
@@ -68,7 +68,7 @@ templ TrainingDatasetStep1(projectID string, projectName string) {
 					<!-- Upload section (hidden by default) -->
 					<div id="upload-corpus-section" class="hidden">
 						<label for="corpus-file" class="block text-sm font-medium text-gray-700 mb-2">
-							Upload Corpus File
+							Upload Document Collection
 						</label>
 						<input
 							type="file"
