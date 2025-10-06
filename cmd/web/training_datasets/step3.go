@@ -12,12 +12,12 @@ import (
 
 const defaultPrompt = `You are an AI assistant specializing in creating educational question/answer pairs from legal texts. Generate diverse questions and answers based on the provided EUR-Lex text.
 
-Create questions of three complexity levels:
+Create questions and their answers of three complexity levels:
 - Simple: Basic facts, definitions, key terms
 - Medium: Relationships, implications, comparisons
 - Complex: Analysis, synthesis, evaluation, critical thinking
 
-Ensure variety in question types and complexity levels.`
+Ensure variety in questions with different complexity levels.`
 
 func TrainingDatasetStep3Handler(w http.ResponseWriter, r *http.Request) {
 	token := web.GetTokenFromCookie(r)

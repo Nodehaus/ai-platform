@@ -67,6 +67,8 @@ func (uc *UpdateTrainingDatasetStatusUseCaseImpl) processCompletedTrainingDatase
 
 	// Update the training dataset with the results
 	trainingDataset.TotalGenerationTimeSeconds = &results.TotalGenerationTimeSeconds
+	trainingDataset.TokensIn = &results.TokensIn
+	trainingDataset.TokensOut = &results.TokensOut
 	trainingDataset.Data = results.TrainingDataItems
 
 	// Save the updated training dataset

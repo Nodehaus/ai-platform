@@ -24,7 +24,9 @@ type TrainingDatasetRepositoryModel struct {
 	JSONObjectFieldsJSON            string    `db:"json_object_fields_json"`
 	ExpectedOutputSizeChars         int       `db:"expected_output_size_chars"`
 	TotalGenerationTimeSeconds      *float64  `db:"total_generation_time_seconds"`
-	GeneratePromptHistoryIDsJSON    string     `db:"generate_prompt_history_ids_json"`
+	TokensIn                        *int      `db:"tokens_in"`
+	TokensOut                       *int      `db:"tokens_out"`
+	GeneratePromptHistoryIDsJSON    string    `db:"generate_prompt_history_ids_json"`
 	GeneratePromptID                uuid.UUID  `db:"generate_prompt_id"`
 	CorpusID                        *uuid.UUID `db:"corpus_id"`
 	LanguageISO                     string     `db:"language_iso"`
@@ -72,6 +74,8 @@ func (m *TrainingDatasetRepositoryModel) ToEntity() (*entities.TrainingDataset, 
 		JSONObjectFields:                jsonObjectFields,
 		ExpectedOutputSizeChars:         m.ExpectedOutputSizeChars,
 		TotalGenerationTimeSeconds:      m.TotalGenerationTimeSeconds,
+		TokensIn:                        m.TokensIn,
+		TokensOut:                       m.TokensOut,
 		GeneratePromptHistoryIDs:        generatePromptHistoryIDs,
 		GeneratePromptID:                m.GeneratePromptID,
 		CorpusID:                        m.CorpusID,
@@ -115,6 +119,8 @@ func FromTrainingDatasetEntity(td *entities.TrainingDataset) (*TrainingDatasetRe
 		JSONObjectFieldsJSON:            string(jsonObjectFieldsJSON),
 		ExpectedOutputSizeChars:         td.ExpectedOutputSizeChars,
 		TotalGenerationTimeSeconds:      td.TotalGenerationTimeSeconds,
+		TokensIn:                        td.TokensIn,
+		TokensOut:                       td.TokensOut,
 		GeneratePromptHistoryIDsJSON:    string(generatePromptHistoryIDsJSON),
 		GeneratePromptID:                td.GeneratePromptID,
 		CorpusID:                        td.CorpusID,

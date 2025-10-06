@@ -34,6 +34,8 @@ type TrainingDatasetData struct {
 	LanguageISO            string      `json:"language_iso"`
 	Status                 string      `json:"status"`
 	FieldNames             []string    `json:"field_names"`
+	TokensIn               *int        `json:"tokens_in,omitempty"`
+	TokensOut              *int        `json:"tokens_out,omitempty"`
 	DataItemsSample        [][]string  `json:"data_items_sample"`
 }
 

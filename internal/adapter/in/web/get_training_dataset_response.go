@@ -5,15 +5,17 @@ import (
 )
 
 type GetTrainingDatasetResponse struct {
-	Version                int      `json:"version"`
-	GeneratePrompt         string   `json:"generate_prompt"`
-	InputField             string   `json:"input_field"`
-	OutputField            string   `json:"output_field"`
-	GenerateExamplesNumber int      `json:"generate_examples_number"`
-	CorpusName             string   `json:"corpus_name"`
-	LanguageISO            string   `json:"language_iso"`
-	Status                 string   `json:"status"`
-	FieldNames             []string `json:"field_names"`
+	Version                int        `json:"version"`
+	GeneratePrompt         string     `json:"generate_prompt"`
+	InputField             string     `json:"input_field"`
+	OutputField            string     `json:"output_field"`
+	GenerateExamplesNumber int        `json:"generate_examples_number"`
+	CorpusName             string     `json:"corpus_name"`
+	LanguageISO            string     `json:"language_iso"`
+	Status                 string     `json:"status"`
+	FieldNames             []string   `json:"field_names"`
+	TokensIn               *int       `json:"tokens_in,omitempty"`
+	TokensOut              *int       `json:"tokens_out,omitempty"`
 	DataItemsSample        [][]string `json:"data_items_sample"`
 }
 
@@ -28,6 +30,8 @@ func ToGetTrainingDatasetResponse(td *entities.TrainingDataset, prompt string, c
 		LanguageISO:            td.LanguageISO,
 		Status:                 string(td.Status),
 		FieldNames:             td.FieldNames,
+		TokensIn:               td.TokensIn,
+		TokensOut:              td.TokensOut,
 		DataItemsSample:        [][]string{},
 	}
 

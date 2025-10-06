@@ -31,6 +31,8 @@ type TrainingDataset struct {
 	JSONObjectFields                map[string]string     `json:"json_object_fields"`
 	ExpectedOutputSizeChars         int                   `json:"expected_output_size_chars"`
 	TotalGenerationTimeSeconds      *float64              `json:"total_generation_time_seconds,omitempty"`
+	TokensIn                        *int                  `json:"tokens_in,omitempty"`
+	TokensOut                       *int                  `json:"tokens_out,omitempty"`
 	GeneratePromptHistoryIDs        []uuid.UUID           `json:"generate_prompt_history_ids"`
 	GeneratePromptID                uuid.UUID             `json:"generate_prompt_id"`
 	CorpusID                        *uuid.UUID            `json:"corpus_id,omitempty"`

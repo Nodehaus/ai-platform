@@ -71,7 +71,7 @@ func (r *TrainingDatasetRepositoryImpl) GetByID(ctx context.Context, id uuid.UUI
 		id, project_id, version, generate_model, generate_model_runner,
 		generate_gpu_info_card, generate_gpu_info_total_gb, generate_gpu_info_cuda_version,
 		input_field, output_field, json_object_fields_json, expected_output_size_chars,
-		total_generation_time_seconds,
+		total_generation_time_seconds, tokens_in, tokens_out,
 		generate_prompt_history_ids_json, generate_prompt_id, corpus_id,
 		language_iso, status, field_names_json, generate_examples_number, created_at, updated_at
 	FROM training_datasets WHERE id = $1`
@@ -91,6 +91,8 @@ func (r *TrainingDatasetRepositoryImpl) GetByID(ctx context.Context, id uuid.UUI
 		&model.JSONObjectFieldsJSON,
 		&model.ExpectedOutputSizeChars,
 		&model.TotalGenerationTimeSeconds,
+		&model.TokensIn,
+		&model.TokensOut,
 		&model.GeneratePromptHistoryIDsJSON,
 		&model.GeneratePromptID,
 		&model.CorpusID,
@@ -128,7 +130,7 @@ func (r *TrainingDatasetRepositoryImpl) GetByProjectID(ctx context.Context, proj
 		id, project_id, version, generate_model, generate_model_runner,
 		generate_gpu_info_card, generate_gpu_info_total_gb, generate_gpu_info_cuda_version,
 		input_field, output_field, json_object_fields_json, expected_output_size_chars,
-		total_generation_time_seconds,
+		total_generation_time_seconds, tokens_in, tokens_out,
 		generate_prompt_history_ids_json, generate_prompt_id, corpus_id,
 		language_iso, status, field_names_json, generate_examples_number, created_at, updated_at
 	FROM training_datasets WHERE project_id = $1 ORDER BY version DESC`
@@ -156,6 +158,8 @@ func (r *TrainingDatasetRepositoryImpl) GetByProjectID(ctx context.Context, proj
 			&model.JSONObjectFieldsJSON,
 			&model.ExpectedOutputSizeChars,
 			&model.TotalGenerationTimeSeconds,
+			&model.TokensIn,
+			&model.TokensOut,
 			&model.GeneratePromptHistoryIDsJSON,
 			&model.GeneratePromptID,
 			&model.CorpusID,
@@ -192,7 +196,7 @@ func (r *TrainingDatasetRepositoryImpl) GetLatestByProjectID(ctx context.Context
 		id, project_id, version, generate_model, generate_model_runner,
 		generate_gpu_info_card, generate_gpu_info_total_gb, generate_gpu_info_cuda_version,
 		input_field, output_field, json_object_fields_json, expected_output_size_chars,
-		total_generation_time_seconds,
+		total_generation_time_seconds, tokens_in, tokens_out,
 		generate_prompt_history_ids_json, generate_prompt_id, corpus_id,
 		language_iso, status, field_names_json, generate_examples_number, created_at, updated_at
 	FROM training_datasets WHERE project_id = $1 ORDER BY version DESC LIMIT 1`
@@ -212,6 +216,8 @@ func (r *TrainingDatasetRepositoryImpl) GetLatestByProjectID(ctx context.Context
 		&model.JSONObjectFieldsJSON,
 		&model.ExpectedOutputSizeChars,
 		&model.TotalGenerationTimeSeconds,
+		&model.TokensIn,
+		&model.TokensOut,
 		&model.GeneratePromptHistoryIDsJSON,
 		&model.GeneratePromptID,
 		&model.CorpusID,
@@ -249,9 +255,9 @@ func (r *TrainingDatasetRepositoryImpl) Update(ctx context.Context, trainingData
 		generate_model = $3, generate_model_runner = $4, generate_gpu_info_card = $5,
 		generate_gpu_info_total_gb = $6, generate_gpu_info_cuda_version = $7,
 		input_field = $8, output_field = $9, json_object_fields_json = $10, expected_output_size_chars = $11,
-		total_generation_time_seconds = $12,
-		generate_prompt_history_ids_json = $13, generate_prompt_id = $14, corpus_id = $15,
-		language_iso = $16, status = $17, field_names_json = $18, generate_examples_number = $19, updated_at = $20
+		total_generation_time_seconds = $12, tokens_in = $13, tokens_out = $14,
+		generate_prompt_history_ids_json = $15, generate_prompt_id = $16, corpus_id = $17,
+		language_iso = $18, status = $19, field_names_json = $20, generate_examples_number = $21, updated_at = $22
 	WHERE id = $1 AND project_id = $2`
 
 	trainingDataset.UpdatedAt = time.Now()
@@ -274,6 +280,8 @@ func (r *TrainingDatasetRepositoryImpl) Update(ctx context.Context, trainingData
 		model.JSONObjectFieldsJSON,
 		model.ExpectedOutputSizeChars,
 		model.TotalGenerationTimeSeconds,
+		model.TokensIn,
+		model.TokensOut,
 		model.GeneratePromptHistoryIDsJSON,
 		model.GeneratePromptID,
 		model.CorpusID,

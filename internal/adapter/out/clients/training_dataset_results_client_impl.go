@@ -86,6 +86,8 @@ func (c *TrainingDatasetResultsClientImpl) GetTrainingDatasetResults(ctx context
 	}
 
 	var totalGenerationTime float64
+	var totalTokensIn int
+	var totalTokensOut int
 	var allAnnotations []AnnotationModel
 
 	// Process each JSON file
@@ -105,6 +107,12 @@ func (c *TrainingDatasetResultsClientImpl) GetTrainingDatasetResults(ctx context
 		fileModel := TrainingDatasetResultsFileModel{}
 		if totalGenTime, ok := rawData["total_generation_time"].(float64); ok {
 			fileModel.TotalGenerationTime = totalGenTime
+		}
+		if tokensIn, ok := rawData["tokens_in"].(float64); ok {
+			fileModel.TokensIn = int(tokensIn)
+		}
+		if tokensOut, ok := rawData["tokens_out"].(float64); ok {
+			fileModel.TokensOut = int(tokensOut)
 		}
 
 		// Parse annotations with dynamic fields
@@ -140,6 +148,8 @@ func (c *TrainingDatasetResultsClientImpl) GetTrainingDatasetResults(ctx context
 		}
 
 		totalGenerationTime += fileModel.TotalGenerationTime
+		totalTokensIn += fileModel.TokensIn
+		totalTokensOut += fileModel.TokensOut
 		allAnnotations = append(allAnnotations, fileModel.Annotations...)
 	}
 
@@ -151,6 +161,8 @@ func (c *TrainingDatasetResultsClientImpl) GetTrainingDatasetResults(ctx context
 
 	return &portClients.TrainingDatasetResult{
 		TotalGenerationTimeSeconds: totalGenerationTime,
+		TokensIn:                   totalTokensIn,
+		TokensOut:                  totalTokensOut,
 		TrainingDataItems:          trainingDataItems,
 	}, nil
 }

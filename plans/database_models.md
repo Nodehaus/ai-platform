@@ -47,6 +47,8 @@ numbers.
     -   input_field: string
     -   output_field: string
     -   total_generation_time_seconds: float (rounded to 2 decimals)
+    -   tokens_in: int
+    -   tokens_out: int
     -   generate_prompt_history: list of Prompt (history of all prompts that the user saved, except the current_prompt)
     -   generate_prompt: Prompt (required)
     -   generate_examples_number: int (required)

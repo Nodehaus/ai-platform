@@ -2,8 +2,10 @@ package clients
 
 // TrainingDatasetResultsFileModel represents the structure of each JSON file from S3
 type TrainingDatasetResultsFileModel struct {
-	TotalGenerationTime float64                   `json:"total_generation_time"`
-	Annotations         []AnnotationModel         `json:"annotations"`
+	TotalGenerationTime float64           `json:"total_generation_time"`
+	TokensIn            int               `json:"tokens_in"`
+	TokensOut           int               `json:"tokens_out"`
+	Annotations         []AnnotationModel `json:"annotations"`
 }
 
 // AnnotationModel represents a single annotation in the JSON file
