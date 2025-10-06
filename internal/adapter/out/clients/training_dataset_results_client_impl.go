@@ -53,8 +53,9 @@ func NewTrainingDatasetResultsClientImpl() (*TrainingDatasetResultsClientImpl, e
 }
 
 func (c *TrainingDatasetResultsClientImpl) GetTrainingDatasetResults(ctx context.Context, trainingDatasetID uuid.UUID, fieldNames []string) (*portClients.TrainingDatasetResult, error) {
+	appEnv := os.Getenv("APP_ENV")
 	// List all JSON files in the datasets/{training_dataset_id}/ path
-	prefix := fmt.Sprintf("datasets/%s/", trainingDatasetID.String())
+	prefix := fmt.Sprintf("%s/datasets/%s/", appEnv, trainingDatasetID.String())
 
 	listInput := &s3.ListObjectsV2Input{
 		Bucket: aws.String(c.bucket),

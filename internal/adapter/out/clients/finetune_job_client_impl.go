@@ -65,7 +65,8 @@ func (c *FinetuneJobClientImpl) SubmitJob(ctx context.Context, job entities.Fine
 		return "", fmt.Errorf("failed to marshal job to JSON: %w", err)
 	}
 
-	key := fmt.Sprintf("jobs/finetunes/%s_%s.json", time.Now().Format("060102150405"), job.FinetuneID)
+	appEnv := os.Getenv("APP_ENV")
+	key := fmt.Sprintf("%s/jobs/finetunes/%s_%s.json", appEnv, time.Now().Format("060102150405"), job.FinetuneID)
 
 	_, err = c.s3Client.PutObject(ctx, &s3.PutObjectInput{
 		Bucket:      aws.String(c.bucket),

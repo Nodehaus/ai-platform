@@ -78,7 +78,8 @@ func (c *TrainingDatasetJobClientImpl) SubmitJob(ctx context.Context, job entiti
 		return fmt.Errorf("failed to marshal job to JSON: %w", err)
 	}
 
-	key := fmt.Sprintf("jobs/datasets/%s_%s.json", time.Now().Format("060102150405"), job.TrainingDatasetID)
+	appEnv := os.Getenv("APP_ENV")
+	key := fmt.Sprintf("%s/jobs/datasets/%s_%s.json", appEnv, time.Now().Format("060102150405"), job.TrainingDatasetID)
 
 	_, err = c.s3Client.PutObject(ctx, &s3.PutObjectInput{
 		Bucket:      aws.String(c.bucket),
