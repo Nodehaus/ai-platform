@@ -378,6 +378,19 @@ func NewCreateDeploymentController(createDeploymentUseCase in.CreateDeploymentUs
 	}
 }
 
+func NewGetDeploymentUseCase(deploymentRepo persistencePort.DeploymentRepository, deploymentService *services.DeploymentService) in.GetDeploymentUseCase {
+	return &use_cases.GetDeploymentUseCaseImpl{
+		DeploymentRepository: deploymentRepo,
+		DeploymentService:    deploymentService,
+	}
+}
+
+func NewGetDeploymentController(getDeploymentUseCase in.GetDeploymentUseCase) *web.GetDeploymentController {
+	return &web.GetDeploymentController{
+		GetDeploymentUseCase: getDeploymentUseCase,
+	}
+}
+
 func NewExternalAPIMiddleware() *server.ExternalAPIMiddleware {
 	return &server.ExternalAPIMiddleware{}
 }
@@ -475,6 +488,7 @@ var Module = fx.Options(
 	fx.Provide(NewDownloadModelUseCase),
 	fx.Provide(NewAnalyzePromptUseCase),
 	fx.Provide(NewCreateDeploymentUseCase),
+	fx.Provide(NewGetDeploymentUseCase),
 	fx.Provide(NewLoginController),
 	fx.Provide(NewCreateProjectController),
 	fx.Provide(NewGetProjectController),
@@ -492,6 +506,7 @@ var Module = fx.Options(
 	fx.Provide(NewDownloadModelController),
 	fx.Provide(NewAnalyzePromptController),
 	fx.Provide(NewCreateDeploymentController),
+	fx.Provide(NewGetDeploymentController),
 	fx.Provide(NewAuthMiddleware),
 	fx.Provide(NewExternalAPIMiddleware),
 )

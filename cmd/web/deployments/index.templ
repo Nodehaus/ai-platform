@@ -1,0 +1,192 @@
+package deployments
+
+import "ai-platform/cmd/web"
+import "fmt"
+
+templ DeploymentIndex(data DeploymentIndexData) {
+	@web.App("max-w-6xl") {
+		<div class="max-w-6xl mx-auto">
+			<div class="bg-white border border-gray-200 rounded-lg p-8 shadow-md mb-8">
+				<div class="mb-6">
+					<div class="flex justify-between items-center mb-4">
+						<div>
+							<h1 class="text-2xl font-bold text-gray-900 mb-2">Deployment</h1>
+							<p class="text-gray-600">Project: { data.ProjectName }</p>
+						</div>
+					</div>
+
+					<!-- Deployment Information -->
+					<div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
+						<h2 class="text-lg font-semibold text-gray-900 mb-4">Deployment Details</h2>
+						<div class="grid grid-cols-1 gap-4">
+							<div>
+								<span class="block text-sm font-medium text-gray-700 mb-1">Model Name</span>
+								<span class="text-gray-900">{ data.Deployment.ModelName }</span>
+							</div>
+							<div>
+								<span class="block text-sm font-medium text-gray-700 mb-1">API Key</span>
+								<div class="flex items-center space-x-2">
+									<code class="bg-gray-100 px-3 py-2 rounded text-sm font-mono flex-1">{ data.Deployment.APIKey }</code>
+									<button
+										onclick={ templ.ComponentScript{Call: fmt.Sprintf("copyToClipboard('%s')", data.Deployment.APIKey)} }
+										class="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
+									>
+										Copy
+									</button>
+								</div>
+								<p class="text-xs text-gray-500 mt-1">Keep this API key secure. You'll need it to make requests to your deployed model.</p>
+							</div>
+							if data.Deployment.FinetuneID != nil {
+								<div>
+									<span class="block text-sm font-medium text-gray-700 mb-1">Created from finetuned model</span>
+									<a
+										href={ templ.URL(fmt.Sprintf("/web/projects/%s/finetunes/%s", data.ProjectID, data.Deployment.FinetuneID.String())) }
+										class="text-blue-600 hover:text-blue-800 text-sm font-medium underline"
+									>
+										View finetune
+									</a>
+								</div>
+							}
+						</div>
+					</div>
+
+					<!-- Test Model Section -->
+					if data.Deployment.FinetuneID != nil {
+						<div class="mt-6">
+							<h3 class="text-lg font-semibold text-gray-900 mb-4">Test Your Deployed Model</h3>
+							<div class="space-y-4">
+								<div>
+									<textarea
+										id="prompt-input"
+										rows="4"
+										class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+										placeholder="Type your prompt here..."
+									></textarea>
+								</div>
+								<div>
+									<button
+										id="get-response-btn"
+										onclick={ templ.ComponentScript{Call: fmt.Sprintf("getModelResponse('%s', '%s')", data.ProjectID, data.Deployment.FinetuneID.String())} }
+										class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+									>
+										Get Model Response
+									</button>
+								</div>
+								<div id="response-container" class="hidden">
+									<div class="border-t border-gray-200 pt-4">
+										<label class="block text-sm font-medium text-gray-700 mb-2">
+											Model Response:
+										</label>
+										<div id="response-output" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm text-gray-700 whitespace-pre-wrap">
+										</div>
+									</div>
+								</div>
+								<div id="error-container" class="hidden">
+									<div class="border-t border-gray-200 pt-4">
+										<div class="bg-red-50 border border-red-200 rounded-md p-3">
+											<p class="text-sm text-red-800" id="error-message"></p>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					}
+				</div>
+
+				<!-- Back Button -->
+				<div class="mt-8 pt-6 border-t border-gray-200">
+					<a
+						href="/web/home"
+						class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+					>
+						← Back to Projects
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			// Function to copy API key to clipboard
+			function copyToClipboard(text) {
+				navigator.clipboard.writeText(text).then(function() {
+					// Show success feedback
+					const btn = event.target;
+					const originalText = btn.textContent;
+					btn.textContent = 'Copied!';
+					btn.classList.add('bg-green-600');
+					btn.classList.remove('bg-blue-600');
+
+					setTimeout(function() {
+						btn.textContent = originalText;
+						btn.classList.remove('bg-green-600');
+						btn.classList.add('bg-blue-600');
+					}, 2000);
+				}).catch(function(err) {
+					console.error('Failed to copy text: ', err);
+				});
+			}
+
+			// Function to get model response
+			async function getModelResponse(projectId, finetuneId) {
+				const promptInput = document.getElementById('prompt-input');
+				const responseContainer = document.getElementById('response-container');
+				const responseOutput = document.getElementById('response-output');
+				const errorContainer = document.getElementById('error-container');
+				const errorMessage = document.getElementById('error-message');
+				const button = document.getElementById('get-response-btn');
+
+				const prompt = promptInput.value.trim();
+
+				// Validate prompt
+				if (!prompt) {
+					errorMessage.textContent = 'Please enter a prompt';
+					errorContainer.classList.remove('hidden');
+					responseContainer.classList.add('hidden');
+					return;
+				}
+
+				// Hide previous results
+				responseContainer.classList.add('hidden');
+				errorContainer.classList.add('hidden');
+
+				// Disable button and show loading state
+				button.disabled = true;
+				button.textContent = 'Generating...';
+
+				try {
+					// Use the finetune completion endpoint
+					const response = await fetch(`/api/projects/${projectId}/finetunes/${finetuneId}/completion`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						credentials: 'include', // Include cookies for authentication
+						body: JSON.stringify({
+							prompt: prompt,
+							max_tokens: 512,
+							temperature: 0.7,
+							top_p: 0.9
+						})
+					});
+
+					if (!response.ok) {
+						const errorData = await response.json();
+						throw new Error(errorData.error || `Request failed with status ${response.status}`);
+					}
+
+					const data = await response.json();
+					responseOutput.textContent = data.completion;
+					responseContainer.classList.remove('hidden');
+
+				} catch (error) {
+					errorMessage.textContent = `Error: ${error.message}`;
+					errorContainer.classList.remove('hidden');
+				} finally {
+					// Re-enable button and restore text
+					button.disabled = false;
+					button.textContent = 'Get Model Response';
+				}
+			}
+		</script>
+	}
+}

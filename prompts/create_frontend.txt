@@ -35,3 +35,6 @@ Add the functionality of creating a finetune to the button "Start Fine-tuning" i
 
 Add a front-end page in `cmd/web/finetunes/index.templ` and `cmd/web/finetunes/index.go` that displays the finetune at `/web/projects/{project_id}/finetunes/{finetune_id}`. Display the metadata of the finetune on the page, but only show fields if they exist. If the status is not `DONE` then only show status information. Have a look at `cmd/web/training_datasets/index.templ` and implement it similar. Add two buttons ""Download Model" and "Chat with Model" below the metadata.
 
+---
+
+Add a front-end page in `cmd/web/deployments/index.templ` and `cmd/web/deployments/index.go` that displays the deployment at `/web/projects/{project_id}/deployments/{deployment_id}`. Display the model name and API Key, and a link to the finetune index page if a finetune exists. Add the functionality to chat with the model in the same way as on the page `cmd/web/finetunes/index.templ`.
