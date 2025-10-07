@@ -37,13 +37,18 @@ func NewOllamaLLMClientImpl() (*OllamaLLMClientImpl, error) {
 	}, nil
 }
 
-func (c *OllamaLLMClientImpl) GenerateCompletion(ctx context.Context, prompt string, maxTokens int, temperature float64, topP float64) (string, error) {
+func (c *OllamaLLMClientImpl) GenerateCompletion(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (string, error) {
 	// Build the request payload
+	bucket := os.Getenv("APP_S3_BUCKET")
+	appEnv := os.Getenv("APP_ENV")
 	requestPayload := map[string]interface{}{
 		"input": map[string]interface{}{
+			"s3_bucket": bucket,
+			"app_env": appEnv,
+			"finetune_id": finetuneID,
 			"openai_route": "/v1/completions",
 			"openai_input": map[string]interface{}{
-				"model":       "qwen3:30b-a3b-instruct-2507-q4_K_M",
+				"model":       model,
 				"prompt":      prompt,
 				"max_tokens":  maxTokens,
 				"temperature": temperature,

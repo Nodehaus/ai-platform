@@ -73,6 +73,14 @@ func NewFinetuneService() *services.FinetuneService {
 	return &services.FinetuneService{}
 }
 
+func NewFinetuneCompletionService(
+	finetuneRepo persistencePort.FinetuneRepository,
+	projectRepo persistencePort.ProjectRepository,
+	ollamaLLMClient clientsPort.OllamaLLMClient,
+) *services.FinetuneCompletionService {
+	return services.NewFinetuneCompletionService(finetuneRepo, projectRepo, ollamaLLMClient)
+}
+
 func NewPromptAnalysisService(ollamaLLMClient clientsPort.OllamaLLMClient) *services.PromptAnalysisService {
 	return &services.PromptAnalysisService{
 		OllamaLLMClient: ollamaLLMClient,
@@ -238,6 +246,12 @@ func NewGetFinetuneUseCase(finetuneRepo persistencePort.FinetuneRepository) in.G
 	}
 }
 
+func NewFinetuneCompletionUseCase(
+	finetuneCompletionService *services.FinetuneCompletionService,
+) in.FinetuneCompletionUseCase {
+	return use_cases.NewFinetuneCompletionUseCaseImpl(finetuneCompletionService)
+}
+
 func NewGetFinetuneController(getFinetuneUseCase in.GetFinetuneUseCase) *web.GetFinetuneController {
 	return &web.GetFinetuneController{
 		GetFinetuneUseCase: getFinetuneUseCase,
@@ -331,6 +345,12 @@ func NewCreateFinetuneController(createFinetuneUseCase in.CreateFinetuneUseCase)
 	}
 }
 
+func NewFinetuneCompletionController(finetuneCompletionUseCase in.FinetuneCompletionUseCase) *web.FinetuneCompletionController {
+	return &web.FinetuneCompletionController{
+		FinetuneCompletionUseCase: finetuneCompletionUseCase,
+	}
+}
+
 func NewExternalAPIMiddleware() *server.ExternalAPIMiddleware {
 	return &server.ExternalAPIMiddleware{}
 }
@@ -406,6 +426,7 @@ var Module = fx.Options(
 	fx.Provide(NewProjectService),
 	fx.Provide(NewTrainingDatasetService),
 	fx.Provide(NewFinetuneService),
+	fx.Provide(NewFinetuneCompletionService),
 	fx.Provide(NewPromptAnalysisService),
 	fx.Provide(NewJWTService),
 	fx.Provide(NewLoginUseCase),
@@ -421,6 +442,7 @@ var Module = fx.Options(
 	fx.Provide(NewUpdateTrainingDatasetStatusUseCase),
 	fx.Provide(NewUpdateFinetuneStatusUseCase),
 	fx.Provide(NewGetFinetuneUseCase),
+	fx.Provide(NewFinetuneCompletionUseCase),
 	fx.Provide(NewDownloadModelUseCase),
 	fx.Provide(NewAnalyzePromptUseCase),
 	fx.Provide(NewLoginController),
@@ -436,6 +458,7 @@ var Module = fx.Options(
 	fx.Provide(NewUpdateTrainingDatasetStatusController),
 	fx.Provide(NewUpdateFinetuneStatusController),
 	fx.Provide(NewGetFinetuneController),
+	fx.Provide(NewFinetuneCompletionController),
 	fx.Provide(NewDownloadModelController),
 	fx.Provide(NewAnalyzePromptController),
 	fx.Provide(NewAuthMiddleware),

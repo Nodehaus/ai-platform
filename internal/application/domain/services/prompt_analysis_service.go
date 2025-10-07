@@ -31,7 +31,7 @@ ANALYSIS:`
 
 	llmPrompt := fmt.Sprintf(promptTemplate, userPrompt)
 
-	response, err := s.OllamaLLMClient.GenerateCompletion(ctx, llmPrompt, 500, 0.7, 0.9)
+	response, err := s.OllamaLLMClient.GenerateCompletion(ctx, "", llmPrompt, "qwen3:30b-a3b-instruct-2507-q4_K_M", 500, 0.3, 0.9)
 	if err != nil {
 		return "", fmt.Errorf("LLM call failed: %w", err)
 	}
@@ -64,7 +64,7 @@ JSON:`
 
 	llmPrompt := fmt.Sprintf(promptTemplate, userPrompt)
 
-	response, err := s.OllamaLLMClient.GenerateCompletion(ctx, llmPrompt, 800, 0.5, 0.9)
+	response, err := s.OllamaLLMClient.GenerateCompletion(ctx, "", llmPrompt, "qwen3:30b-a3b-instruct-2507-q4_K_M", 800, 0.2, 0.9)
 	if err != nil {
 		return nil, fmt.Errorf("LLM call failed: %w", err)
 	}

@@ -168,8 +168,45 @@ templ FinetuneIndex(data FinetuneIndexData) {
 								Download Model
 							</button>
 						</div>
-						<div class="mt-6 flex space-x-3">
-							Chat with Model coming soon...
+
+						<!-- Test Model Section -->
+						<div class="mt-6">
+							<h3 class="text-lg font-semibold text-gray-900 mb-4">Test Your Model</h3>
+							<div class="space-y-4">
+								<div>
+									<textarea
+										id="prompt-input"
+										rows="4"
+										class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+										placeholder="Type your prompt here..."
+									></textarea>
+								</div>
+								<div>
+									<button
+										id="get-response-btn"
+										onclick={ templ.ComponentScript{Call: fmt.Sprintf("getModelResponse('%s', '%s')", data.ProjectID, data.FinetuneID)} }
+										class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+									>
+										Get Model Response
+									</button>
+								</div>
+								<div id="response-container" class="hidden">
+									<div class="border-t border-gray-200 pt-4">
+										<label class="block text-sm font-medium text-gray-700 mb-2">
+											Model Response:
+										</label>
+										<div id="response-output" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm text-gray-700 whitespace-pre-wrap">
+										</div>
+									</div>
+								</div>
+								<div id="error-container" class="hidden">
+									<div class="border-t border-gray-200 pt-4">
+										<div class="bg-red-50 border border-red-200 rounded-md p-3">
+											<p class="text-sm text-red-800" id="error-message"></p>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					}
 				</div>
@@ -209,6 +246,67 @@ templ FinetuneIndex(data FinetuneIndexData) {
 				// Open the download URL in a new tab/window
 				// The browser will automatically include cookies and trigger the download
 				window.open(`/api/projects/${projectId}/finetunes/${finetuneId}/download`, '_blank');
+			}
+
+			// Function to get model response
+			async function getModelResponse(projectId, finetuneId) {
+				const promptInput = document.getElementById('prompt-input');
+				const responseContainer = document.getElementById('response-container');
+				const responseOutput = document.getElementById('response-output');
+				const errorContainer = document.getElementById('error-container');
+				const errorMessage = document.getElementById('error-message');
+				const button = document.getElementById('get-response-btn');
+
+				const prompt = promptInput.value.trim();
+
+				// Validate prompt
+				if (!prompt) {
+					errorMessage.textContent = 'Please enter a prompt';
+					errorContainer.classList.remove('hidden');
+					responseContainer.classList.add('hidden');
+					return;
+				}
+
+				// Hide previous results
+				responseContainer.classList.add('hidden');
+				errorContainer.classList.add('hidden');
+
+				// Disable button and show loading state
+				button.disabled = true;
+				button.textContent = 'Generating...';
+
+				try {
+					const response = await fetch(`/api/projects/${projectId}/finetunes/${finetuneId}/completion`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						credentials: 'include', // Include cookies for authentication
+						body: JSON.stringify({
+							prompt: prompt,
+							max_tokens: 512,
+							temperature: 0.7,
+							top_p: 0.9
+						})
+					});
+
+					if (!response.ok) {
+						const errorData = await response.json();
+						throw new Error(errorData.error || `Request failed with status ${response.status}`);
+					}
+
+					const data = await response.json();
+					responseOutput.textContent = data.completion;
+					responseContainer.classList.remove('hidden');
+
+				} catch (error) {
+					errorMessage.textContent = `Error: ${error.message}`;
+					errorContainer.classList.remove('hidden');
+				} finally {
+					// Re-enable button and restore text
+					button.disabled = false;
+					button.textContent = 'Get Model Response';
+				}
 			}
 		</script>
 	}

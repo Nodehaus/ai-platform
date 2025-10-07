@@ -5,5 +5,5 @@ import (
 )
 
 type OllamaLLMClient interface {
-	GenerateCompletion(ctx context.Context, prompt string, maxTokens int, temperature float64, topP float64) (string, error)
+	GenerateCompletion(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (string, error)
 }

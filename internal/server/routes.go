@@ -43,6 +43,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	protected.POST("/projects/:project_id/training-datasets/:training_dataset_id/upload", s.uploadTrainingDatasetController.UploadTrainingDataset)
 	protected.POST("/projects/:project_id/finetunes", s.createFinetuneController.CreateFinetune)
 	protected.GET("/projects/:project_id/finetunes/:finetune_id", s.getFinetuneController.GetFinetune)
+	protected.POST("/projects/:project_id/finetunes/:finetune_id/completion", s.finetuneCompletionController.GenerateCompletion)
 	protected.GET("/projects/:project_id/finetunes/:finetune_id/download", s.downloadModelController.DownloadModel)
 
 	// External API routes (API key protected)
