@@ -167,9 +167,18 @@ templ FinetuneIndex(data FinetuneIndexData) {
 							<button onclick={ templ.ComponentScript{Call: fmt.Sprintf("downloadModel('%s', '%s')", data.ProjectID, data.FinetuneID)} } class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
 								Download Model
 							</button>
-							<button onclick={ templ.ComponentScript{Call: fmt.Sprintf("deployModel('%s', '%s', '%s')", data.ProjectID, data.FinetuneID, data.Finetune.ModelName)} } class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium">
-								Deploy Model
-							</button>
+							if data.Finetune.DeploymentID == nil {
+								<button onclick={ templ.ComponentScript{Call: fmt.Sprintf("deployModel('%s', '%s', '%s')", data.ProjectID, data.FinetuneID, data.Finetune.ModelName)} } class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium">
+									Deploy Model
+								</button>
+							} else {
+								<a
+									href={ templ.URL(fmt.Sprintf("/web/projects/%s/deployments/%s", data.ProjectID, data.Finetune.DeploymentID)) }
+									class="inline-flex items-center px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium"
+								>
+									View Deployment
+								</a>
+							}
 						</div>
 
 						<!-- Deployment Info -->

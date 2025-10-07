@@ -35,6 +35,7 @@ type FinetuneData struct {
 	ModelQuantization                *string                `json:"model_quantization"`
 	InferenceSamples                 []InferenceSample      `json:"inference_samples"`
 	TrainingTimeSeconds              *float64               `json:"training_time_seconds"`
+	DeploymentID                     *uuid.UUID             `json:"deployment_id,omitempty"`
 }
 
 type InferenceSample struct {

@@ -20,9 +20,10 @@ type GetFinetuneResponse struct {
 	ModelQuantization                *string                      `json:"model_quantization"`
 	InferenceSamples                 []entities.InferenceSample   `json:"inference_samples"`
 	TrainingTimeSeconds              *float64                     `json:"training_time_seconds"`
+	DeploymentID                     *uuid.UUID                   `json:"deployment_id,omitempty"`
 }
 
-func ToGetFinetuneResponse(finetune *entities.Finetune) *GetFinetuneResponse {
+func ToGetFinetuneResponse(finetune *entities.Finetune, deploymentID *uuid.UUID) *GetFinetuneResponse {
 	return &GetFinetuneResponse{
 		ID:                               finetune.ID,
 		Version:                          finetune.Version,
@@ -38,5 +39,6 @@ func ToGetFinetuneResponse(finetune *entities.Finetune) *GetFinetuneResponse {
 		ModelQuantization:                finetune.ModelQuantization,
 		InferenceSamples:                 finetune.InferenceSamples,
 		TrainingTimeSeconds:              finetune.TrainingTimeSeconds,
+		DeploymentID:                     deploymentID,
 	}
 }

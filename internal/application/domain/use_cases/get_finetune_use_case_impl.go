@@ -6,10 +6,12 @@ import (
 
 	"ai-platform/internal/application/port/in"
 	"ai-platform/internal/application/port/out/persistence"
+	"github.com/google/uuid"
 )
 
 type GetFinetuneUseCaseImpl struct {
-	FinetuneRepository persistence.FinetuneRepository
+	FinetuneRepository   persistence.FinetuneRepository
+	DeploymentRepository persistence.DeploymentRepository
 }
 
 func (uc *GetFinetuneUseCaseImpl) GetFinetune(ctx context.Context, command in.GetFinetuneCommand) (*in.GetFinetuneResult, error) {
@@ -32,7 +34,15 @@ func (uc *GetFinetuneUseCaseImpl) GetFinetune(ctx context.Context, command in.Ge
 	// This would require injecting ProjectRepository to check ownership
 	// For now, we assume the controller has already verified project ownership
 
+	// Check if this finetune has been deployed
+	var deploymentID *uuid.UUID
+	deployment, err := uc.DeploymentRepository.GetByFinetuneID(command.FinetuneID)
+	if err == nil && deployment != nil {
+		deploymentID = &deployment.ID
+	}
+
 	return &in.GetFinetuneResult{
-		Finetune: finetune,
+		Finetune:     finetune,
+		DeploymentID: deploymentID,
 	}, nil
 }

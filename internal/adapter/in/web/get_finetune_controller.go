@@ -67,6 +67,6 @@ func (c *GetFinetuneController) GetFinetune(ctx *gin.Context) {
 		return
 	}
 
-	response := ToGetFinetuneResponse(result.Finetune)
+	response := ToGetFinetuneResponse(result.Finetune, result.DeploymentID)
 	ctx.JSON(http.StatusOK, response)
 }

@@ -255,9 +255,10 @@ func NewUpdateFinetuneStatusController(updateFinetuneStatusUseCase in.UpdateFine
 	}
 }
 
-func NewGetFinetuneUseCase(finetuneRepo persistencePort.FinetuneRepository) in.GetFinetuneUseCase {
+func NewGetFinetuneUseCase(finetuneRepo persistencePort.FinetuneRepository, deploymentRepo persistencePort.DeploymentRepository) in.GetFinetuneUseCase {
 	return &use_cases.GetFinetuneUseCaseImpl{
-		FinetuneRepository: finetuneRepo,
+		FinetuneRepository:   finetuneRepo,
+		DeploymentRepository: deploymentRepo,
 	}
 }
 
