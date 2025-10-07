@@ -47,8 +47,8 @@ func NewDownloadModelClientImpl() (*DownloadModelClientImpl, error) {
 }
 
 func (c *DownloadModelClientImpl) DownloadModel(ctx context.Context, finetuneID uuid.UUID, modelName string) (io.ReadCloser, int64, error) {
-	// Construct S3 key: /finetunes/{finetune_id}/{model_name}.gguf
-	key := fmt.Sprintf("finetunes/%s/%s.gguf", finetuneID.String(), modelName)
+	appEnv := os.Getenv("APP_ENV")
+	key := fmt.Sprintf("%s/finetunes/%s/%s.gguf", appEnv, finetuneID.String(), modelName)
 
 	// First get object metadata to check if file exists and get content length
 	headInput := &s3.HeadObjectInput{
