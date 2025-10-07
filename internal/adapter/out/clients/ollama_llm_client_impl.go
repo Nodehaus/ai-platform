@@ -38,22 +38,41 @@ func NewOllamaLLMClientImpl() (*OllamaLLMClientImpl, error) {
 }
 
 func (c *OllamaLLMClientImpl) GenerateCompletion(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (string, error) {
+	openaiInput := map[string]interface{}{
+		"model":       model,
+		"prompt":      prompt,
+		"max_tokens":  maxTokens,
+		"temperature": temperature,
+		"top_p":       topP,
+	}
+
+	return c.callRunpodAPI(ctx, finetuneID, "/v1/completions", openaiInput)
+}
+
+func (c *OllamaLLMClientImpl) GenerateChatCompletion(ctx context.Context, finetuneID string, messages []string, model string, maxTokens int, temperature float64, topP float64) (string, error) {
+	openaiInput := map[string]interface{}{
+		"model":       model,
+		"messages":    messages,
+		"max_tokens":  maxTokens,
+		"temperature": temperature,
+		"top_p":       topP,
+	}
+
+	return c.callRunpodAPI(ctx, finetuneID, "/v1/chat/completions", openaiInput)
+}
+
+// callRunpodAPI is a common method to make API calls to Runpod
+func (c *OllamaLLMClientImpl) callRunpodAPI(ctx context.Context, finetuneID string, openaiRoute string, openaiInput map[string]interface{}) (string, error) {
 	// Build the request payload
 	bucket := os.Getenv("APP_S3_BUCKET")
 	appEnv := os.Getenv("APP_ENV")
 	requestPayload := map[string]interface{}{
 		"input": map[string]interface{}{
-			"s3_bucket": bucket,
-			"app_env": appEnv,
-			"finetune_id": finetuneID,
-			"openai_route": "/v1/completions",
-			"openai_input": map[string]interface{}{
-				"model":       model,
-				"prompt":      prompt,
-				"max_tokens":  maxTokens,
-				"temperature": temperature,
-				"top_p":       topP,
-			},
+			"s3_bucket":    bucket,
+			"app_env":      appEnv,
+			"finetune_id":  finetuneID,
+			"openai_route": openaiRoute,
+			"openai_input": openaiInput,
 		},
 	}
 

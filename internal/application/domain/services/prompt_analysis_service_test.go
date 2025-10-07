@@ -7,12 +7,20 @@ import (
 
 // MockOllamaLLMClient is a mock implementation for testing
 type MockOllamaLLMClient struct {
-	GenerateCompletionFunc func(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (string, error)
+	GenerateCompletionFunc     func(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (string, error)
+	GenerateChatCompletionFunc func(ctx context.Context, finetuneID string, messages []string, model string, maxTokens int, temperature float64, topP float64) (string, error)
 }
 
 func (m *MockOllamaLLMClient) GenerateCompletion(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (string, error) {
 	if m.GenerateCompletionFunc != nil {
 		return m.GenerateCompletionFunc(ctx, finetuneID, prompt, model, maxTokens, temperature, topP)
+	}
+	return "", nil
+}
+
+func (m *MockOllamaLLMClient) GenerateChatCompletion(ctx context.Context, finetuneID string, messages []string, model string, maxTokens int, temperature float64, topP float64) (string, error) {
+	if m.GenerateChatCompletionFunc != nil {
+		return m.GenerateChatCompletionFunc(ctx, finetuneID, messages, model, maxTokens, temperature, topP)
 	}
 	return "", nil
 }

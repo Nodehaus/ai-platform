@@ -115,6 +115,11 @@ func (m *MockOllamaLLMClient) GenerateCompletion(ctx context.Context, finetuneID
 	return args.String(0), args.Error(1)
 }
 
+func (m *MockOllamaLLMClient) GenerateChatCompletion(ctx context.Context, finetuneID string, messages []string, model string, maxTokens int, temperature float64, topP float64) (string, error) {
+	args := m.Called(ctx, finetuneID, messages, model, maxTokens, temperature, topP)
+	return args.String(0), args.Error(1)
+}
+
 func TestValidateOwnership_Success(t *testing.T) {
 	ctx := context.Background()
 	projectID := uuid.New()
