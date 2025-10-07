@@ -8,6 +8,7 @@ type ProjectWithTrainingDataset struct {
 	Project         entities.Project
 	TrainingDataset *entities.TrainingDataset
 	Finetune        *entities.Finetune
+	Deployments     []entities.Deployment
 }
 
 type ListProjectsResult struct {

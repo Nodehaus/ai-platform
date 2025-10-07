@@ -22,12 +22,18 @@ type FinetuneData struct {
 	Status string    `json:"status"`
 }
 
+type DeploymentData struct {
+	ID        uuid.UUID `json:"id"`
+	ModelName string    `json:"model_name"`
+}
+
 type ProjectData struct {
 	ID              uuid.UUID             `json:"id"`
 	Name            string                `json:"name"`
 	Status          string                `json:"status"`
 	TrainingDataset *TrainingDatasetData  `json:"training_dataset"`
 	Finetune        *FinetuneData         `json:"finetune"`
+	Deployments     []DeploymentData      `json:"deployments"`
 	CreatedAt       string                `json:"created_at"`
 	UpdatedAt       string                `json:"updated_at"`
 }
@@ -46,12 +52,18 @@ type FinetuneResponse struct {
 	Status string    `json:"status"`
 }
 
+type DeploymentResponse struct {
+	ID        uuid.UUID `json:"id"`
+	ModelName string    `json:"model_name"`
+}
+
 type ProjectResponse struct {
 	ID              uuid.UUID                `json:"id"`
 	Name            string                   `json:"name"`
 	Status          string                   `json:"status"`
 	TrainingDataset *TrainingDatasetResponse `json:"training_dataset"`
 	Finetune        *FinetuneResponse        `json:"finetune"`
+	Deployments     []DeploymentResponse     `json:"deployments"`
 	CreatedAt       string                   `json:"created_at"`
 	UpdatedAt       string                   `json:"updated_at"`
 }
@@ -149,12 +161,21 @@ func fetchProjectsData(r *http.Request, token string) (*ProjectsData, error) {
 			}
 		}
 
+		deployments := make([]DeploymentData, len(project.Deployments))
+		for j, deployment := range project.Deployments {
+			deployments[j] = DeploymentData{
+				ID:        deployment.ID,
+				ModelName: deployment.ModelName,
+			}
+		}
+
 		projectsData.Projects[i] = ProjectData{
 			ID:              project.ID,
 			Name:            project.Name,
 			Status:          project.Status,
 			TrainingDataset: trainingDataset,
 			Finetune:        finetune,
+			Deployments:     deployments,
 			CreatedAt:       formattedCreatedAt,
 			UpdatedAt:       project.UpdatedAt,
 		}

@@ -23,6 +23,7 @@ func (uc *ListProjectsUseCaseImpl) ListProjects(command in.ListProjectsCommand) 
 			Project:         projectWithDataset.Project,
 			TrainingDataset: projectWithDataset.TrainingDataset,
 			Finetune:        projectWithDataset.Finetune,
+			Deployments:     projectWithDataset.Deployments,
 		}
 	}
 

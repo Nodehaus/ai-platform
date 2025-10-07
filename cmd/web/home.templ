@@ -83,6 +83,26 @@ templ Home(projectsData ProjectsData) {
 											</div>
 										</div>
 									}
+									if len(project.Deployments) > 0 {
+										<div class="mt-2">
+											<div class="flex items-center space-x-2 mb-1">
+												<span class="text-sm text-gray-600">Deployments:</span>
+											</div>
+											<div class="ml-4 space-y-1">
+												for _, deployment := range project.Deployments {
+													<div class="flex items-center space-x-2">
+														<span class="text-xs text-gray-500">•</span>
+														<a
+															href={ templ.URL(fmt.Sprintf("/web/projects/%s/deployments/%s", project.ID, deployment.ID)) }
+															class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+														>
+															{ deployment.ModelName }
+														</a>
+													</div>
+												}
+											</div>
+										</div>
+									}
 								</div>
 							}
 						</div>

@@ -12,12 +12,14 @@ type ProjectWithTrainingDataset struct {
 	Project         entities.Project
 	TrainingDataset *entities.TrainingDataset
 	Finetune        *entities.Finetune
+	Deployments     []entities.Deployment
 }
 
 type ProjectService struct {
 	ProjectRepository         persistence.ProjectRepository
 	TrainingDatasetRepository persistence.TrainingDatasetRepository
 	FinetuneRepository        persistence.FinetuneRepository
+	DeploymentRepository      persistence.DeploymentRepository
 }
 
 
@@ -88,10 +90,16 @@ func (s *ProjectService) ListProjects(ctx context.Context, ownerID uuid.UUID) ([
 			latestFinetune = nil
 		}
 
+		deployments, err := s.DeploymentRepository.GetByProjectID(project.ID)
+		if err != nil {
+			deployments = []entities.Deployment{}
+		}
+
 		result[i] = ProjectWithTrainingDataset{
 			Project:         project,
 			TrainingDataset: latestTrainingDataset,
 			Finetune:        latestFinetune,
+			Deployments:     deployments,
 		}
 	}
 
