@@ -53,6 +53,12 @@ func NewFinetuneRepository(dbService database.Service) persistencePort.FinetuneR
 	}
 }
 
+func NewDeploymentRepository(dbService database.Service) persistencePort.DeploymentRepository {
+	return &persistence.DeploymentRepositoryImpl{
+		Db: dbService.GetDB(),
+	}
+}
+
 func NewUserService() *services.UserService {
 	return &services.UserService{}
 }
@@ -84,6 +90,14 @@ func NewFinetuneCompletionService(
 func NewPromptAnalysisService(ollamaLLMClient clientsPort.OllamaLLMClient) *services.PromptAnalysisService {
 	return &services.PromptAnalysisService{
 		OllamaLLMClient: ollamaLLMClient,
+	}
+}
+
+func NewDeploymentService(deploymentRepo persistencePort.DeploymentRepository, projectRepo persistencePort.ProjectRepository, finetuneRepo persistencePort.FinetuneRepository) *services.DeploymentService {
+	return &services.DeploymentService{
+		DeploymentRepository: deploymentRepo,
+		ProjectRepository:    projectRepo,
+		FinetuneRepository:   finetuneRepo,
 	}
 }
 
@@ -351,6 +365,19 @@ func NewFinetuneCompletionController(finetuneCompletionUseCase in.FinetuneComple
 	}
 }
 
+func NewCreateDeploymentUseCase(deploymentRepo persistencePort.DeploymentRepository, deploymentService *services.DeploymentService) in.CreateDeploymentUseCase {
+	return &use_cases.CreateDeploymentUseCaseImpl{
+		DeploymentRepository: deploymentRepo,
+		DeploymentService:    deploymentService,
+	}
+}
+
+func NewCreateDeploymentController(createDeploymentUseCase in.CreateDeploymentUseCase) *web.CreateDeploymentController {
+	return &web.CreateDeploymentController{
+		CreateDeploymentUseCase: createDeploymentUseCase,
+	}
+}
+
 func NewExternalAPIMiddleware() *server.ExternalAPIMiddleware {
 	return &server.ExternalAPIMiddleware{}
 }
@@ -416,6 +443,7 @@ var Module = fx.Options(
 	fx.Provide(NewCorpusRepository),
 	fx.Provide(NewPromptRepository),
 	fx.Provide(NewFinetuneRepository),
+	fx.Provide(NewDeploymentRepository),
 	fx.Provide(NewTrainingDatasetJobClient),
 	fx.Provide(NewTrainingDatasetResultsClient),
 	fx.Provide(NewFinetuneJobClient),
@@ -428,6 +456,7 @@ var Module = fx.Options(
 	fx.Provide(NewFinetuneService),
 	fx.Provide(NewFinetuneCompletionService),
 	fx.Provide(NewPromptAnalysisService),
+	fx.Provide(NewDeploymentService),
 	fx.Provide(NewJWTService),
 	fx.Provide(NewLoginUseCase),
 	fx.Provide(NewCreateProjectUseCase),
@@ -445,6 +474,7 @@ var Module = fx.Options(
 	fx.Provide(NewFinetuneCompletionUseCase),
 	fx.Provide(NewDownloadModelUseCase),
 	fx.Provide(NewAnalyzePromptUseCase),
+	fx.Provide(NewCreateDeploymentUseCase),
 	fx.Provide(NewLoginController),
 	fx.Provide(NewCreateProjectController),
 	fx.Provide(NewGetProjectController),
@@ -461,6 +491,7 @@ var Module = fx.Options(
 	fx.Provide(NewFinetuneCompletionController),
 	fx.Provide(NewDownloadModelController),
 	fx.Provide(NewAnalyzePromptController),
+	fx.Provide(NewCreateDeploymentController),
 	fx.Provide(NewAuthMiddleware),
 	fx.Provide(NewExternalAPIMiddleware),
 )

@@ -87,7 +87,7 @@ A `Prompt` is a string with a version.
 
 ## Finetune
 
-The `Finetune` stored information about the model training and the final model.
+The `Finetune` stores information about the model training and the final model.
 
 ### Model sketch
 
@@ -106,11 +106,26 @@ The `Finetune` stored information about the model training and the final model.
     -   training_time_seconds: float (rounded to 2 decimals)
     -   status: enum of [PLANNING. RUNNING, ABORTED, FAILED, DONE, DELETED] (required)
 
-The `InferenceSample` contains generated output with their input from the validation dataset, we create those during training at specific training steps:
+The `InferenceSample` contains generated output with their input from the validation dataset, we create those during
+training at specific training steps:
 
 -   type InferenceSample
     -   at_step: int
     -   items: list of [input: string, output: string] pairs
+
+## Deployment
+
+The `Deployment` stores information about a model that is deployed for inference. A model can be based on a fine-tuned
+model or any base model (from outside of this app, identified via string as model name). A deployment belongs to a
+project.
+
+### Model sketch
+
+-   type Deployment
+    -   model_name: string (required)
+    -   api_key: string (required)
+    -   project_id: Project (required)
+    -   finetune_id: Finetune (if deployed from a finetune)
 
 ## Status Transitions
 

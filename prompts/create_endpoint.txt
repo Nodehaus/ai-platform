@@ -125,3 +125,15 @@ Add a service with two functions and their prompts for those LLM calls.
 ---
 
 Add an endpoint `/projects/:project_id/finetunes/:finetune_id/completion` that accepts a JSON with a prompt and returns an LLM completion string. We can use the existing OllamaLLMClient to generate the completion. As a model you need to pass the `model_name` of the finetune.
+
+---
+
+Add an endpoint to create a new deployment. You can find information about the database models in `plans/database_models.md`. For now we only want one more POST endpoint `/api/projects/{project_id}/deployments` that reveives the following JSON (the values are examples):
+
+{
+    "model_name": "some_model_name",
+    "finetune_id": "optional_finetune_id"
+}
+
+When creating a deployment then also create a new API key for the database entry.
+
