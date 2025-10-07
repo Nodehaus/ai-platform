@@ -387,10 +387,38 @@ func NewGetDeploymentUseCase(deploymentRepo persistencePort.DeploymentRepository
 	}
 }
 
+func NewPublicCompletionUseCase(ollamaLLMClient clientsPort.OllamaLLMClient) in.PublicCompletionUseCase {
+	return &use_cases.PublicCompletionUseCaseImpl{
+		OllamaLLMClient: ollamaLLMClient,
+	}
+}
+
+func NewPublicChatCompletionUseCase(ollamaLLMClient clientsPort.OllamaLLMClient) in.PublicChatCompletionUseCase {
+	return &use_cases.PublicChatCompletionUseCaseImpl{
+		OllamaLLMClient: ollamaLLMClient,
+	}
+}
+
 func NewGetDeploymentController(getDeploymentUseCase in.GetDeploymentUseCase) *web.GetDeploymentController {
 	return &web.GetDeploymentController{
 		GetDeploymentUseCase: getDeploymentUseCase,
 	}
+}
+
+func NewPublicCompletionController(publicCompletionUseCase in.PublicCompletionUseCase) *web.PublicCompletionController {
+	return &web.PublicCompletionController{
+		PublicCompletionUseCase: publicCompletionUseCase,
+	}
+}
+
+func NewPublicChatCompletionController(publicChatCompletionUseCase in.PublicChatCompletionUseCase) *web.PublicChatCompletionController {
+	return &web.PublicChatCompletionController{
+		PublicChatCompletionUseCase: publicChatCompletionUseCase,
+	}
+}
+
+func NewAPIKeyMiddleware(deploymentRepo persistencePort.DeploymentRepository) *server.APIKeyMiddleware {
+	return server.NewAPIKeyMiddleware(deploymentRepo)
 }
 
 func NewExternalAPIMiddleware() *server.ExternalAPIMiddleware {
@@ -491,6 +519,8 @@ var Module = fx.Options(
 	fx.Provide(NewAnalyzePromptUseCase),
 	fx.Provide(NewCreateDeploymentUseCase),
 	fx.Provide(NewGetDeploymentUseCase),
+	fx.Provide(NewPublicCompletionUseCase),
+	fx.Provide(NewPublicChatCompletionUseCase),
 	fx.Provide(NewLoginController),
 	fx.Provide(NewCreateProjectController),
 	fx.Provide(NewGetProjectController),
@@ -509,6 +539,9 @@ var Module = fx.Options(
 	fx.Provide(NewAnalyzePromptController),
 	fx.Provide(NewCreateDeploymentController),
 	fx.Provide(NewGetDeploymentController),
+	fx.Provide(NewPublicCompletionController),
+	fx.Provide(NewPublicChatCompletionController),
 	fx.Provide(NewAuthMiddleware),
+	fx.Provide(NewAPIKeyMiddleware),
 	fx.Provide(NewExternalAPIMiddleware),
 )

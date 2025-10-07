@@ -137,3 +137,6 @@ Add an endpoint to create a new deployment. You can find information about the d
 
 When creating a deployment then also create a new API key for the database entry.
 
+---
+
+Add two OpenAI compatible endpoints at `/public/{project_id}/completions` and `/public/{project_id}/chat/completions`. Create a new route group for those that will check the API key based on the model name that we can find in the deployments. Use the OllamaLLMClient to forward the request.

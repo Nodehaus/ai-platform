@@ -55,6 +55,12 @@ func (s *Server) RegisterRoutes() http.Handler {
 	external.PUT("/training-datasets/:training_dataset_id/update-status", s.updateTrainingDatasetStatusController.UpdateStatus)
 	external.PUT("/finetunes/:finetune_id/update-status", s.updateFinetuneStatusController.UpdateStatus)
 
+	// Public OpenAI-compatible API routes (deployment API key protected)
+	publicAPI := r.Group("/public/:project_id")
+	publicAPI.Use(s.apiKeyMiddleware.AuthenticateAPIKey())
+	publicAPI.POST("/completions", s.publicCompletionController.GenerateCompletion)
+	publicAPI.POST("/chat/completions", s.publicChatCompletionController.GenerateChatCompletion)
+
 	staticFiles, _ := fs.Sub(web.Files, "assets")
 	r.StaticFS("/assets", http.FS(staticFiles))
 

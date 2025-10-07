@@ -18,6 +18,7 @@ type DeploymentIndexData struct {
 	ProjectName  string
 	DeploymentID string
 	Deployment   DeploymentData
+	BaseURL      string
 }
 
 type DeploymentData struct {
@@ -77,11 +78,15 @@ func DeploymentIndexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get base URL for API examples
+	baseURL := web.GetAPIBaseURL(r)
+
 	indexData := DeploymentIndexData{
 		ProjectID:    projectIDStr,
 		ProjectName:  projectName,
 		DeploymentID: deploymentIDStr,
 		Deployment:   *deploymentData,
+		BaseURL:      baseURL,
 	}
 
 	templ.Handler(DeploymentIndex(indexData)).ServeHTTP(w, r)

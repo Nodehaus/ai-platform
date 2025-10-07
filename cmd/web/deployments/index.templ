@@ -49,6 +49,36 @@ templ DeploymentIndex(data DeploymentIndexData) {
 						</div>
 					</div>
 
+					<!-- API Usage Examples -->
+					<div class="mt-6">
+						<h3 class="text-lg font-semibold text-gray-900 mb-4">API Usage Examples</h3>
+						<div>
+							<p class="text-sm text-gray-700 mb-4">
+								Use your API key to make requests to your deployed model. Below are examples using the OpenAI Python library.
+							</p>
+
+							<div class="space-y-6">
+								<!-- Completions Example -->
+								<div>
+									<h4 class="text-sm font-semibold text-gray-900 mb-2">Text Completions</h4>
+									<pre class="bg-gray-900 text-gray-100 p-4 rounded-md overflow-x-auto text-xs"><code>{ "from openai import OpenAI\n\n# Initialize the client with your deployment API key\nclient = OpenAI(\n    api_key=\"" }{ data.Deployment.APIKey }{ "\",\n    base_url=\"" }{ data.BaseURL }{ "/public/" }{ data.ProjectID }{ "\"\n)\n\n# Generate a completion\nresponse = client.completions.create(\n    model=\"" }{ data.Deployment.ModelName }{ "\",\n    prompt=\"Your prompt here\",\n    max_tokens=512,\n    temperature=0.7,\n    top_p=0.9\n)\n\nprint(response.choices[0].text)" }</code></pre>
+								</div>
+
+								<!-- Chat Completions Example -->
+								<div>
+									<h4 class="text-sm font-semibold text-gray-900 mb-2">Chat Completions</h4>
+									<pre class="bg-gray-900 text-gray-100 p-4 rounded-md overflow-x-auto text-xs"><code>{ "from openai import OpenAI\n\n# Initialize the client with your deployment API key\nclient = OpenAI(\n    api_key=\"" }{ data.Deployment.APIKey }{ "\",\n    base_url=\"" }{ data.BaseURL }{ "/public/" }{ data.ProjectID }{ "\"\n)\n\n# Generate a chat completion\nresponse = client.chat.completions.create(\n    model=\"" }{ data.Deployment.ModelName }{ "\",\n    messages=[\n        {\"role\": \"user\", \"content\": \"Your message here\"}\n    ],\n    max_tokens=512,\n    temperature=0.7,\n    top_p=0.9\n)\n\nprint(response.choices[0].message.content)" }</code></pre>
+								</div>
+
+								<!-- cURL Example -->
+								<div>
+									<h4 class="text-sm font-semibold text-gray-900 mb-2">Using cURL</h4>
+									<pre class="bg-gray-900 text-gray-100 p-4 rounded-md overflow-x-auto text-xs"><code>{ "curl " }{ data.BaseURL }{ "/public/" }{ data.ProjectID }{ "/completions \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer " }{ data.Deployment.APIKey }{ "\" \\\n  -d '{\n    \"model\": \"" }{ data.Deployment.ModelName }{ "\",\n    \"prompt\": \"Your prompt here\",\n    \"max_tokens\": 512,\n    \"temperature\": 0.7,\n    \"top_p\": 0.9\n  }'" }</code></pre>
+								</div>
+							</div>
+						</div>
+					</div>
+
 					<!-- Test Model Section -->
 					if data.Deployment.FinetuneID != nil {
 						<div class="mt-6">

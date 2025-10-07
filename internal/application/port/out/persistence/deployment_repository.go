@@ -11,5 +11,6 @@ type DeploymentRepository interface {
 	GetByProjectID(projectID uuid.UUID) ([]entities.Deployment, error)
 	GetByFinetuneID(finetuneID uuid.UUID) (*entities.Deployment, error)
 	GetByProjectIDAndModelName(projectID uuid.UUID, modelName string) (*entities.Deployment, error)
+	GetByAPIKey(apiKey string) (*entities.Deployment, error)
 	Delete(id uuid.UUID) error
 }

@@ -138,6 +138,31 @@ func (r *DeploymentRepositoryImpl) GetByProjectIDAndModelName(projectID uuid.UUI
 	return model.ToEntity(), nil
 }
 
+func (r *DeploymentRepositoryImpl) GetByAPIKey(apiKey string) (*entities.Deployment, error) {
+	query := `SELECT id, model_name, api_key, project_id, finetune_id, created_at, updated_at
+			  FROM deployments WHERE api_key = $1`
+
+	var model DeploymentRepositoryModel
+	err := r.Db.QueryRow(query, apiKey).Scan(
+		&model.ID,
+		&model.ModelName,
+		&model.APIKey,
+		&model.ProjectID,
+		&model.FinetuneID,
+		&model.CreatedAt,
+		&model.UpdatedAt,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return model.ToEntity(), nil
+}
+
 func (r *DeploymentRepositoryImpl) Delete(id uuid.UUID) error {
 	query := `DELETE FROM deployments WHERE id = $1`
 	_, err := r.Db.Exec(query, id)
