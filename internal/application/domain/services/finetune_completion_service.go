@@ -67,10 +67,10 @@ func (s *FinetuneCompletionService) GenerateCompletion(ctx context.Context, fine
 		topP = 0.9
 	}
 
-	completion, err := s.ollamaLLMClient.GenerateCompletion(ctx, finetuneID.String(), prompt, modelName, maxTokens, temperature, topP)
+	result, err := s.ollamaLLMClient.GenerateCompletion(ctx, finetuneID.String(), prompt, modelName, maxTokens, temperature, topP)
 	if err != nil {
 		return "", err
 	}
 
-	return completion, nil
+	return result.Response, nil
 }

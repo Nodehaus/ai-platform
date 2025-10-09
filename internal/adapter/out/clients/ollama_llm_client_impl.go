@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	portClients "ai-platform/internal/application/port/out/clients"
 )
 
 type OllamaLLMClientImpl struct {
@@ -37,7 +39,7 @@ func NewOllamaLLMClientImpl() (*OllamaLLMClientImpl, error) {
 	}, nil
 }
 
-func (c *OllamaLLMClientImpl) GenerateCompletion(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (string, error) {
+func (c *OllamaLLMClientImpl) GenerateCompletion(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (*portClients.OllamaLLMClientResult, error) {
 	openaiInput := map[string]interface{}{
 		"model":       model,
 		"prompt":      prompt,
@@ -49,7 +51,7 @@ func (c *OllamaLLMClientImpl) GenerateCompletion(ctx context.Context, finetuneID
 	return c.callRunpodAPI(ctx, finetuneID, "/v1/completions", openaiInput)
 }
 
-func (c *OllamaLLMClientImpl) GenerateChatCompletion(ctx context.Context, finetuneID string, messages []string, model string, maxTokens int, temperature float64, topP float64) (string, error) {
+func (c *OllamaLLMClientImpl) GenerateChatCompletion(ctx context.Context, finetuneID string, messages []string, model string, maxTokens int, temperature float64, topP float64) (*portClients.OllamaLLMClientResult, error) {
 	openaiInput := map[string]interface{}{
 		"model":       model,
 		"messages":    messages,
@@ -62,7 +64,7 @@ func (c *OllamaLLMClientImpl) GenerateChatCompletion(ctx context.Context, finetu
 }
 
 // callRunpodAPI is a common method to make API calls to Runpod
-func (c *OllamaLLMClientImpl) callRunpodAPI(ctx context.Context, finetuneID string, openaiRoute string, openaiInput map[string]interface{}) (string, error) {
+func (c *OllamaLLMClientImpl) callRunpodAPI(ctx context.Context, finetuneID string, openaiRoute string, openaiInput map[string]interface{}) (*portClients.OllamaLLMClientResult, error) {
 	// Build the request payload
 	bucket := os.Getenv("APP_S3_BUCKET")
 	appEnv := os.Getenv("APP_ENV")
@@ -78,14 +80,14 @@ func (c *OllamaLLMClientImpl) callRunpodAPI(ctx context.Context, finetuneID stri
 
 	requestJSON, err := json.Marshal(requestPayload)
 	if err != nil {
-		return "", fmt.Errorf("failed to marshal request to JSON: %w", err)
+		return nil, fmt.Errorf("failed to marshal request to JSON: %w", err)
 	}
 
 	// Create HTTP request to Runpod API
 	url := fmt.Sprintf("https://api.runpod.ai/v2/%s/runsync", c.podID)
 	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(requestJSON))
 	if err != nil {
-		return "", fmt.Errorf("failed to create HTTP request: %w", err)
+		return nil, fmt.Errorf("failed to create HTTP request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -94,39 +96,45 @@ func (c *OllamaLLMClientImpl) callRunpodAPI(ctx context.Context, finetuneID stri
 	// Send request
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("failed to send request to Runpod API: %w", err)
+		return nil, fmt.Errorf("failed to send request to Runpod API: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return "", fmt.Errorf("Runpod API returned status code %d", resp.StatusCode)
+		return nil, fmt.Errorf("Runpod API returned status code %d", resp.StatusCode)
 	}
 
 	// Read response body
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("failed to read response body: %w", err)
+		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
 	// Parse response
 	var responseData OllamaLLMResponseModel
 	if err := json.Unmarshal(bodyBytes, &responseData); err != nil {
-		return "", fmt.Errorf("failed to decode response: %w", err)
+		return nil, fmt.Errorf("failed to decode response: %w", err)
 	}
 
 	// Check if status is COMPLETED
 	if responseData.Status != "COMPLETED" {
-		return "", fmt.Errorf("runpod job status is %s, not COMPLETED", responseData.Status)
+		return nil, fmt.Errorf("runpod job status is %s, not COMPLETED", responseData.Status)
 	}
 
 	// Extract the response text from the completion
 	if len(responseData.Output) == 0 {
-		return "", fmt.Errorf("no output in response")
+		return nil, fmt.Errorf("no output in response")
 	}
 
 	if len(responseData.Output[0].Choices) == 0 {
-		return "", fmt.Errorf("no completion choices in response")
+		return nil, fmt.Errorf("no completion choices in response")
 	}
 
-	return responseData.Output[0].Choices[0].Text, nil
+	return &portClients.OllamaLLMClientResult{
+		Response:      responseData.Output[0].Choices[0].Text,
+		TokensIn:      responseData.Output[0].Usage.PromptTokens,
+		TokensOut:     responseData.Output[0].Usage.CompletionTokens,
+		DelayTime:     responseData.DelayTime,
+		ExecutionTime: responseData.ExecutionTime,
+	}, nil
 }

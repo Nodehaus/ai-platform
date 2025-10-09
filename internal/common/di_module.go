@@ -59,6 +59,12 @@ func NewDeploymentRepository(dbService database.Service) persistencePort.Deploym
 	}
 }
 
+func NewDeploymentLogsRepository(dbService database.Service) persistencePort.DeploymentLogsRepository {
+	return &persistence.DeploymentLogsRepositoryImpl{
+		Db: dbService.GetDB(),
+	}
+}
+
 func NewUserService() *services.UserService {
 	return &services.UserService{}
 }
@@ -387,15 +393,17 @@ func NewGetDeploymentUseCase(deploymentRepo persistencePort.DeploymentRepository
 	}
 }
 
-func NewPublicCompletionUseCase(ollamaLLMClient clientsPort.OllamaLLMClient) in.PublicCompletionUseCase {
+func NewPublicCompletionUseCase(ollamaLLMClient clientsPort.OllamaLLMClient, deploymentLogsRepo persistencePort.DeploymentLogsRepository) in.PublicCompletionUseCase {
 	return &use_cases.PublicCompletionUseCaseImpl{
-		OllamaLLMClient: ollamaLLMClient,
+		OllamaLLMClient:          ollamaLLMClient,
+		DeploymentLogsRepository: deploymentLogsRepo,
 	}
 }
 
-func NewPublicChatCompletionUseCase(ollamaLLMClient clientsPort.OllamaLLMClient) in.PublicChatCompletionUseCase {
+func NewPublicChatCompletionUseCase(ollamaLLMClient clientsPort.OllamaLLMClient, deploymentLogsRepo persistencePort.DeploymentLogsRepository) in.PublicChatCompletionUseCase {
 	return &use_cases.PublicChatCompletionUseCaseImpl{
-		OllamaLLMClient: ollamaLLMClient,
+		OllamaLLMClient:          ollamaLLMClient,
+		DeploymentLogsRepository: deploymentLogsRepo,
 	}
 }
 
@@ -487,6 +495,7 @@ var Module = fx.Options(
 	fx.Provide(NewPromptRepository),
 	fx.Provide(NewFinetuneRepository),
 	fx.Provide(NewDeploymentRepository),
+	fx.Provide(NewDeploymentLogsRepository),
 	fx.Provide(NewTrainingDatasetJobClient),
 	fx.Provide(NewTrainingDatasetResultsClient),
 	fx.Provide(NewFinetuneJobClient),

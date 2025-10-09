@@ -3,26 +3,28 @@ package services
 import (
 	"context"
 	"testing"
+
+	"ai-platform/internal/application/port/out/clients"
 )
 
 // MockOllamaLLMClient is a mock implementation for testing
 type MockOllamaLLMClient struct {
-	GenerateCompletionFunc     func(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (string, error)
-	GenerateChatCompletionFunc func(ctx context.Context, finetuneID string, messages []string, model string, maxTokens int, temperature float64, topP float64) (string, error)
+	GenerateCompletionFunc     func(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error)
+	GenerateChatCompletionFunc func(ctx context.Context, finetuneID string, messages []string, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error)
 }
 
-func (m *MockOllamaLLMClient) GenerateCompletion(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (string, error) {
+func (m *MockOllamaLLMClient) GenerateCompletion(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error) {
 	if m.GenerateCompletionFunc != nil {
 		return m.GenerateCompletionFunc(ctx, finetuneID, prompt, model, maxTokens, temperature, topP)
 	}
-	return "", nil
+	return &clients.OllamaLLMClientResult{Response: ""}, nil
 }
 
-func (m *MockOllamaLLMClient) GenerateChatCompletion(ctx context.Context, finetuneID string, messages []string, model string, maxTokens int, temperature float64, topP float64) (string, error) {
+func (m *MockOllamaLLMClient) GenerateChatCompletion(ctx context.Context, finetuneID string, messages []string, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error) {
 	if m.GenerateChatCompletionFunc != nil {
 		return m.GenerateChatCompletionFunc(ctx, finetuneID, messages, model, maxTokens, temperature, topP)
 	}
-	return "", nil
+	return &clients.OllamaLLMClientResult{Response: ""}, nil
 }
 
 func TestPromptAnalysisService_ExtractJSON(t *testing.T) {
@@ -71,16 +73,18 @@ func TestPromptAnalysisService_ExtractJSON(t *testing.T) {
 
 func TestPromptAnalysisService_GetJSONStructure(t *testing.T) {
 	mockClient := &MockOllamaLLMClient{
-		GenerateCompletionFunc: func(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (string, error) {
-			return `{
-				"json_object_fields": {
-					"question": "The question to ask",
-					"answer": "The answer to the question"
-				},
-				"input_field": "question",
-				"output_field": "answer",
-				"expected_output_size_chars": 150
-			}`, nil
+		GenerateCompletionFunc: func(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error) {
+			return &clients.OllamaLLMClientResult{
+				Response: `{
+					"json_object_fields": {
+						"question": "The question to ask",
+						"answer": "The answer to the question"
+					},
+					"input_field": "question",
+					"output_field": "answer",
+					"expected_output_size_chars": 150
+				}`,
+			}, nil
 		},
 	}
 
@@ -109,8 +113,10 @@ func TestPromptAnalysisService_GetJSONStructure(t *testing.T) {
 
 func TestPromptAnalysisService_GetPromptAnalysis(t *testing.T) {
 	mockClient := &MockOllamaLLMClient{
-		GenerateCompletionFunc: func(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (string, error) {
-			return "This is a good prompt. Consider adding more specific examples.", nil
+		GenerateCompletionFunc: func(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error) {
+			return &clients.OllamaLLMClientResult{
+				Response: "This is a good prompt. Consider adding more specific examples.",
+			}, nil
 		},
 	}
 

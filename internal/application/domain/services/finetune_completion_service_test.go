@@ -11,6 +11,7 @@ import (
 
 	"ai-platform/internal/application/domain/entities"
 	"ai-platform/internal/application/domain/services"
+	"ai-platform/internal/application/port/out/clients"
 )
 
 // Mock repositories and clients
@@ -110,14 +111,20 @@ type MockOllamaLLMClient struct {
 	mock.Mock
 }
 
-func (m *MockOllamaLLMClient) GenerateCompletion(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (string, error) {
+func (m *MockOllamaLLMClient) GenerateCompletion(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error) {
 	args := m.Called(ctx, finetuneID, prompt, model, maxTokens, temperature, topP)
-	return args.String(0), args.Error(1)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*clients.OllamaLLMClientResult), args.Error(1)
 }
 
-func (m *MockOllamaLLMClient) GenerateChatCompletion(ctx context.Context, finetuneID string, messages []string, model string, maxTokens int, temperature float64, topP float64) (string, error) {
+func (m *MockOllamaLLMClient) GenerateChatCompletion(ctx context.Context, finetuneID string, messages []string, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error) {
 	args := m.Called(ctx, finetuneID, messages, model, maxTokens, temperature, topP)
-	return args.String(0), args.Error(1)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*clients.OllamaLLMClientResult), args.Error(1)
 }
 
 func TestValidateOwnership_Success(t *testing.T) {
@@ -251,7 +258,7 @@ func TestGenerateCompletion_Success(t *testing.T) {
 	mockFinetuneRepo := new(MockFinetuneRepository)
 	mockOllamaClient := new(MockOllamaLLMClient)
 
-	mockOllamaClient.On("GenerateCompletion", ctx, finetuneID.String(), "test prompt", "test_model", 512, 0.7, 0.9).Return("completion result", nil)
+	mockOllamaClient.On("GenerateCompletion", ctx, finetuneID.String(), "test prompt", "test_model", 512, 0.7, 0.9).Return(&clients.OllamaLLMClientResult{Response: "completion result"}, nil)
 
 	service := services.NewFinetuneCompletionService(mockFinetuneRepo, mockProjectRepo, mockOllamaClient)
 
@@ -270,7 +277,7 @@ func TestGenerateCompletion_WithCustomParameters(t *testing.T) {
 	mockFinetuneRepo := new(MockFinetuneRepository)
 	mockOllamaClient := new(MockOllamaLLMClient)
 
-	mockOllamaClient.On("GenerateCompletion", ctx, finetuneID.String(), "test prompt", "test_model", 1024, 0.8, 0.95).Return("completion result", nil)
+	mockOllamaClient.On("GenerateCompletion", ctx, finetuneID.String(), "test prompt", "test_model", 1024, 0.8, 0.95).Return(&clients.OllamaLLMClientResult{Response: "completion result"}, nil)
 
 	service := services.NewFinetuneCompletionService(mockFinetuneRepo, mockProjectRepo, mockOllamaClient)
 

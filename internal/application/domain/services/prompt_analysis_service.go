@@ -31,12 +31,12 @@ ANALYSIS:`
 
 	llmPrompt := fmt.Sprintf(promptTemplate, userPrompt)
 
-	response, err := s.OllamaLLMClient.GenerateCompletion(ctx, "", llmPrompt, "qwen3:30b-a3b-instruct-2507-q4_K_M", 500, 0.3, 0.9)
+	result, err := s.OllamaLLMClient.GenerateCompletion(ctx, "", llmPrompt, "qwen3:30b-a3b-instruct-2507-q4_K_M", 500, 0.3, 0.9)
 	if err != nil {
 		return "", fmt.Errorf("LLM call failed: %w", err)
 	}
 
-	return strings.TrimSpace(response), nil
+	return strings.TrimSpace(result.Response), nil
 }
 
 // GetJSONStructure calls the LLM to determine the JSON object structure for training data
@@ -64,23 +64,23 @@ JSON:`
 
 	llmPrompt := fmt.Sprintf(promptTemplate, userPrompt)
 
-	response, err := s.OllamaLLMClient.GenerateCompletion(ctx, "", llmPrompt, "qwen3:30b-a3b-instruct-2507-q4_K_M", 800, 0.2, 0.9)
+	result, err := s.OllamaLLMClient.GenerateCompletion(ctx, "", llmPrompt, "qwen3:30b-a3b-instruct-2507-q4_K_M", 800, 0.2, 0.9)
 	if err != nil {
 		return nil, fmt.Errorf("LLM call failed: %w", err)
 	}
 
 	// Parse the JSON response
-	jsonResponse, err := s.extractJSON(response)
+	jsonResponse, err := s.extractJSON(result.Response)
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract JSON from response: %w", err)
 	}
 
-	var result JSONStructureResponse
-	if err := json.Unmarshal([]byte(jsonResponse), &result); err != nil {
+	var structResponse JSONStructureResponse
+	if err := json.Unmarshal([]byte(jsonResponse), &structResponse); err != nil {
 		return nil, fmt.Errorf("failed to parse JSON response: %w", err)
 	}
 
-	return &result, nil
+	return &structResponse, nil
 }
 
 // extractJSON attempts to extract JSON from the LLM response

@@ -127,6 +127,22 @@ project.
     -   project_id: Project (required)
     -   finetune_id: Finetune (if deployed from a finetune)
 
+## DeploymentLogs
+
+The `DeploymentLogs` stores all input prompts/messages and output of a depployed model.
+
+### Model sketch
+
+-   type DeploymentLogs
+    -   deployment_id: string (required)
+    -   tokens_in: int (required)
+    -   tokens_out: int (required)
+    -   input: str (required, the prompt or JSON string of messages)
+    -   output: str (required)
+    -   delay_time: int (required)
+    -   execution_time: int (required)
+    -   source: string
+
 ## Status Transitions
 
 ### Project Status
