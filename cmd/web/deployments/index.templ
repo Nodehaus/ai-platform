@@ -109,6 +109,13 @@ templ DeploymentIndex(data DeploymentIndexData) {
 									</tbody>
 								</table>
 							</div>
+
+							<!-- Download Logs Button -->
+							<div class="mt-4">
+								<button onclick={ templ.ComponentScript{Call: fmt.Sprintf("downloadDeploymentLogs('%s', '%s')", data.ProjectID, data.DeploymentID)} } class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm font-medium">
+									Download All Logs
+								</button>
+							</div>
 						</div>
 					}
 
@@ -198,6 +205,13 @@ templ DeploymentIndex(data DeploymentIndexData) {
 		</div>
 
 		<script>
+			// Function to download deployment logs
+			function downloadDeploymentLogs(projectId, deploymentId) {
+				// Open the download URL in a new tab/window
+				// The browser will automatically include cookies and trigger the download
+				window.open(`/api/projects/${projectId}/deployments/${deploymentId}/logs_download`, '_blank');
+			}
+
 			// Function to copy API key to clipboard
 			function copyToClipboard(text) {
 				navigator.clipboard.writeText(text).then(function() {

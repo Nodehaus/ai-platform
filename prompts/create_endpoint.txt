@@ -140,3 +140,7 @@ When creating a deployment then also create a new API key for the database entry
 ---
 
 Add two OpenAI compatible endpoints at `/public/{project_id}/completions` and `/public/{project_id}/chat/completions`. Create a new route group for those that will check the API key based on the model name that we can find in the deployments. Use the OllamaLLMClient to forward the request.
+
+```
+
+Add an endpoint `/projects/:project_id/deployments/:deployment_id/logs_download` that returns the logs of the deployment as CSV file. It must return all log entries with three columns: date, input, output. We have a similar endpoint at `/projects/:project_id/training-datasets/:training_dataset_id/download` that returns the training dataset as CSV.

@@ -414,6 +414,24 @@ func NewGetDeploymentController(getDeploymentUseCase in.GetDeploymentUseCase) *w
 	}
 }
 
+func NewDownloadDeploymentLogsUseCase(
+	deploymentLogsRepo persistencePort.DeploymentLogsRepository,
+	deploymentRepo persistencePort.DeploymentRepository,
+	deploymentService *services.DeploymentService,
+) in.DownloadDeploymentLogsUseCase {
+	return &use_cases.DownloadDeploymentLogsUseCaseImpl{
+		DeploymentLogsRepository: deploymentLogsRepo,
+		DeploymentRepository:     deploymentRepo,
+		DeploymentService:        deploymentService,
+	}
+}
+
+func NewDownloadDeploymentLogsController(downloadDeploymentLogsUseCase in.DownloadDeploymentLogsUseCase) *web.DownloadDeploymentLogsController {
+	return &web.DownloadDeploymentLogsController{
+		DownloadDeploymentLogsUseCase: downloadDeploymentLogsUseCase,
+	}
+}
+
 func NewPublicCompletionController(publicCompletionUseCase in.PublicCompletionUseCase) *web.PublicCompletionController {
 	return &web.PublicCompletionController{
 		PublicCompletionUseCase: publicCompletionUseCase,
@@ -529,6 +547,7 @@ var Module = fx.Options(
 	fx.Provide(NewAnalyzePromptUseCase),
 	fx.Provide(NewCreateDeploymentUseCase),
 	fx.Provide(NewGetDeploymentUseCase),
+	fx.Provide(NewDownloadDeploymentLogsUseCase),
 	fx.Provide(NewPublicCompletionUseCase),
 	fx.Provide(NewPublicChatCompletionUseCase),
 	fx.Provide(NewLoginController),
@@ -549,6 +568,7 @@ var Module = fx.Options(
 	fx.Provide(NewAnalyzePromptController),
 	fx.Provide(NewCreateDeploymentController),
 	fx.Provide(NewGetDeploymentController),
+	fx.Provide(NewDownloadDeploymentLogsController),
 	fx.Provide(NewPublicCompletionController),
 	fx.Provide(NewPublicChatCompletionController),
 	fx.Provide(NewAuthMiddleware),

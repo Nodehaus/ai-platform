@@ -9,4 +9,5 @@ import (
 type DeploymentLogsRepository interface {
 	Create(log *entities.DeploymentLogs) error
 	GetLatest(deploymentID uuid.UUID, limit int) ([]*entities.DeploymentLogs, error)
+	GetAll(deploymentID uuid.UUID) ([]*entities.DeploymentLogs, error)
 }

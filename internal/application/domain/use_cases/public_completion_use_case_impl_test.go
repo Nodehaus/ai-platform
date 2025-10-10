@@ -43,6 +43,13 @@ func (m *mockDeploymentLogsRepository) GetLatest(deploymentID uuid.UUID, limit i
 	return m.logs, nil
 }
 
+func (m *mockDeploymentLogsRepository) GetAll(deploymentID uuid.UUID) ([]*entities.DeploymentLogs, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
+	return m.logs, nil
+}
+
 func TestPublicCompletionUseCaseImpl_Success(t *testing.T) {
 	finetuneID := uuid.New()
 	deploymentID := uuid.New()
