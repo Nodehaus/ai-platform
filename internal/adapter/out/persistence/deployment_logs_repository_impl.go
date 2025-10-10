@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"ai-platform/internal/application/domain/entities"
+
+	"github.com/google/uuid"
 )
 
 type DeploymentLogsRepositoryImpl struct {
@@ -34,4 +36,46 @@ func (r *DeploymentLogsRepositoryImpl) Create(log *entities.DeploymentLogs) erro
 	)
 
 	return err
+}
+
+func (r *DeploymentLogsRepositoryImpl) GetLatest(deploymentID uuid.UUID, limit int) ([]*entities.DeploymentLogs, error) {
+	query := `SELECT id, deployment_id, tokens_in, tokens_out, input, output, delay_time, execution_time, source, created_at, updated_at
+			  FROM deployment_logs
+			  WHERE deployment_id = $1
+			  ORDER BY created_at DESC
+			  LIMIT $2`
+
+	rows, err := r.Db.Query(query, deploymentID, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var logs []*entities.DeploymentLogs
+	for rows.Next() {
+		log := &entities.DeploymentLogs{}
+		err := rows.Scan(
+			&log.ID,
+			&log.DeploymentID,
+			&log.TokensIn,
+			&log.TokensOut,
+			&log.Input,
+			&log.Output,
+			&log.DelayTime,
+			&log.ExecutionTime,
+			&log.Source,
+			&log.CreatedAt,
+			&log.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		logs = append(logs, log)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return logs, nil
 }

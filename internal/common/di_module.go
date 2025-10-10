@@ -386,10 +386,11 @@ func NewCreateDeploymentController(createDeploymentUseCase in.CreateDeploymentUs
 	}
 }
 
-func NewGetDeploymentUseCase(deploymentRepo persistencePort.DeploymentRepository, deploymentService *services.DeploymentService) in.GetDeploymentUseCase {
+func NewGetDeploymentUseCase(deploymentRepo persistencePort.DeploymentRepository, deploymentLogsRepo persistencePort.DeploymentLogsRepository, deploymentService *services.DeploymentService) in.GetDeploymentUseCase {
 	return &use_cases.GetDeploymentUseCaseImpl{
-		DeploymentRepository: deploymentRepo,
-		DeploymentService:    deploymentService,
+		DeploymentRepository:     deploymentRepo,
+		DeploymentLogsRepository: deploymentLogsRepo,
+		DeploymentService:        deploymentService,
 	}
 }
 

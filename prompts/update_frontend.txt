@@ -49,3 +49,7 @@ templ HelloPost(name string) {
 ```
 
 Now we have a `homepage.templ` and a general `auth_handers.go`. Implement the homepage according to the best practices of templ, all the code related to the homepage will be in a `homepage.go`.
+
+---
+
+Add a table with the latest log entries to `cmd/web/deployments/index.templ`, above the `API Usage Examples`. The table must look the same as the one in `cmd/web/training_datasets/index.templ`, with three columns "Date", "Input" and "Output".

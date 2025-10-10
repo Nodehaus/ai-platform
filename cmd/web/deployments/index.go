@@ -21,14 +21,21 @@ type DeploymentIndexData struct {
 	BaseURL      string
 }
 
+type DeploymentLogSample struct {
+	CreatedAt time.Time `json:"created_at"`
+	Input     string    `json:"input"`
+	Output    string    `json:"output"`
+}
+
 type DeploymentData struct {
-	ID         uuid.UUID  `json:"id"`
-	ModelName  string     `json:"model_name"`
-	APIKey     string     `json:"api_key"`
-	ProjectID  uuid.UUID  `json:"project_id"`
-	FinetuneID *uuid.UUID `json:"finetune_id"`
-	CreatedAt  time.Time  `json:"created_at"`
-	UpdatedAt  time.Time  `json:"updated_at"`
+	ID         uuid.UUID             `json:"id"`
+	ModelName  string                `json:"model_name"`
+	APIKey     string                `json:"api_key"`
+	ProjectID  uuid.UUID             `json:"project_id"`
+	FinetuneID *uuid.UUID            `json:"finetune_id"`
+	CreatedAt  time.Time             `json:"created_at"`
+	UpdatedAt  time.Time             `json:"updated_at"`
+	LogsSample []DeploymentLogSample `json:"logs_sample"`
 }
 
 func DeploymentIndexHandler(w http.ResponseWriter, r *http.Request) {

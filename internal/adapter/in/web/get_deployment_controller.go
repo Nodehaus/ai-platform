@@ -72,6 +72,6 @@ func (c *GetDeploymentController) GetDeployment(ctx *gin.Context) {
 		return
 	}
 
-	response := NewGetDeploymentResponse(result.Deployment)
+	response := NewGetDeploymentResponse(result.Deployment, result.Logs)
 	ctx.JSON(http.StatusOK, response)
 }

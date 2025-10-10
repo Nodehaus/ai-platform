@@ -3,3 +3,7 @@ In the `/api/projects` GET endpoint that lists the projects, add the `training_d
 --
 
 In the `/api/projects/{project_id}/training-datasets` POST endpoint add a field `generate_examples_number` with the number of training examples that we want to generate for the training dataset. Add this number to the final database entry.
+
+---
+
+In the `internal/adapter/in/web/get_deployment_controller.go` add a sample of the deployment logs to the response. We want to receive the 10 latest log entries of that deployment ID, only date, input and output. You can find a similar response in `internal/adapter/in/web/get_training_dataset_controller.go` that returns 10 examples of the training dataset.

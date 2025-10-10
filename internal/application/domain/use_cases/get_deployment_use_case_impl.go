@@ -1,6 +1,7 @@
 package use_cases
 
 import (
+	"ai-platform/internal/application/domain/entities"
 	"ai-platform/internal/application/domain/services"
 	"ai-platform/internal/application/port/in"
 	"ai-platform/internal/application/port/out/persistence"
@@ -8,8 +9,9 @@ import (
 )
 
 type GetDeploymentUseCaseImpl struct {
-	DeploymentRepository persistence.DeploymentRepository
-	DeploymentService    *services.DeploymentService
+	DeploymentRepository     persistence.DeploymentRepository
+	DeploymentLogsRepository persistence.DeploymentLogsRepository
+	DeploymentService        *services.DeploymentService
 }
 
 func (uc *GetDeploymentUseCaseImpl) GetDeployment(command in.GetDeploymentCommand) (*in.GetDeploymentResult, error) {
@@ -34,7 +36,15 @@ func (uc *GetDeploymentUseCaseImpl) GetDeployment(command in.GetDeploymentComman
 		return nil, errors.New("deployment does not belong to this project")
 	}
 
+	// Get latest 10 deployment logs
+	logs, err := uc.DeploymentLogsRepository.GetLatest(command.DeploymentID, 10)
+	if err != nil {
+		// Don't fail if we can't fetch logs, just return empty slice
+		logs = []*entities.DeploymentLogs{}
+	}
+
 	return &in.GetDeploymentResult{
 		Deployment: deployment,
+		Logs:       logs,
 	}, nil
 }
