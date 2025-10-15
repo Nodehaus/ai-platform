@@ -3,6 +3,7 @@ package use_cases
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"ai-platform/internal/application/domain/entities"
 	"ai-platform/internal/application/port/in"
@@ -17,15 +18,22 @@ type PublicCompletionUseCaseImpl struct {
 }
 
 func (uc *PublicCompletionUseCaseImpl) GenerateCompletion(ctx context.Context, command in.PublicCompletionCommand) (*in.PublicCompletionResult, error) {
-	// If no finetune_id, we cannot generate completions
-	if command.FinetuneID == nil {
+	// Check if finetune_id is required (only for nodehaus models)
+	if command.FinetuneID == nil && strings.HasPrefix(command.ModelName, "nodehaus") {
 		return nil, fmt.Errorf("deployment does not have a finetune model")
+	}
+
+	// Prepare finetuneID string pointer for the client
+	var finetuneIDStr *string
+	if command.FinetuneID != nil {
+		idStr := command.FinetuneID.String()
+		finetuneIDStr = &idStr
 	}
 
 	// Call OllamaLLMClient
 	result, err := uc.OllamaLLMClient.GenerateCompletion(
 		ctx,
-		command.FinetuneID.String(),
+		finetuneIDStr,
 		command.Prompt,
 		command.ModelName,
 		command.MaxTokens,

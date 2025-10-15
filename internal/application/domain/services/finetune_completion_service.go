@@ -60,14 +60,12 @@ func (s *FinetuneCompletionService) GenerateCompletion(ctx context.Context, fine
 	if maxTokens == 0 {
 		maxTokens = 512
 	}
-	if temperature == 0 {
-		temperature = 0.7
-	}
 	if topP == 0 {
 		topP = 0.9
 	}
 
-	result, err := s.ollamaLLMClient.GenerateCompletion(ctx, finetuneID.String(), prompt, modelName, maxTokens, temperature, topP)
+	finetuneIDStr := finetuneID.String()
+	result, err := s.ollamaLLMClient.GenerateCompletion(ctx, &finetuneIDStr, prompt, modelName, maxTokens, temperature, topP)
 	if err != nil {
 		return "", err
 	}

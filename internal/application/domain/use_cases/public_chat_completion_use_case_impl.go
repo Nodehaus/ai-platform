@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"ai-platform/internal/application/domain/entities"
 	"ai-platform/internal/application/port/in"
@@ -18,15 +19,22 @@ type PublicChatCompletionUseCaseImpl struct {
 }
 
 func (uc *PublicChatCompletionUseCaseImpl) GenerateChatCompletion(ctx context.Context, command in.PublicChatCompletionCommand) (*in.PublicChatCompletionResult, error) {
-	// If no finetune_id, we cannot generate completions
-	if command.FinetuneID == nil {
+	// Check if finetune_id is required (only for nodehaus models)
+	if command.FinetuneID == nil && strings.HasPrefix(command.ModelName, "nodehaus") {
 		return nil, fmt.Errorf("deployment does not have a finetune model")
+	}
+
+	// Prepare finetuneID string pointer for the client
+	var finetuneIDStr *string
+	if command.FinetuneID != nil {
+		idStr := command.FinetuneID.String()
+		finetuneIDStr = &idStr
 	}
 
 	// Call OllamaLLMClient
 	result, err := uc.OllamaLLMClient.GenerateChatCompletion(
 		ctx,
-		command.FinetuneID.String(),
+		finetuneIDStr,
 		command.Messages,
 		command.ModelName,
 		command.MaxTokens,

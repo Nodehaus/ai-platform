@@ -39,7 +39,7 @@ func NewOllamaLLMClientImpl() (*OllamaLLMClientImpl, error) {
 	}, nil
 }
 
-func (c *OllamaLLMClientImpl) GenerateCompletion(ctx context.Context, finetuneID string, prompt string, model string, maxTokens int, temperature float64, topP float64) (*portClients.OllamaLLMClientResult, error) {
+func (c *OllamaLLMClientImpl) GenerateCompletion(ctx context.Context, finetuneID *string, prompt string, model string, maxTokens int, temperature float64, topP float64) (*portClients.OllamaLLMClientResult, error) {
 	openaiInput := map[string]interface{}{
 		"model":       model,
 		"prompt":      prompt,
@@ -51,7 +51,7 @@ func (c *OllamaLLMClientImpl) GenerateCompletion(ctx context.Context, finetuneID
 	return c.callRunpodAPI(ctx, finetuneID, "/v1/completions", openaiInput)
 }
 
-func (c *OllamaLLMClientImpl) GenerateChatCompletion(ctx context.Context, finetuneID string, messages []string, model string, maxTokens int, temperature float64, topP float64) (*portClients.OllamaLLMClientResult, error) {
+func (c *OllamaLLMClientImpl) GenerateChatCompletion(ctx context.Context, finetuneID *string, messages []string, model string, maxTokens int, temperature float64, topP float64) (*portClients.OllamaLLMClientResult, error) {
 	openaiInput := map[string]interface{}{
 		"model":       model,
 		"messages":    messages,
@@ -64,18 +64,25 @@ func (c *OllamaLLMClientImpl) GenerateChatCompletion(ctx context.Context, finetu
 }
 
 // callRunpodAPI is a common method to make API calls to Runpod
-func (c *OllamaLLMClientImpl) callRunpodAPI(ctx context.Context, finetuneID string, openaiRoute string, openaiInput map[string]interface{}) (*portClients.OllamaLLMClientResult, error) {
+func (c *OllamaLLMClientImpl) callRunpodAPI(ctx context.Context, finetuneID *string, openaiRoute string, openaiInput map[string]interface{}) (*portClients.OllamaLLMClientResult, error) {
 	// Build the request payload
 	bucket := os.Getenv("APP_S3_BUCKET")
 	appEnv := os.Getenv("APP_ENV")
+
+	inputPayload := map[string]interface{}{
+		"s3_bucket":    bucket,
+		"app_env":      appEnv,
+		"openai_route": openaiRoute,
+		"openai_input": openaiInput,
+	}
+
+	// Only include finetune_id if it's not nil
+	if finetuneID != nil {
+		inputPayload["finetune_id"] = *finetuneID
+	}
+
 	requestPayload := map[string]interface{}{
-		"input": map[string]interface{}{
-			"s3_bucket":    bucket,
-			"app_env":      appEnv,
-			"finetune_id":  finetuneID,
-			"openai_route": openaiRoute,
-			"openai_input": openaiInput,
-		},
+		"input": inputPayload,
 	}
 
 	requestJSON, err := json.Marshal(requestPayload)
