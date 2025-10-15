@@ -60,7 +60,7 @@ func (c *PublicCompletionController) GenerateCompletion(ctx *gin.Context) {
 		maxTokens = *request.MaxTokens
 	}
 
-	temperature := 0.7
+	temperature := 0.5
 	if request.Temperature != nil {
 		temperature = *request.Temperature
 	}

@@ -95,6 +95,10 @@ func (s *Server) RegisterRoutes() http.Handler {
 		training_datasets.CreateTrainingDatasetHandler(c.Writer, c.Request)
 	})
 
+	r.GET("/web/projects/:project_id/training-datasets/step0", func(c *gin.Context) {
+		training_datasets.TrainingDatasetStep0Handler(c.Writer, c.Request)
+	})
+
 	r.GET("/web/projects/:project_id/training-datasets/step1", func(c *gin.Context) {
 		training_datasets.TrainingDatasetStep1Handler(c.Writer, c.Request)
 	})

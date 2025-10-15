@@ -26,7 +26,7 @@ templ Home(projectsData ProjectsData) {
 							if project.TrainingDataset == nil {
 								<div class="mt-2">
 									<a
-										href={ templ.URL(fmt.Sprintf("/web/projects/%s/training-datasets/step1", project.ID)) }
+										href={ templ.URL(fmt.Sprintf("/web/projects/%s/training-datasets/step0", project.ID)) }
 										class="text-blue-600 hover:text-blue-800 text-sm font-medium"
 									>
 										Create training dataset

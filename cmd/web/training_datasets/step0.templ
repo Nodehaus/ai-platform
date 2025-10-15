@@ -1,0 +1,185 @@
+package training_datasets
+
+import "ai-platform/cmd/web"
+
+templ TrainingDatasetStep0(projectID string, projectName string) {
+	@web.App("max-w-6xl") {
+		<div class="max-w-6xl mx-auto">
+			<div class="bg-white border border-gray-200 rounded-lg p-8 shadow-md mb-8">
+				<div class="mb-6">
+					<h1 class="text-2xl font-bold text-gray-900 mb-2">Choose Your Path</h1>
+					<p class="text-gray-600">Project: { projectName }</p>
+				</div>
+
+				<form id="step0-form" class="space-y-6">
+					<div>
+						<div class="space-y-4">
+							<div>
+								<label class="flex items-center">
+									<input
+										type="radio"
+										name="path-option"
+										value="deploy-base-model"
+										class="mr-3 text-blue-600"
+									/>
+									<span class="text-sm text-gray-700">Deploy a base model</span>
+								</label>
+							</div>
+							<div>
+								<label class="flex items-center">
+									<input
+										type="radio"
+										name="path-option"
+										value="create-training-data"
+										class="mr-3 text-blue-600"
+									/>
+									<span class="text-sm text-gray-700">Create training data</span>
+								</label>
+							</div>
+						</div>
+					</div>
+
+					<!-- Deploy base model section (hidden by default) -->
+					<div id="deploy-base-model-section" class="hidden">
+						<label for="base-model" class="block text-sm font-medium text-gray-700 mb-2">
+							Select Base Model
+						</label>
+						<select
+							id="base-model"
+							name="base-model"
+							class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+						>
+							<option value="">Choose a model...</option>
+							<option value="qwen3:30b-a3b-instruct-2507-q4_K_M">Qwen 3 30B</option>
+							<option value="qwen3:8b">Qwen 3 8B</option>
+							<option value="qwen3:4b">Qwen 3 4B</option>
+							<option value="qwen3:1.7b">Qwen 3 1.7B</option>
+							<option value="gemma3:12b">Gemma 3 12B</option>
+							<option value="gemma3:4b">Gemma 3 4B</option>
+							<option value="gemma3:1b">Gemma 3 1B</option>
+						</select>
+					</div>
+				</form>
+
+				<div class="mt-8 flex justify-between">
+					<a
+						href="/web/home"
+						class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+					>
+						← Back
+					</a>
+					<button
+						id="next-btn"
+						class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-400 cursor-not-allowed"
+						disabled
+					>
+						Next
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			const projectId = {{ projectID }};
+			const nextBtn = document.getElementById('next-btn');
+			const deployBaseModelSection = document.getElementById('deploy-base-model-section');
+			const baseModelSelect = document.getElementById('base-model');
+
+			// Handle radio button changes
+			document.querySelectorAll('input[name="path-option"]').forEach(function(radio) {
+				radio.addEventListener('change', function() {
+					// Hide all sections first
+					deployBaseModelSection.classList.add('hidden');
+
+					// Reset next button to disabled state
+					disableNextButton();
+
+					if (this.value === 'deploy-base-model') {
+						deployBaseModelSection.classList.remove('hidden');
+						// Check if model is already selected
+						if (baseModelSelect.value) {
+							enableDeployButton();
+						}
+					} else if (this.value === 'create-training-data') {
+						enableTrainingDataButton();
+					}
+				});
+			});
+
+			// Handle base model selection changes
+			baseModelSelect.addEventListener('change', function() {
+				const selectedRadio = document.querySelector('input[name="path-option"]:checked');
+				if (selectedRadio && selectedRadio.value === 'deploy-base-model') {
+					if (this.value) {
+						enableDeployButton();
+					} else {
+						disableNextButton();
+					}
+				}
+			});
+
+			function enableDeployButton() {
+				nextBtn.disabled = false;
+				nextBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+				nextBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+				nextBtn.textContent = 'Deploy Model';
+				nextBtn.onclick = async function() {
+					// Disable button to prevent double clicks
+					nextBtn.disabled = true;
+					nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+					nextBtn.textContent = 'Deploying...';
+
+					try {
+						const response = await fetch('/api/projects/' + projectId + '/deployments', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+							},
+							credentials: 'include',
+							body: JSON.stringify({
+								model_name: baseModelSelect.value
+							})
+						});
+
+						const data = await response.json();
+
+						if (response.ok) {
+							// Redirect to the deployment page
+							window.location.href = '/web/projects/' + projectId + '/deployments/' + data.id;
+						} else {
+							// Show error and re-enable button
+							alert('Error deploying model: ' + (data.error || 'Unknown error'));
+							nextBtn.disabled = false;
+							nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+							nextBtn.textContent = 'Deploy Model';
+						}
+					} catch (error) {
+						// Show error and re-enable button
+						alert('Network error: ' + error.message);
+						nextBtn.disabled = false;
+						nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+						nextBtn.textContent = 'Deploy Model';
+					}
+				};
+			}
+
+			function enableTrainingDataButton() {
+				nextBtn.disabled = false;
+				nextBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+				nextBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+				nextBtn.textContent = 'Next';
+				nextBtn.onclick = function() {
+					window.location.href = '/web/projects/' + projectId + '/training-datasets/step1';
+				};
+			}
+
+			function disableNextButton() {
+				nextBtn.disabled = true;
+				nextBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+				nextBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+				nextBtn.textContent = 'Next';
+				nextBtn.onclick = null;
+			}
+		</script>
+	}
+}
