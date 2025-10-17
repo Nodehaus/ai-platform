@@ -51,7 +51,7 @@ func (c *OllamaLLMClientImpl) GenerateCompletion(ctx context.Context, finetuneID
 	return c.callRunpodAPI(ctx, finetuneID, "/v1/completions", openaiInput)
 }
 
-func (c *OllamaLLMClientImpl) GenerateChatCompletion(ctx context.Context, finetuneID *string, messages []string, model string, maxTokens int, temperature float64, topP float64) (*portClients.OllamaLLMClientResult, error) {
+func (c *OllamaLLMClientImpl) GenerateChatCompletion(ctx context.Context, finetuneID *string, messages []portClients.ChatMessage, model string, maxTokens int, temperature float64, topP float64) (*portClients.OllamaLLMClientResult, error) {
 	openaiInput := map[string]interface{}{
 		"model":       model,
 		"messages":    messages,
@@ -137,8 +137,19 @@ func (c *OllamaLLMClientImpl) callRunpodAPI(ctx context.Context, finetuneID *str
 		return nil, fmt.Errorf("no completion choices in response")
 	}
 
+	// Extract response content - handle both completion (text) and chat completion (message)
+	var responseText string
+	choice := responseData.Output[0].Choices[0]
+	if choice.Message != nil {
+		// Chat completion response
+		responseText = choice.Message.Content
+	} else {
+		// Regular completion response
+		responseText = choice.Text
+	}
+
 	return &portClients.OllamaLLMClientResult{
-		Response:      responseData.Output[0].Choices[0].Text,
+		Response:      responseText,
 		TokensIn:      responseData.Output[0].Usage.PromptTokens,
 		TokensOut:     responseData.Output[0].Usage.CompletionTokens,
 		DelayTime:     responseData.DelayTime,

@@ -31,11 +31,20 @@ func (uc *PublicChatCompletionUseCaseImpl) GenerateChatCompletion(ctx context.Co
 		finetuneIDStr = &idStr
 	}
 
+	// Convert command messages directly to client models
+	clientMessages := make([]clients.ChatMessage, len(command.Messages))
+	for i, msg := range command.Messages {
+		clientMessages[i] = clients.ChatMessage{
+			Role:    msg.Role,
+			Content: msg.Content,
+		}
+	}
+
 	// Call OllamaLLMClient
 	result, err := uc.OllamaLLMClient.GenerateChatCompletion(
 		ctx,
 		finetuneIDStr,
-		command.Messages,
+		clientMessages,
 		command.ModelName,
 		command.MaxTokens,
 		command.Temperature,
@@ -45,7 +54,7 @@ func (uc *PublicChatCompletionUseCaseImpl) GenerateChatCompletion(ctx context.Co
 		return nil, fmt.Errorf("failed to generate chat completion: %w", err)
 	}
 
-	// Convert messages to JSON string for logging
+	// Convert command messages to JSON string for logging
 	messagesJSON, err := json.Marshal(command.Messages)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal messages: %w", err)

@@ -54,10 +54,13 @@ func (c *PublicChatCompletionController) GenerateChatCompletion(ctx *gin.Context
 		finetuneID = &finetuneUUID
 	}
 
-	// Convert messages to string array (simplified for Ollama)
-	messages := make([]string, len(request.Messages))
+	// Convert messages to command ChatMessage
+	messages := make([]in.ChatMessage, len(request.Messages))
 	for i, msg := range request.Messages {
-		messages[i] = msg.Content
+		messages[i] = in.ChatMessage{
+			Role:    msg.Role,
+			Content: msg.Content,
+		}
 	}
 
 	// Set defaults for optional parameters

@@ -19,7 +19,7 @@ func (m *mockOllamaLLMClient) GenerateCompletion(ctx context.Context, finetuneID
 	return m.result, m.err
 }
 
-func (m *mockOllamaLLMClient) GenerateChatCompletion(ctx context.Context, finetuneID *string, messages []string, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error) {
+func (m *mockOllamaLLMClient) GenerateChatCompletion(ctx context.Context, finetuneID *string, messages []clients.ChatMessage, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error) {
 	return m.result, m.err
 }
 

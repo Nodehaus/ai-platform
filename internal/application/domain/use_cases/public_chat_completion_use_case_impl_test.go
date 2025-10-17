@@ -4,10 +4,11 @@ import (
 	"context"
 	"testing"
 
+	"github.com/google/uuid"
+
 	"ai-platform/internal/application/domain/entities"
 	"ai-platform/internal/application/port/in"
 	"ai-platform/internal/application/port/out/clients"
-	"github.com/google/uuid"
 )
 
 func TestPublicChatCompletionUseCaseImpl_Success(t *testing.T) {
@@ -34,7 +35,10 @@ func TestPublicChatCompletionUseCaseImpl_Success(t *testing.T) {
 		DeploymentLogsRepository: mockLogsRepo,
 	}
 
-	messages := []string{"Hello", "How are you?"}
+	messages := []in.ChatMessage{
+		{Role: "user", Content: "Hello"},
+		{Role: "user", Content: "How are you?"},
+	}
 	command := in.PublicChatCompletionCommand{
 		DeploymentID: deploymentID,
 		FinetuneID:   &finetuneID,
@@ -76,7 +80,7 @@ func TestPublicChatCompletionUseCaseImpl_Success(t *testing.T) {
 		t.Errorf("Expected tokens out 25, got %d", log.TokensOut)
 	}
 
-	expectedInput := `["Hello","How are you?"]`
+	expectedInput := `[{"role":"user","content":"Hello"},{"role":"user","content":"How are you?"}]`
 	if log.Input != expectedInput {
 		t.Errorf("Expected input '%s', got %s", expectedInput, log.Input)
 	}

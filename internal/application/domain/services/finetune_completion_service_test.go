@@ -119,7 +119,7 @@ func (m *MockOllamaLLMClient) GenerateCompletion(ctx context.Context, finetuneID
 	return args.Get(0).(*clients.OllamaLLMClientResult), args.Error(1)
 }
 
-func (m *MockOllamaLLMClient) GenerateChatCompletion(ctx context.Context, finetuneID *string, messages []string, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error) {
+func (m *MockOllamaLLMClient) GenerateChatCompletion(ctx context.Context, finetuneID *string, messages []clients.ChatMessage, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error) {
 	args := m.Called(ctx, finetuneID, messages, model, maxTokens, temperature, topP)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)

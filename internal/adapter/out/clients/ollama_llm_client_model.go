@@ -8,6 +8,10 @@ type OllamaLLMResponseModel struct {
 	Output        []struct {
 		Choices []struct {
 			Text         string `json:"text"`
+			Message      *struct {
+				Role    string `json:"role"`
+				Content string `json:"content"`
+			} `json:"message"`
 			Index        int    `json:"index"`
 			FinishReason string `json:"finish_reason"`
 		} `json:"choices"`
