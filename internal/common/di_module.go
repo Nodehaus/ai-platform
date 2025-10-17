@@ -444,6 +444,16 @@ func NewPublicChatCompletionController(publicChatCompletionUseCase in.PublicChat
 	}
 }
 
+func NewPublicListModelsUseCase(deploymentRepo persistencePort.DeploymentRepository) in.PublicListModelsUseCase {
+	return use_cases.NewPublicListModelsUseCaseImpl(deploymentRepo)
+}
+
+func NewPublicListModelsController(publicListModelsUseCase in.PublicListModelsUseCase) *web.PublicListModelsController {
+	return &web.PublicListModelsController{
+		PublicListModelsUseCase: publicListModelsUseCase,
+	}
+}
+
 func NewAPIKeyMiddleware(deploymentRepo persistencePort.DeploymentRepository) *server.APIKeyMiddleware {
 	return server.NewAPIKeyMiddleware(deploymentRepo)
 }
@@ -550,6 +560,7 @@ var Module = fx.Options(
 	fx.Provide(NewDownloadDeploymentLogsUseCase),
 	fx.Provide(NewPublicCompletionUseCase),
 	fx.Provide(NewPublicChatCompletionUseCase),
+	fx.Provide(NewPublicListModelsUseCase),
 	fx.Provide(NewLoginController),
 	fx.Provide(NewCreateProjectController),
 	fx.Provide(NewGetProjectController),
@@ -571,6 +582,7 @@ var Module = fx.Options(
 	fx.Provide(NewDownloadDeploymentLogsController),
 	fx.Provide(NewPublicCompletionController),
 	fx.Provide(NewPublicChatCompletionController),
+	fx.Provide(NewPublicListModelsController),
 	fx.Provide(NewAuthMiddleware),
 	fx.Provide(NewAPIKeyMiddleware),
 	fx.Provide(NewExternalAPIMiddleware),

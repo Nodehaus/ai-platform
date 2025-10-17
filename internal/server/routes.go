@@ -61,6 +61,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	publicAPI.Use(s.apiKeyMiddleware.AuthenticateAPIKey())
 	publicAPI.POST("/completions", s.publicCompletionController.GenerateCompletion)
 	publicAPI.POST("/chat/completions", s.publicChatCompletionController.GenerateChatCompletion)
+	publicAPI.GET("/models", s.publicListModelsController.ListModels)
 
 	staticFiles, _ := fs.Sub(web.Files, "assets")
 	r.StaticFS("/assets", http.FS(staticFiles))

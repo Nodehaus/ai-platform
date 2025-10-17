@@ -37,12 +37,13 @@ type Server struct {
 	downloadDeploymentLogsController         *web.DownloadDeploymentLogsController
 	publicCompletionController               *web.PublicCompletionController
 	publicChatCompletionController           *web.PublicChatCompletionController
+	publicListModelsController               *web.PublicListModelsController
 	authMiddleware                           *AuthMiddleware
 	apiKeyMiddleware                         *APIKeyMiddleware
 	externalAPIMiddleware                    *ExternalAPIMiddleware
 }
 
-func NewServer(db database.Service, loginController *web.LoginController, createProjectController *web.CreateProjectController, getProjectController *web.GetProjectController, listProjectsController *web.ListProjectsController, createTrainingDatasetController *web.CreateTrainingDatasetController, getTrainingDatasetController *web.GetTrainingDatasetController, downloadTrainingDatasetController *web.DownloadTrainingDatasetController, uploadTrainingDatasetController *web.UploadTrainingDatasetController, uploadNewTrainingDatasetVersionController *web.UploadNewTrainingDatasetVersionController, updateTrainingDatasetStatusController *web.UpdateTrainingDatasetStatusController, updateFinetuneStatusController *web.UpdateFinetuneStatusController, createFinetuneController *web.CreateFinetuneController, getFinetuneController *web.GetFinetuneController, finetuneCompletionController *web.FinetuneCompletionController, downloadModelController *web.DownloadModelController, analyzePromptController *web.AnalyzePromptController, createDeploymentController *web.CreateDeploymentController, getDeploymentController *web.GetDeploymentController, downloadDeploymentLogsController *web.DownloadDeploymentLogsController, publicCompletionController *web.PublicCompletionController, publicChatCompletionController *web.PublicChatCompletionController, authMiddleware *AuthMiddleware, apiKeyMiddleware *APIKeyMiddleware, externalAPIMiddleware *ExternalAPIMiddleware) *http.Server {
+func NewServer(db database.Service, loginController *web.LoginController, createProjectController *web.CreateProjectController, getProjectController *web.GetProjectController, listProjectsController *web.ListProjectsController, createTrainingDatasetController *web.CreateTrainingDatasetController, getTrainingDatasetController *web.GetTrainingDatasetController, downloadTrainingDatasetController *web.DownloadTrainingDatasetController, uploadTrainingDatasetController *web.UploadTrainingDatasetController, uploadNewTrainingDatasetVersionController *web.UploadNewTrainingDatasetVersionController, updateTrainingDatasetStatusController *web.UpdateTrainingDatasetStatusController, updateFinetuneStatusController *web.UpdateFinetuneStatusController, createFinetuneController *web.CreateFinetuneController, getFinetuneController *web.GetFinetuneController, finetuneCompletionController *web.FinetuneCompletionController, downloadModelController *web.DownloadModelController, analyzePromptController *web.AnalyzePromptController, createDeploymentController *web.CreateDeploymentController, getDeploymentController *web.GetDeploymentController, downloadDeploymentLogsController *web.DownloadDeploymentLogsController, publicCompletionController *web.PublicCompletionController, publicChatCompletionController *web.PublicChatCompletionController, publicListModelsController *web.PublicListModelsController, authMiddleware *AuthMiddleware, apiKeyMiddleware *APIKeyMiddleware, externalAPIMiddleware *ExternalAPIMiddleware) *http.Server {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
 	serverInstance := &Server{
 		port:                                     port,
@@ -68,6 +69,7 @@ func NewServer(db database.Service, loginController *web.LoginController, create
 		downloadDeploymentLogsController:         downloadDeploymentLogsController,
 		publicCompletionController:               publicCompletionController,
 		publicChatCompletionController:           publicChatCompletionController,
+		publicListModelsController:               publicListModelsController,
 		authMiddleware:                           authMiddleware,
 		apiKeyMiddleware:                         apiKeyMiddleware,
 		externalAPIMiddleware:                    externalAPIMiddleware,

@@ -144,3 +144,7 @@ Add two OpenAI compatible endpoints at `/public/{project_id}/completions` and `/
 ```
 
 Add an endpoint `/projects/:project_id/deployments/:deployment_id/logs_download` that returns the logs of the deployment as CSV file. It must return all log entries with three columns: date, input, output. We have a similar endpoint at `/projects/:project_id/training-datasets/:training_dataset_id/download` that returns the training dataset as CSV.
+
+---
+
+Add an endpoint `/public/:project_id/models` that lists all models of the project in a OpenAI API compatible structure. We already have the endpoints for completion `/public/{project_id}/completions` and `/public/{project_id}/chat/completions`, check the API key in the same way.
