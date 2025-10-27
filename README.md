@@ -36,8 +36,8 @@ To run the full AI platform end-to-end you will need three other repositories:
            ┌─────────────────────┐         │                    ↓
            │ Training Dataset    │         │         ┌─────────────────────┐
            │ Runner              │         │         │   Finetune LLMs     │
-           │ - Python script     │         │         │   - Unsloth API     │
-           └──────┬──────────┬───┘         │         │   - Model finetuning│
+           │ - Python script     │         │         │   - Unsloth         │
+           └──────┬──────────┬───┘         │         │   - Docker/Runpod   │
                   │          │             │         └──────────┬──────────┘
    3. Calls       │          │ 4. Writes   │                    │
      inference    │          │  training   │                    │ 8. Writes
