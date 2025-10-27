@@ -12,8 +12,8 @@ purposes. See deployment for notes on how to deploy the project on a live system
 To run the full AI platform end-to-end you will need three other repositories:
 
 -   [Create Training Dataset Runner](https://github.com/Nodehaus/create-training-dataset-runner): This is basically a Python script that decouples the long running job to create training data from both the API (this `ai-platform` repository) and the inference deployment (the next in the list, `inference-llms`). The API will create a job file on S3, the runner script will take it and use some prompts to create training data in batches. The inference endpoint will be called several times. You need to run this script somewhere as a process. We plan to later replace this with an event-driven architecture.
--   [Inference LLMs](https://github.com/Nodehaus/inference-llms): This repo contains relatively simple Python API to do inference with Ollama. We currently deploy it with Docker on runpod. We embed one default model in the Docker image, this is what we use for creating the training data, analyze the use case prompt, etc.
--   [Finetne LLMs](https://github.com/Nodehaus/finetune-llms): This is a repo that contains a Python API that runs Unsloth to finetune a base model with the training data. It receives the metadata as job file and the training data JSON both on S3. It writes the finetuned model as GGUF to S3.
+-   [Inference LLMs](https://github.com/Nodehaus/inference-llms): This repo contains relatively simple Python API to do inference with Ollama. We currently deploy it with Docker on Runpod. We embed one default model in the Docker image, this is what we use for creating the training data, analyze the use case prompt, etc.
+-   [Finetne LLMs](https://github.com/Nodehaus/finetune-llms): This is a repo that contains a Python API that runs Unsloth to finetune a base model with the training data. It receives the metadata as job file and the training data JSON both on S3. It writes the finetuned model as GGUF to S3. We currently use Docker and Runpod for deployment.
 
 ### Repository Architecture
 
