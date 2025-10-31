@@ -257,5 +257,5 @@ func CreateProjectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("HX-Redirect", fmt.Sprintf("/web/projects/%s/training-datasets/step1", createResp.ID))
+	w.Header().Set("HX-Redirect", fmt.Sprintf("/web/projects/%s/training-datasets/step0", createResp.ID))
 }
