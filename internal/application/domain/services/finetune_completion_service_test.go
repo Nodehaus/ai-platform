@@ -127,6 +127,22 @@ func (m *MockOllamaLLMClient) GenerateChatCompletion(ctx context.Context, finetu
 	return args.Get(0).(*clients.OllamaLLMClientResult), args.Error(1)
 }
 
+func (m *MockOllamaLLMClient) GenerateChatCompletionStream(ctx context.Context, finetuneID *string, messages []clients.ChatMessage, model string, maxTokens int, temperature float64, topP float64) (<-chan *clients.StreamChunk, <-chan error, *clients.StreamMetadata, error) {
+	args := m.Called(ctx, finetuneID, messages, model, maxTokens, temperature, topP)
+	if len(args) < 4 {
+		return nil, nil, nil, args.Error(0)
+	}
+	chunkChan := make(chan *clients.StreamChunk)
+	errChan := make(chan error)
+	close(chunkChan)
+	close(errChan)
+	var metadata *clients.StreamMetadata
+	if args.Get(2) != nil {
+		metadata = args.Get(2).(*clients.StreamMetadata)
+	}
+	return chunkChan, errChan, metadata, args.Error(3)
+}
+
 func TestValidateOwnership_Success(t *testing.T) {
 	ctx := context.Background()
 	projectID := uuid.New()
