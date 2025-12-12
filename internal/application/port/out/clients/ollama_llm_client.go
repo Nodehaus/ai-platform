@@ -17,7 +17,14 @@ type OllamaLLMClientResult struct {
 	ExecutionTime int
 }
 
+type StreamChunk struct {
+	Content      string
+	FinishReason *string
+	Error        error
+}
+
 type OllamaLLMClient interface {
 	GenerateCompletion(ctx context.Context, finetuneID *string, prompt string, model string, maxTokens int, temperature float64, topP float64) (*OllamaLLMClientResult, error)
 	GenerateChatCompletion(ctx context.Context, finetuneID *string, messages []ChatMessage, model string, maxTokens int, temperature float64, topP float64) (*OllamaLLMClientResult, error)
+	GenerateChatCompletionStream(ctx context.Context, finetuneID *string, messages []ChatMessage, model string, maxTokens int, temperature float64, topP float64) (<-chan StreamChunk, error)
 }

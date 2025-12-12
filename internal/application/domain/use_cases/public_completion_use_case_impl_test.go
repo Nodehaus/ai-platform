@@ -23,6 +23,12 @@ func (m *mockOllamaLLMClient) GenerateChatCompletion(ctx context.Context, finetu
 	return m.result, m.err
 }
 
+func (m *mockOllamaLLMClient) GenerateChatCompletionStream(ctx context.Context, finetuneID *string, messages []clients.ChatMessage, model string, maxTokens int, temperature float64, topP float64) (<-chan clients.StreamChunk, error) {
+	ch := make(chan clients.StreamChunk)
+	close(ch)
+	return ch, m.err
+}
+
 type mockDeploymentLogsRepository struct {
 	logs []*entities.DeploymentLogs
 	err  error

@@ -9,8 +9,9 @@ import (
 
 // MockOllamaLLMClient is a mock implementation for testing
 type MockOllamaLLMClient struct {
-	GenerateCompletionFunc     func(ctx context.Context, finetuneID *string, prompt string, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error)
-	GenerateChatCompletionFunc func(ctx context.Context, finetuneID *string, messages []clients.ChatMessage, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error)
+	GenerateCompletionFunc           func(ctx context.Context, finetuneID *string, prompt string, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error)
+	GenerateChatCompletionFunc       func(ctx context.Context, finetuneID *string, messages []clients.ChatMessage, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error)
+	GenerateChatCompletionStreamFunc func(ctx context.Context, finetuneID *string, messages []clients.ChatMessage, model string, maxTokens int, temperature float64, topP float64) (<-chan clients.StreamChunk, error)
 }
 
 func (m *MockOllamaLLMClient) GenerateCompletion(ctx context.Context, finetuneID *string, prompt string, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error) {
@@ -25,6 +26,15 @@ func (m *MockOllamaLLMClient) GenerateChatCompletion(ctx context.Context, finetu
 		return m.GenerateChatCompletionFunc(ctx, finetuneID, messages, model, maxTokens, temperature, topP)
 	}
 	return &clients.OllamaLLMClientResult{Response: ""}, nil
+}
+
+func (m *MockOllamaLLMClient) GenerateChatCompletionStream(ctx context.Context, finetuneID *string, messages []clients.ChatMessage, model string, maxTokens int, temperature float64, topP float64) (<-chan clients.StreamChunk, error) {
+	if m.GenerateChatCompletionStreamFunc != nil {
+		return m.GenerateChatCompletionStreamFunc(ctx, finetuneID, messages, model, maxTokens, temperature, topP)
+	}
+	ch := make(chan clients.StreamChunk)
+	close(ch)
+	return ch, nil
 }
 
 func TestPromptAnalysisService_ExtractJSON(t *testing.T) {

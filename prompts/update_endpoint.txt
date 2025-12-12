@@ -7,3 +7,73 @@ In the `/api/projects/{project_id}/training-datasets` POST endpoint add a field 
 ---
 
 In the `internal/adapter/in/web/get_deployment_controller.go` add a sample of the deployment logs to the response. We want to receive the 10 latest log entries of that deployment ID, only date, input and output. You can find a similar response in `internal/adapter/in/web/get_training_dataset_controller.go` that returns 10 examples of the training dataset.
+
+---
+
+In the endpoint `/public/:project_id/chat/completions` endpoint we want to support OpenAI API compatible streaming. Streaming will happen when the user passes the `stream` key with value `true` in the input JSON. The streaming in the LLM client will be implemented according to the runpod API specification, here is a simple Python script that demonstrates the streaming with Runpod:
+
+```
+import json
+import os
+
+import requests
+
+api_key = os.getenv("RUNPOD_API_KEY")
+endpoint_id = os.getenv("RUNPOD_POD_ID_OLLAMA")
+base = f"https://api.runpod.ai/v2/{endpoint_id}"
+headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+
+payload = {
+    "input": {
+        "app_env": "production",
+        "s3_bucket": "nodehaus",
+        "openai_route": "/v1/chat/completions",
+        "openai_input": {
+            "model": "qwen3:30b-a3b-instruct-2507-q4_K_M",
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": "Write a short poem about coding."},
+            ],
+            "stream": True,
+        },
+    }
+}
+
+r = requests.post(f"{base}/run", headers=headers, json=payload)
+run_id = r.json()["id"]
+print(f"Started run with ID: {run_id}")
+
+data = None
+
+while not data or ("status" in data and data["status"] != "COMPLETED"):
+    resp = requests.get(f"{base}/stream/{run_id}", headers=headers)
+    for line in resp.iter_lines(decode_unicode=True):
+        if not line:
+            continue
+        try:
+            data = json.loads(line)
+        except Exception:
+            data = None
+            print(f"Could not parse line: {line}")
+
+        if data and data["status"] == "IN_PROGRESS":
+            for chunk in data["stream"]:
+                if chunk["output"].startswith("data: "):
+                    content = chunk["output"][6:]
+                    if content == "[DONE]":
+                        print("\n\nStream finished.")
+                    else:
+                        try:
+                            parsed = json.loads(content)
+                        except json.JSONDecodeError:
+                            print("\n\nCould not parse chunk.")
+                            continue
+
+                        if parsed["choices"][0]["delta"].get("content"):
+                            print(
+                                parsed["choices"][0]["delta"]["content"],
+                                end="",
+                                flush=True,
+                            )
+
+```
