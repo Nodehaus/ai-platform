@@ -77,3 +77,7 @@ while not data or ("status" in data and data["status"] != "COMPLETED"):
                             )
 
 ```
+
+---
+
+In the endpoint `/public/:project_id/completions` endpoint we want to support OpenAI API compatible streaming. Streaming will happen when the user passes the `stream` key with value `true` in the input JSON. The chat endpoint `/public/:project_id/chat/completions` supports streaming already, implement it in the same way for completions and re-use any existing code if it makes sense.

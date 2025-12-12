@@ -10,4 +10,5 @@ type PublicCompletionCommand struct {
 	MaxTokens    int
 	Temperature  float64
 	TopP         float64
+	Stream       bool
 }

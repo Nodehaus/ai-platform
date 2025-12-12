@@ -65,3 +65,76 @@ func (uc *PublicCompletionUseCaseImpl) GenerateCompletion(ctx context.Context, c
 		Response: result.Response,
 	}, nil
 }
+
+func (uc *PublicCompletionUseCaseImpl) GenerateCompletionStream(ctx context.Context, command in.PublicCompletionCommand) (<-chan clients.StreamChunk, error) {
+	// Check if finetune_id is required (only for nodehaus models)
+	if command.FinetuneID == nil && strings.HasPrefix(command.ModelName, "nodehaus") {
+		return nil, fmt.Errorf("deployment does not have a finetune model")
+	}
+
+	// Prepare finetuneID string pointer for the client
+	var finetuneIDStr *string
+	if command.FinetuneID != nil {
+		idStr := command.FinetuneID.String()
+		finetuneIDStr = &idStr
+	}
+
+	// Call OllamaLLMClient streaming method
+	streamChan, err := uc.OllamaLLMClient.GenerateCompletionStream(
+		ctx,
+		finetuneIDStr,
+		command.Prompt,
+		command.ModelName,
+		command.MaxTokens,
+		command.Temperature,
+		command.TopP,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate completion stream: %w", err)
+	}
+
+	// Create a new channel for the controller
+	outputChan := make(chan clients.StreamChunk)
+
+	// Start goroutine to collect tokens and log at the end
+	go func() {
+		defer close(outputChan)
+
+		var fullResponse strings.Builder
+		totalTokensIn := 0
+		totalTokensOut := 0
+
+		for chunk := range streamChan {
+			// Forward the chunk to the controller
+			outputChan <- chunk
+
+			// Accumulate the response
+			if chunk.Content != "" {
+				fullResponse.WriteString(chunk.Content)
+				totalTokensOut++ // Approximate token count
+			}
+
+			// If there's an error, stop
+			if chunk.Error != nil {
+				return
+			}
+		}
+
+		// Log the request and response after streaming is complete
+		log := &entities.DeploymentLogs{
+			ID:            uuid.New(),
+			DeploymentID:  command.DeploymentID,
+			TokensIn:      totalTokensIn,
+			TokensOut:     totalTokensOut,
+			Input:         command.Prompt,
+			Output:        fullResponse.String(),
+			DelayTime:     0,
+			ExecutionTime: 0,
+			Source:        "api",
+		}
+
+		_ = uc.DeploymentLogsRepository.Create(log)
+	}()
+
+	return outputChan, nil
+}

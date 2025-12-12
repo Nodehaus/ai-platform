@@ -10,6 +10,7 @@ import (
 // MockOllamaLLMClient is a mock implementation for testing
 type MockOllamaLLMClient struct {
 	GenerateCompletionFunc           func(ctx context.Context, finetuneID *string, prompt string, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error)
+	GenerateCompletionStreamFunc     func(ctx context.Context, finetuneID *string, prompt string, model string, maxTokens int, temperature float64, topP float64) (<-chan clients.StreamChunk, error)
 	GenerateChatCompletionFunc       func(ctx context.Context, finetuneID *string, messages []clients.ChatMessage, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error)
 	GenerateChatCompletionStreamFunc func(ctx context.Context, finetuneID *string, messages []clients.ChatMessage, model string, maxTokens int, temperature float64, topP float64) (<-chan clients.StreamChunk, error)
 }
@@ -19,6 +20,15 @@ func (m *MockOllamaLLMClient) GenerateCompletion(ctx context.Context, finetuneID
 		return m.GenerateCompletionFunc(ctx, finetuneID, prompt, model, maxTokens, temperature, topP)
 	}
 	return &clients.OllamaLLMClientResult{Response: ""}, nil
+}
+
+func (m *MockOllamaLLMClient) GenerateCompletionStream(ctx context.Context, finetuneID *string, prompt string, model string, maxTokens int, temperature float64, topP float64) (<-chan clients.StreamChunk, error) {
+	if m.GenerateCompletionStreamFunc != nil {
+		return m.GenerateCompletionStreamFunc(ctx, finetuneID, prompt, model, maxTokens, temperature, topP)
+	}
+	ch := make(chan clients.StreamChunk)
+	close(ch)
+	return ch, nil
 }
 
 func (m *MockOllamaLLMClient) GenerateChatCompletion(ctx context.Context, finetuneID *string, messages []clients.ChatMessage, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error) {

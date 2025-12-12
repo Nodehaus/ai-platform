@@ -1,6 +1,8 @@
 package web
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -70,6 +72,11 @@ func (c *PublicCompletionController) GenerateCompletion(ctx *gin.Context) {
 		topP = *request.TopP
 	}
 
+	stream := false
+	if request.Stream != nil {
+		stream = *request.Stream
+	}
+
 	command := in.PublicCompletionCommand{
 		DeploymentID: deploymentID.(uuid.UUID),
 		FinetuneID:   finetuneID,
@@ -78,8 +85,16 @@ func (c *PublicCompletionController) GenerateCompletion(ctx *gin.Context) {
 		MaxTokens:    maxTokens,
 		Temperature:  temperature,
 		TopP:         topP,
+		Stream:       stream,
 	}
 
+	// Handle streaming response
+	if stream {
+		c.handleStreamingResponse(ctx, command, deploymentID.(uuid.UUID), request.Model)
+		return
+	}
+
+	// Handle non-streaming response
 	result, err := c.PublicCompletionUseCase.GenerateCompletion(ctx.Request.Context(), command)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -102,4 +117,83 @@ func (c *PublicCompletionController) GenerateCompletion(ctx *gin.Context) {
 			},
 		},
 	})
+}
+
+func (c *PublicCompletionController) handleStreamingResponse(ctx *gin.Context, command in.PublicCompletionCommand, deploymentID uuid.UUID, model string) {
+	// Set SSE headers
+	ctx.Header("Content-Type", "text/event-stream")
+	ctx.Header("Cache-Control", "no-cache")
+	ctx.Header("Connection", "keep-alive")
+	ctx.Header("Transfer-Encoding", "chunked")
+
+	// Get the streaming channel from use case
+	streamChan, err := c.PublicCompletionUseCase.GenerateCompletionStream(ctx.Request.Context(), command)
+	if err != nil {
+		// Write error as SSE
+		errorData := map[string]interface{}{
+			"error": map[string]string{
+				"message": err.Error(),
+				"type":    "internal_error",
+			},
+		}
+		errorJSON, _ := json.Marshal(errorData)
+		fmt.Fprintf(ctx.Writer, "data: %s\n\n", errorJSON)
+		ctx.Writer.(http.Flusher).Flush()
+		return
+	}
+
+	// Stream the chunks
+	for chunk := range streamChan {
+		if chunk.Error != nil {
+			// Write error and stop
+			errorData := map[string]interface{}{
+				"error": map[string]string{
+					"message": chunk.Error.Error(),
+					"type":    "internal_error",
+				},
+			}
+			errorJSON, _ := json.Marshal(errorData)
+			fmt.Fprintf(ctx.Writer, "data: %s\n\n", errorJSON)
+			ctx.Writer.(http.Flusher).Flush()
+			return
+		}
+
+		// Create OpenAI-compatible streaming chunk for completions
+		response := map[string]interface{}{
+			"id":      deploymentID.String(),
+			"object":  "text_completion",
+			"created": 0,
+			"model":   model,
+			"choices": []map[string]interface{}{
+				{
+					"index": 0,
+				},
+			},
+		}
+
+		// Add text if present
+		if chunk.Content != "" {
+			response["choices"].([]map[string]interface{})[0]["text"] = chunk.Content
+		}
+
+		// Add finish_reason if present
+		if chunk.FinishReason != nil {
+			response["choices"].([]map[string]interface{})[0]["finish_reason"] = *chunk.FinishReason
+		} else {
+			response["choices"].([]map[string]interface{})[0]["finish_reason"] = nil
+		}
+
+		// Marshal to JSON and write
+		chunkJSON, err := json.Marshal(response)
+		if err != nil {
+			continue
+		}
+
+		fmt.Fprintf(ctx.Writer, "data: %s\n\n", chunkJSON)
+		ctx.Writer.(http.Flusher).Flush()
+	}
+
+	// Write [DONE] message
+	fmt.Fprintf(ctx.Writer, "data: [DONE]\n\n")
+	ctx.Writer.(http.Flusher).Flush()
 }
