@@ -111,7 +111,7 @@ type MockOllamaLLMClient struct {
 	mock.Mock
 }
 
-func (m *MockOllamaLLMClient) GenerateCompletion(ctx context.Context, finetuneID *string, prompt string, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error) {
+func (m *MockOllamaLLMClient) GenerateCompletion(ctx context.Context, finetuneID *string, prompt string, model string, maxTokens *int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error) {
 	args := m.Called(ctx, finetuneID, prompt, model, maxTokens, temperature, topP)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -119,7 +119,7 @@ func (m *MockOllamaLLMClient) GenerateCompletion(ctx context.Context, finetuneID
 	return args.Get(0).(*clients.OllamaLLMClientResult), args.Error(1)
 }
 
-func (m *MockOllamaLLMClient) GenerateCompletionStream(ctx context.Context, finetuneID *string, prompt string, model string, maxTokens int, temperature float64, topP float64) (<-chan clients.StreamChunk, error) {
+func (m *MockOllamaLLMClient) GenerateCompletionStream(ctx context.Context, finetuneID *string, prompt string, model string, maxTokens *int, temperature float64, topP float64) (<-chan clients.StreamChunk, error) {
 	args := m.Called(ctx, finetuneID, prompt, model, maxTokens, temperature, topP)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -127,7 +127,7 @@ func (m *MockOllamaLLMClient) GenerateCompletionStream(ctx context.Context, fine
 	return args.Get(0).(<-chan clients.StreamChunk), args.Error(1)
 }
 
-func (m *MockOllamaLLMClient) GenerateChatCompletion(ctx context.Context, finetuneID *string, messages []clients.ChatMessage, model string, maxTokens int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error) {
+func (m *MockOllamaLLMClient) GenerateChatCompletion(ctx context.Context, finetuneID *string, messages []clients.ChatMessage, model string, maxTokens *int, temperature float64, topP float64) (*clients.OllamaLLMClientResult, error) {
 	args := m.Called(ctx, finetuneID, messages, model, maxTokens, temperature, topP)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -135,7 +135,7 @@ func (m *MockOllamaLLMClient) GenerateChatCompletion(ctx context.Context, finetu
 	return args.Get(0).(*clients.OllamaLLMClientResult), args.Error(1)
 }
 
-func (m *MockOllamaLLMClient) GenerateChatCompletionStream(ctx context.Context, finetuneID *string, messages []clients.ChatMessage, model string, maxTokens int, temperature float64, topP float64) (<-chan clients.StreamChunk, error) {
+func (m *MockOllamaLLMClient) GenerateChatCompletionStream(ctx context.Context, finetuneID *string, messages []clients.ChatMessage, model string, maxTokens *int, temperature float64, topP float64) (<-chan clients.StreamChunk, error) {
 	args := m.Called(ctx, finetuneID, messages, model, maxTokens, temperature, topP)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -277,7 +277,9 @@ func TestGenerateCompletion_Success(t *testing.T) {
 	finetuneIDStr := finetuneID.String()
 	mockOllamaClient.On("GenerateCompletion", ctx, mock.MatchedBy(func(id *string) bool {
 		return id != nil && *id == finetuneIDStr
-	}), "test prompt", "test_model", 512, 0.0, 0.9).Return(&clients.OllamaLLMClientResult{Response: "completion result"}, nil)
+	}), "test prompt", "test_model", mock.MatchedBy(func(tokens *int) bool {
+		return tokens != nil && *tokens == 512
+	}), 0.0, 0.9).Return(&clients.OllamaLLMClientResult{Response: "completion result"}, nil)
 
 	service := services.NewFinetuneCompletionService(mockFinetuneRepo, mockProjectRepo, mockOllamaClient)
 
@@ -299,7 +301,9 @@ func TestGenerateCompletion_WithCustomParameters(t *testing.T) {
 	finetuneIDStr := finetuneID.String()
 	mockOllamaClient.On("GenerateCompletion", ctx, mock.MatchedBy(func(id *string) bool {
 		return id != nil && *id == finetuneIDStr
-	}), "test prompt", "test_model", 1024, 0.8, 0.95).Return(&clients.OllamaLLMClientResult{Response: "completion result"}, nil)
+	}), "test prompt", "test_model", mock.MatchedBy(func(tokens *int) bool {
+		return tokens != nil && *tokens == 1024
+	}), 0.8, 0.95).Return(&clients.OllamaLLMClientResult{Response: "completion result"}, nil)
 
 	service := services.NewFinetuneCompletionService(mockFinetuneRepo, mockProjectRepo, mockOllamaClient)
 

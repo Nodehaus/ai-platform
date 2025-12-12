@@ -57,11 +57,6 @@ func (c *PublicCompletionController) GenerateCompletion(ctx *gin.Context) {
 	}
 
 	// Set defaults for optional parameters
-	maxTokens := 100
-	if request.MaxTokens != nil {
-		maxTokens = *request.MaxTokens
-	}
-
 	temperature := 0.5
 	if request.Temperature != nil {
 		temperature = *request.Temperature
@@ -82,7 +77,7 @@ func (c *PublicCompletionController) GenerateCompletion(ctx *gin.Context) {
 		FinetuneID:   finetuneID,
 		ModelName:    request.Model,
 		Prompt:       request.Prompt,
-		MaxTokens:    maxTokens,
+		MaxTokens:    request.MaxTokens,
 		Temperature:  temperature,
 		TopP:         topP,
 		Stream:       stream,

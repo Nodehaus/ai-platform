@@ -40,26 +40,34 @@ func NewOllamaLLMClientImpl() (*OllamaLLMClientImpl, error) {
 	}, nil
 }
 
-func (c *OllamaLLMClientImpl) GenerateCompletion(ctx context.Context, finetuneID *string, prompt string, model string, maxTokens int, temperature float64, topP float64) (*portClients.OllamaLLMClientResult, error) {
+func (c *OllamaLLMClientImpl) GenerateCompletion(ctx context.Context, finetuneID *string, prompt string, model string, maxTokens *int, temperature float64, topP float64) (*portClients.OllamaLLMClientResult, error) {
 	openaiInput := map[string]interface{}{
 		"model":       model,
 		"prompt":      prompt,
-		"max_tokens":  maxTokens,
 		"temperature": temperature,
 		"top_p":       topP,
+	}
+
+	// Only include max_tokens if provided
+	if maxTokens != nil {
+		openaiInput["max_tokens"] = *maxTokens
 	}
 
 	return c.callRunpodAPI(ctx, finetuneID, "/v1/completions", openaiInput)
 }
 
-func (c *OllamaLLMClientImpl) GenerateCompletionStream(ctx context.Context, finetuneID *string, prompt string, model string, maxTokens int, temperature float64, topP float64) (<-chan portClients.StreamChunk, error) {
+func (c *OllamaLLMClientImpl) GenerateCompletionStream(ctx context.Context, finetuneID *string, prompt string, model string, maxTokens *int, temperature float64, topP float64) (<-chan portClients.StreamChunk, error) {
 	openaiInput := map[string]interface{}{
 		"model":       model,
 		"prompt":      prompt,
-		"max_tokens":  maxTokens,
 		"temperature": temperature,
 		"top_p":       topP,
 		"stream":      true,
+	}
+
+	// Only include max_tokens if provided
+	if maxTokens != nil {
+		openaiInput["max_tokens"] = *maxTokens
 	}
 
 	// Build the request payload
@@ -259,27 +267,35 @@ func (c *OllamaLLMClientImpl) GenerateCompletionStream(ctx context.Context, fine
 	return chunkChan, nil
 }
 
-func (c *OllamaLLMClientImpl) GenerateChatCompletion(ctx context.Context, finetuneID *string, messages []portClients.ChatMessage, model string, maxTokens int, temperature float64, topP float64) (*portClients.OllamaLLMClientResult, error) {
+func (c *OllamaLLMClientImpl) GenerateChatCompletion(ctx context.Context, finetuneID *string, messages []portClients.ChatMessage, model string, maxTokens *int, temperature float64, topP float64) (*portClients.OllamaLLMClientResult, error) {
 	openaiInput := map[string]interface{}{
 		"model":       model,
 		"messages":    messages,
-		"max_tokens":  maxTokens,
 		"temperature": temperature,
 		"top_p":       topP,
 		"stream":      false,
 	}
 
+	// Only include max_tokens if provided
+	if maxTokens != nil {
+		openaiInput["max_tokens"] = *maxTokens
+	}
+
 	return c.callRunpodAPI(ctx, finetuneID, "/v1/chat/completions", openaiInput)
 }
 
-func (c *OllamaLLMClientImpl) GenerateChatCompletionStream(ctx context.Context, finetuneID *string, messages []portClients.ChatMessage, model string, maxTokens int, temperature float64, topP float64) (<-chan portClients.StreamChunk, error) {
+func (c *OllamaLLMClientImpl) GenerateChatCompletionStream(ctx context.Context, finetuneID *string, messages []portClients.ChatMessage, model string, maxTokens *int, temperature float64, topP float64) (<-chan portClients.StreamChunk, error) {
 	openaiInput := map[string]interface{}{
 		"model":       model,
 		"messages":    messages,
-		"max_tokens":  maxTokens,
 		"temperature": temperature,
 		"top_p":       topP,
 		"stream":      true,
+	}
+
+	// Only include max_tokens if provided
+	if maxTokens != nil {
+		openaiInput["max_tokens"] = *maxTokens
 	}
 
 	// Build the request payload

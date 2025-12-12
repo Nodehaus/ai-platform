@@ -39,12 +39,13 @@ func TestPublicChatCompletionUseCaseImpl_Success(t *testing.T) {
 		{Role: "user", Content: "Hello"},
 		{Role: "user", Content: "How are you?"},
 	}
+	maxTokens := 100
 	command := in.PublicChatCompletionCommand{
 		DeploymentID: deploymentID,
 		FinetuneID:   &finetuneID,
 		ModelName:    "test-model",
 		Messages:     messages,
-		MaxTokens:    100,
+		MaxTokens:    &maxTokens,
 		Temperature:  0.7,
 		TopP:         0.9,
 	}

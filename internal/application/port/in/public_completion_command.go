@@ -7,7 +7,7 @@ type PublicCompletionCommand struct {
 	FinetuneID   *uuid.UUID
 	ModelName    string
 	Prompt       string
-	MaxTokens    int
+	MaxTokens    *int
 	Temperature  float64
 	TopP         float64
 	Stream       bool

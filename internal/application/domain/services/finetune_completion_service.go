@@ -57,15 +57,19 @@ func (s *FinetuneCompletionService) GetFinetuneModelName(ctx context.Context, fi
 
 func (s *FinetuneCompletionService) GenerateCompletion(ctx context.Context, finetuneID uuid.UUID, modelName, prompt string, maxTokens int, temperature, topP float64) (string, error) {
 	// Set defaults if not provided
+	var maxTokensPtr *int
 	if maxTokens == 0 {
-		maxTokens = 512
+		defaultMaxTokens := 512
+		maxTokensPtr = &defaultMaxTokens
+	} else {
+		maxTokensPtr = &maxTokens
 	}
 	if topP == 0 {
 		topP = 0.9
 	}
 
 	finetuneIDStr := finetuneID.String()
-	result, err := s.ollamaLLMClient.GenerateCompletion(ctx, &finetuneIDStr, prompt, modelName, maxTokens, temperature, topP)
+	result, err := s.ollamaLLMClient.GenerateCompletion(ctx, &finetuneIDStr, prompt, modelName, maxTokensPtr, temperature, topP)
 	if err != nil {
 		return "", err
 	}
