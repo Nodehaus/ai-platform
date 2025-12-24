@@ -19,7 +19,7 @@ func (c *PublicChatCompletionController) GenerateChatCompletion(ctx *gin.Context
 	var request PublicChatCompletionRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid request format",
+			"error": fmt.Sprintf("Failed to generate chat completion: %v", err),
 		})
 		return
 	}
@@ -59,9 +59,25 @@ func (c *PublicChatCompletionController) GenerateChatCompletion(ctx *gin.Context
 	// Convert messages to command ChatMessage
 	messages := make([]in.ChatMessage, len(request.Messages))
 	for i, msg := range request.Messages {
+		content := ""
+		if str, ok := msg.Content.(string); ok {
+			content = str
+		} else if arr, ok := msg.Content.([]interface{}); ok {
+			for _, item := range arr {
+				if m, ok := item.(map[string]interface{}); ok {
+					if typ, exists := m["type"]; exists && typ == "text" {
+						if txt, exists := m["text"]; exists {
+							if s, ok := txt.(string); ok {
+								content += s
+							}
+						}
+					}
+				}
+			}
+		}
 		messages[i] = in.ChatMessage{
 			Role:    msg.Role,
-			Content: msg.Content,
+			Content: content,
 		}
 	}
 

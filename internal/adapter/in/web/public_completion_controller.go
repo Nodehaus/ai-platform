@@ -19,7 +19,7 @@ func (c *PublicCompletionController) GenerateCompletion(ctx *gin.Context) {
 	var request PublicCompletionRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid request format",
+			"error": fmt.Sprintf("Failed to generate chat completion: %v", err),
 		})
 		return
 	}

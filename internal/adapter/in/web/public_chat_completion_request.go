@@ -1,8 +1,8 @@
 package web
 
 type PublicChatMessage struct {
-	Role    string `json:"role" binding:"required"`
-	Content string `json:"content" binding:"required"`
+	Role    string      `json:"role" binding:"required"`
+	Content interface{} `json:"content" binding:"required"`
 }
 
 type PublicChatCompletionRequest struct {
